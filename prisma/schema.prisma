@@ -1,0 +1,88 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+model User {
+  id         String   @id @default(uuid())
+  name       String
+  email      String   @unique
+  number     String   @unique 
+  password   String
+  disability String?
+  role       Role     @default(USER)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  buses      Bus[]
+  feedbacks  Feedback[]
+}
+
+model Bus {
+  id          String   @id @default(uuid())
+  matricula   String
+  driverId    String
+  status      BusStatus @default(IN_TRANSIT)
+  capacity    Int
+  currentLoad Int
+  location    String
+  updatedAt   DateTime @updatedAt
+
+ driver      User     @relation(fields: [driverId], references: [id]) 
+  route       Route?
+}
+
+model Route {
+  id            String   @id @default(uuid())
+  busId         String   @unique
+  origin        String
+  destination   String
+  stops         String[]
+  estimatedTime String
+
+  bus          Bus      @relation(fields: [busId], references: [id])
+}
+
+model Feedback {
+  id        String   @id @default(uuid())
+  userId    String
+  busId     String?
+  rating    Int
+  comment   String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id])
+  bus       Bus?     @relation(fields: [busId], references: [id])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String?
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id])
+}
+
+enum Role {
+  USER
+  DRIVER
+  ADMIN
+}
+
+enum BusStatus {
+  IN_TRANSIT
+  STOPPED
+  FULL
+}
