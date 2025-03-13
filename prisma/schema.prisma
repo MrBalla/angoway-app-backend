@@ -13,7 +13,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 model User {
-  id         String   @id @default(uuid())
+  id         Int   @id @default(uuid())
   name       String
   email      String   @unique
   number     String   @unique 
@@ -28,7 +28,7 @@ model User {
 }
 
 model Bus {
-  id          String   @id @default(uuid())
+  id          Int   @id @default(uuid())
   matricula   String
   driverId    String
   status      BusStatus @default(IN_TRANSIT)
