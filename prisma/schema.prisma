@@ -13,49 +13,61 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 model User {
-  id         Int   @id @default(uuid())
-  name       String
-  email      String   @unique
-  number     String   @unique 
-  password   String
-  disability String?
-  role       Role     @default(USER)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id                  Int     @default(autoincrement()) @id
+  name                String
+  email               String   @unique
+  number              String   @unique 
+  password            String
+  disability          String?
+  url_foto_de_perfil  String
+  role                Role     @default(USER)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 
-  buses      Bus[]
-  feedbacks  Feedback[]
+  buses               Bus[]
+  feedbacks           Feedback[]
+  notifications       Notification[]
 }
 
 model Bus {
-  id          Int   @id @default(uuid())
+  id          Int       @default(autoincrement()) @id
   matricula   String
-  driverId    String
+  driverId    Int
+  routeId     Int
   status      BusStatus @default(IN_TRANSIT)
   capacity    Int
   currentLoad Int
   location    String
-  updatedAt   DateTime @updatedAt
+  updatedAt   DateTime  @updatedAt
 
- driver      User     @relation(fields: [driverId], references: [id]) 
-  route       Route?
-}
+  driver      User       @relation(fields: [driverId], references: [id]) 
+  route       Route?     @relation(fields: [routeId], references:[id])
+
+  feedbacks   Feedback[]
+ }
 
 model Route {
-  id            String   @id @default(uuid())
-  busId         String   @unique
+  id            Int       @default(autoincrement()) @id
   origin        String
   destination   String
-  stops         String[]
   estimatedTime String
+  stops         Stop[]     @relation("RouteStops")
 
-  bus          Bus      @relation(fields: [busId], references: [id])
+  buses       Bus[]
 }
 
+model Stop {
+  id       Int     @default(autoincrement()) @id
+  name     String
+  routeId  Int
+  route    Route    @relation(fields: [routeId], references: [id], name: "RouteStops")
+}
+
+
 model Feedback {
-  id        String   @id @default(uuid())
-  userId    String
-  busId     String?
+  id        Int     @default(autoincrement()) @id
+  userId    Int
+  busId     Int
   rating    Int
   comment   String
   createdAt DateTime @default(now())
@@ -65,8 +77,8 @@ model Feedback {
 }
 
 model Notification {
-  id        String   @id @default(uuid())
-  userId    String?
+  id        Int     @default(autoincrement()) @id
+  userId    Int
   title     String
   message   String
   read      Boolean  @default(false)
