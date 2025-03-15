@@ -24,14 +24,22 @@ export class UserController {
 
   @Put('/:id')
   async updateUser(@Param('id') id: string, @Body() userData:Prisma.UserUpdateInput
-):Promise<UserModel>{
-  const user= await this.userService.updateUser({ 
-  where:{id: Number(id)},
-  data:userData  
-  })
+    ):Promise<UserModel>{
+    const user= await this.userService.updateUser({ 
+      where:{id: Number(id)},
+      data:userData  
+    })
   if(!user){
     throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
   }
   return user;
-} 
+  } 
+
+  @Delete('/:id')
+  async deleteUser(@Param('id')id:string):Promise<UserModel>{
+    return this.userService.deleteUser({id: Number(id)})
+  }
+    
 }
+
+
