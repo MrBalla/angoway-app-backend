@@ -2,6 +2,7 @@ import { Controller, Get, Param, Post, Body, Put, Delete,HttpCode, HttpStatus } 
 import { Prisma, User as UserModel } from '@prisma/client';
 import { UserService } from './user.service';
 import { NotFoundException } from '@nestjs/common';
+import { BusModule } from 'src/bus/bus.module';
 @Controller('user')
 export class UserController {
     
@@ -11,6 +12,7 @@ export class UserController {
    async signupUser(@Body() userData: Prisma.UserCreateInput): Promise<void> {
     await this.userService.createUser(userData);
   }
+
   @Get('/:id')
   async getUserById(@Param('id') id: string): Promise<UserModel> {
     const user = await this.userService.user({ id: Number(id) });
@@ -19,4 +21,17 @@ export class UserController {
     }
     return user;
   }
+
+  @Put('/:id')
+  async updateUser(@Param('id') id: string, @Body() userData:Prisma.UserUpdateInput
+):Promise<UserModel>{
+  const user= await this.userService.updateUser({ 
+  where:{id: Number(id)},
+  data:userData  
+  })
+  if(!user){
+    throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
+  }
+  return user;
+} 
 }
