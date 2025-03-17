@@ -1,8 +1,8 @@
-import { Controller, Get, Param, Post, Body, Put, Delete,HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, Put, Delete,HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
 import { Prisma, User as UserModel } from '@prisma/client';
 import { UserService } from './user.service';
 import { NotFoundException } from '@nestjs/common';
-import { BusModule } from 'src/bus/bus.module';
+import { AuthGuard } from 'src/auth/auth.guard';
 @Controller('user')
 export class UserController {
     
@@ -13,18 +13,22 @@ export class UserController {
     await this.userService.createUser(userData);
   }
 
+  @UseGuards(AuthGuard)
   @Get('/:id')
-  async getUserById(@Param('id') id: string): Promise<UserModel> {
+  async getUserById(@Param('id') id: string): Promise<Omit<UserModel, 'password'>> {
     const user = await this.userService.user({ id: Number(id) });
     if (!user) {
         throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
     }
-    return user;
+    const { password, ...userWithoutPassword } = user;
+    return userWithoutPassword;
   }
 
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
   @Put('/:id')
   async updateUser(@Param('id') id: string, @Body() userData:Prisma.UserUpdateInput
-    ):Promise<UserModel>{
+    ):Promise<void>{
     const user= await this.userService.updateUser({ 
       where:{id: Number(id)},
       data:userData  
@@ -32,12 +36,13 @@ export class UserController {
   if(!user){
     throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
   }
-  return user;
   } 
-
+  
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
   @Delete('/:id')
-  async deleteUser(@Param('id')id:string):Promise<UserModel>{
-    return this.userService.deleteUser({id: Number(id)})
+  async deleteUser(@Param('id')id:string):Promise<void>{
+    await this.userService.deleteUser({id: Number(id)})
   }
     
 }
