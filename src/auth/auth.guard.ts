@@ -25,7 +25,7 @@ export class AuthGuard implements CanActivate {
                 })
                 request['user']=payload;
             }catch{
-                throw new UnauthorizedException('');
+                throw new UnauthorizedException('Acesso não autorizado. Token inválido ou expirado.');
             }
             return true;
     }
