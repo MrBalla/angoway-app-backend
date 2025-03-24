@@ -14,13 +14,13 @@ export class AuthService {
 
    async signin(Params: Prisma.UserCreateInput):Promise<{acess_token: string}>{
     //verificar se o usuario existe
-      const user = await this.userService.user({email: Params.email});
+      const user = await this.userService.user({number: Params.number});
       if(!user)throw new NotFoundError('Usuário não encontrado');
     //verificar se a senha está correta
        const passwordMatch = await bcrypt.compare(Params.password, user.password);
        if(!passwordMatch)throw new UnauthorizedException('credenciais incorreta');
     //retornar o usuario
-    const payload = {sub: user.id, email: user.email};
+    const payload = {sub: user.id, number: user.number};
 
     return {acess_token: await this.jwtService.signAsync(payload)};
    }

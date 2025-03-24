@@ -11,7 +11,7 @@ export class BusController {
     async createBus(@Body() busData: Prisma.BusCreateInput):Promise<void>{
         await this.busService.createBus(busData);
     }
-    @Get('buses')
+    @Get('')
     async buses(): Promise<Bus[]>{
         return this.busService.buses();
     }
