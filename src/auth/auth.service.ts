@@ -12,7 +12,7 @@ export class AuthService {
     @Inject()
     private readonly jwtService: JwtService;
 
-   async signin(Params: Prisma.UserCreateInput):Promise<{acess_token: string}>{
+   async signin(Params: Prisma.UserCreateInput):Promise<{access_token: string}>{
     //verificar se o usuario existe
       const user = await this.userService.user({number: Params.number});
       if(!user)throw new NotFoundException('Usuário não encontrado');
@@ -22,7 +22,7 @@ export class AuthService {
     //retornar o usuario
     const payload = {sub: user.id, number: user.number};
 
-    return {acess_token: await this.jwtService.signAsync(payload)};
+    return {access_token: await this.jwtService.signAsync(payload)};
    }
 
 }
