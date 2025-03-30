@@ -19,7 +19,7 @@ model User {
   number              String   @unique 
   password            String
   disability          String?
-  url_foto_de_perfil  String
+  url_foto_de_perfil  String?
   role                Role     @default(USER)
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
