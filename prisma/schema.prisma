@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,89 +6,72 @@ datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
 }
-model User {
-  id                  Int     @default(autoincrement()) @id
-  name                String
-  email               String   @unique
-  number              String   @unique 
-  password            String
-  disability          String?
-  url_foto_de_perfil  String?
-  role                Role     @default(USER)
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
 
-  buses               Bus[]
-  feedbacks           Feedback[]
-  notifications       Notification[]
+model User {
+  id                 Int            @id @default(autoincrement())
+  name               String
+  email              String         @unique
+  number             String         @unique
+  password           String
+  disability         String?
+  url_foto_de_perfil String?
+  role               String         @default("USER")
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  buses              Bus[]
+  feedbacks          Feedback[]
+  notifications      Notification[]
 }
 
 model Bus {
-  id          Int       @default(autoincrement()) @id
-  matricula   String
+  id          Int        @id @default(autoincrement())
+  matricula   String     @unique
   driverId    Int
   routeId     Int
-  status      BusStatus @default(IN_TRANSIT)
+  status      String     @default("IN_TRANSIT")
   capacity    Int
   currentLoad Int
   location    String
-  updatedAt   DateTime  @updatedAt
-
-  driver      User       @relation(fields: [driverId], references: [id]) 
-  route       Route?     @relation(fields: [routeId], references:[id])
-
+  updatedAt   DateTime   @updatedAt
+  route       Route      @relation(fields: [routeId], references: [id])
+  driver      User       @relation(fields: [driverId], references: [id])
   feedbacks   Feedback[]
- }
+}
 
 model Route {
-  id            Int       @default(autoincrement()) @id
+  id            Int    @id @default(autoincrement())
   origin        String
   destination   String
+  name          String @unique
   estimatedTime String
-  stops         Stop[]     @relation("RouteStops")
-
-  buses       Bus[]
+  buses         Bus[]
+  stops         Stop[] @relation("RouteStops")
 }
 
 model Stop {
-  id       Int     @default(autoincrement()) @id
-  name     String
-  routeId  Int
-  route    Route    @relation(fields: [routeId], references: [id], name: "RouteStops")
+  id      Int    @id @default(autoincrement())
+  name    String
+  routeId Int
+  route   Route  @relation("RouteStops", fields: [routeId], references: [id])
 }
 
-
 model Feedback {
-  id        Int     @default(autoincrement()) @id
+  id        Int      @id @default(autoincrement())
   userId    Int
   busId     Int
   rating    Int
   comment   String
   createdAt DateTime @default(now())
-
+  bus       Bus      @relation(fields: [busId], references: [id])
   user      User     @relation(fields: [userId], references: [id])
-  bus       Bus?     @relation(fields: [busId], references: [id])
 }
 
 model Notification {
-  id        Int     @default(autoincrement()) @id
+  id        Int      @id @default(autoincrement())
   userId    Int
   title     String
   message   String
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
-
-  user      User?    @relation(fields: [userId], references: [id])
-}
-
-enum Role {
-  USER
-  DRIVER
-  ADMIN
-}
-
-enum BusStatus {
-  IN_TRANSIT
-  STOPPED
-  FULL
+  user      User     @relation(fields: [userId], references: [id])
 }
