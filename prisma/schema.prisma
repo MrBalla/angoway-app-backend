@@ -23,27 +23,19 @@ model User {
   notifications      Notification[]
 }
 
-enum BusStatus {
-  IN_TRANSIT
-  STOPPED
-  FULL
-}
-
 model Bus {
-  id           Int         @id @default(autoincrement())
-  matricula    String
-  driverId     Int
-  routeId      Int
-  status       BusStatus   @default(IN_TRANSIT)
-  capacity     Int
-  currentLoad  Int
-  latitude     Float?
-  longitude    Float?
-  updatedAt    DateTime    @updatedAt
-
-  route        Route       @relation(fields: [routeId], references: [id])
-  driver       User        @relation(fields: [driverId], references: [id])
-  feedbacks    Feedback[]
+  id          Int        @id @default(autoincrement())
+  matricula   String     @unique
+  driverId    Int
+  routeId     Int
+  status      String     @default("IN_TRANSIT")
+  capacity    Int
+  currentLoad Int
+  location    String
+  updatedAt   DateTime   @updatedAt
+  route       Route      @relation(fields: [routeId], references: [id])
+  driver      User       @relation(fields: [driverId], references: [id])
+  feedbacks   Feedback[]
 }
 
 
