@@ -6,7 +6,7 @@ import {
     MessageBody,
     ConnectedSocket
   } from "@nestjs/websockets";
-  import { Socket, Server } from "socket.io";
+  import { Socket } from "socket.io";
   import { DriverLocation } from "src/types/driver.location";
   import { Inject, Injectable, Logger } from "@nestjs/common";
   import { BusService } from "src/bus/bus.service";
