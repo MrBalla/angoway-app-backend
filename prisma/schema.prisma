@@ -46,14 +46,18 @@ model Bus {
   feedbacks    Feedback[]
 }
 
+
 model Route {
-  id            Int    @id @default(autoincrement())
+  id            Int      @id @default(autoincrement())
   origin        String
   destination   String
-  estimatedTime String
-  buses         Bus[]
+  departureTime String // aqqui para armazenar o horário de partida
+  arrivalTime   String // aqqui para armazenar o horário de chegada
+  status        String   @default("active") // "active" ou "inactive"
   stops         Stop[] @relation("RouteStops")
+  buses         Bus[]
 }
+
 
 model Stop {
   id      Int    @id @default(autoincrement())
