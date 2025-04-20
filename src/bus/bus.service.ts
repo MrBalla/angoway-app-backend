@@ -27,6 +27,28 @@ export class BusService {
             }
         })
     }
+
+    async findBusByDriverId(driverId: number) {
+        return this.prisma.bus.findFirst({
+            where: { driverId },
+            include: {
+                driver:{
+                    select:{
+                        name:true,
+                        url_foto_de_perfil: true
+                    }
+                },
+                route:{
+                    select:{
+                        name: true,
+                        estimatedTime: true,
+                    }
+                }
+            }
+        })
+    }
+
+
     async updateBus(id: number, data: Prisma.BusUpdateInput): Promise<Bus> {
         return this.prisma.bus.update({where:{id}, data})
     }
