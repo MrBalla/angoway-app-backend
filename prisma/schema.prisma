@@ -33,23 +33,23 @@ model Bus {
   currentLoad Int
   location    String
   updatedAt   DateTime   @updatedAt
-  route       Route      @relation(fields: [routeId], references: [id])
   driver      User       @relation(fields: [driverId], references: [id])
+  route       Route      @relation(fields: [routeId], references: [id])
   feedbacks   Feedback[]
 }
 
-
 model Route {
-  id            Int      @id @default(autoincrement())
+  id            Int    @id @default(autoincrement())
+  name          String
   origin        String
   destination   String
-  departureTime String // aqqui para armazenar o horário de partida
-  arrivalTime   String // aqqui para armazenar o horário de chegada
-  status        String   @default("active") // "active" ou "inactive"
-  stops         Stop[] @relation("RouteStops")
+  departureTime String
+  estimatedTime String
+  arrivalTime   String
+  status        String @default("active")
   buses         Bus[]
+  stops         Stop[] @relation("RouteStops")
 }
-
 
 model Stop {
   id      Int    @id @default(autoincrement())
