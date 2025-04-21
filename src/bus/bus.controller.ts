@@ -18,7 +18,7 @@ export class BusController {
         return this.busService.buses();
     }
 
-    @Get('bus-details')
+    @Get('dashboard-details')
     @UseGuards(AuthGuard)
     async getBusDetails(@Body() driverId: number): Promise<Bus | null>{
         return this.busService.provideBusDetails(driverId);
