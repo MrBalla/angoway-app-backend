@@ -9,10 +9,12 @@ import { Controller,
     Put, 
     NotFoundException,
     Delete,
-    Patch
+    Patch,
+    UseGuards
    } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { RoutesService } from './routes.service';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('routes')
 export class RoutesController {
@@ -20,11 +22,14 @@ export class RoutesController {
 @Inject()
 private readonly routesService: RoutesService
 
+//Só para Admnistrador, entt têm que se por auth para Admin
 @Post('')
 @HttpCode(HttpStatus.CREATED)
 async createRoute(@Body() routeData: Prisma.RouteCreateInput): Promise<void> {
    await this.routesService.create(routeData);
 }
+
+//Só para Admnistrador, entt têm que se por auth para Admin
 @Put('/:id')
 @HttpCode(HttpStatus.OK)
 async updateRoutes(@Param('id') id: string, @Body() routeData: Prisma.RouteUpdateInput): Promise<void> {
@@ -34,11 +39,13 @@ async updateRoutes(@Param('id') id: string, @Body() routeData: Prisma.RouteUpdat
    }
 }
 
+@UseGuards(AuthGuard)
 @Get('')
 async findAllRoutes(): Promise<any> {
    return await this.routesService.findAll();
 }
 
+@UseGuards(AuthGuard)
 @Get('/:id')
 async findOneRoute(@Param('id') id: string): Promise<any> {
    const route = await this.routesService.findOne(Number(id));
@@ -48,22 +55,26 @@ async findOneRoute(@Param('id') id: string): Promise<any> {
    return route;
 }
 
+//Só  para Admnistrador, entt têm que se por auth para Admin
 @Delete('/:id')
+@HttpCode(HttpStatus.OK)
 async deleteRoute(@Param('id') id: string): Promise<void> {
    await this.routesService.deleteRoutes(Number(id));
 }
 
-
+@UseGuards(AuthGuard)
 @Get('findByOriginOrDestination/:query')
 async findByOriginOrDestination(@Param('query') query: string): Promise<any> {
    return await this.routesService.findByOriginOrDestination(query);
 }
 
+@UseGuards(AuthGuard)
 @Get('findByStops/:stopName')
 async findByStops(@Param('stopName') stopName: string): Promise<any> {
    return await this.routesService.findByStops(stopName);
 }
 
+//Só para Admnistrador, entt têm que se por auth para Admin
 @Patch('updateStatus/:id')
 @HttpCode(HttpStatus.OK)
 async updateStatus(@Param('id') id: number): Promise<void> {
