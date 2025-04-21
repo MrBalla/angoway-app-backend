@@ -41,7 +41,7 @@ export class BusService {
                 route:{
                     select:{
                         name: true,
-                        estimatedTime: true,
+                        estimatedTime: true,    
                     }
                 }
             }
