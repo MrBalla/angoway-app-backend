@@ -1,6 +1,8 @@
-import { Body, Controller, Get, Inject, Post } from '@nestjs/common';
+import { Body, Controller, Get, Inject, Post, UseGuards } from '@nestjs/common';
 import { BusService } from './bus.service';
 import { Bus, Prisma } from '@prisma/client';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { busDetails } from 'src/types/bus.details';
 
 @Controller('bus')
 export class BusController {
@@ -14,6 +16,12 @@ export class BusController {
     @Get('')
     async buses(): Promise<Bus[]>{
         return this.busService.buses();
+    }
+
+    @Get('dashboard-details')
+    @UseGuards(AuthGuard)
+    async getBusDetails(@Body() driverId: number): Promise<Bus | null>{
+        return this.busService.provideBusDetails(driverId);
     }
 
 }
