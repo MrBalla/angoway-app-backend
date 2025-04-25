@@ -56,7 +56,7 @@ export class BusService {
         return this.prisma.bus.delete({where:{id}})
     }
 
-    async provideBusDetails(driverId: number): Promise<Bus | null>{
+    async provideBusDetails(driverId: number){
         return this.prisma.bus.findFirst({
             where: { driverId },
             include: {
@@ -65,7 +65,11 @@ export class BusService {
                         origin: true,
                         destination: true,
                         estimatedTime: true,
-                        stops: true
+                        stops: {
+                            select: {
+                                name: true,
+                            },
+                        },
                     }
                 }
             }
