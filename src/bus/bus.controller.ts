@@ -26,7 +26,7 @@ export class BusController {
       status: bus?.status,
       currentLoad: bus?.currentLoad,
       capacity: bus?.capacity,
-      numberOfStops: 3,
+      numberOfStops: 3,//replace with an attribue that holds the distance(in km) from point A to B
       route: {
         destination: bus?.route.destination,
         estimatedTime: bus?.route.estimatedTime,
