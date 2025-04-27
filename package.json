@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "setup": "npm install && npm run prisma:reload && npm run start:dev",
-    "prisma:reload": "npx prisma genarate && npx prisma migrate dev --name reload",
+    "prisma:reload": "npx prisma generate && npx prisma migrate dev --name reload",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
