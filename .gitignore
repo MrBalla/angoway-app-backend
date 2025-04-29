@@ -2,7 +2,8 @@
 /dist
 /node_modules
 /build
-
+/prisma/prisma/client/
+prisma/prisma/client/*.js
 # Logs
 logs
 *.log

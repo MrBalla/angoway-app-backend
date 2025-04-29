@@ -6,6 +6,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
+    "setup": "npm install && npm run prisma:reload && npm run start:dev",
+    "prisma:reload": "npx prisma generate && npx prisma migrate dev --name reload",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
@@ -20,12 +22,14 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@anatine/zod-nestjs": "^2.0.12",
     "@nestjs/common": "^11.0.1",
     "@nestjs/core": "^11.0.1",
     "@nestjs/jwt": "^11.0.0",
     "@nestjs/mapped-types": "*",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/platform-socket.io": "^11.0.16",
+    "@nestjs/swagger": "^11.1.5",
     "@nestjs/websockets": "^11.0.16",
     "@prisma/client": "^6.5.0",
     "bcrypt": "^5.1.1",
