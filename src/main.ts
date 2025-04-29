@@ -10,9 +10,9 @@ async function bootstrap() {
 
     patchNestjsSwagger();
 
-    const config = new DocumentBuilder().setTitle('API')
-    .setDescription('API description')
-    .setVersion('1.0')
+    const config = new DocumentBuilder().setTitle('AngowayApp API')
+    .setDescription('Angoway App Backend Description')
+    .setVersion('1.2')
     .build();
 
     const document = SwaggerModule.createDocument(app, config);;
