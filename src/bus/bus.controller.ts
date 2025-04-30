@@ -1,8 +1,18 @@
-import { Body, Controller, Get, Inject, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Inject,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { BusService } from './bus.service';
 import { Bus, Prisma } from '@prisma/client';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { busDetails } from 'src/types/bus.details';
+import { updateBusDetails } from 'src/types/update-bus-details';
 
 @Controller('bus')
 export class BusController {
@@ -26,7 +36,7 @@ export class BusController {
       status: bus?.status,
       currentLoad: bus?.currentLoad,
       capacity: bus?.capacity,
-      numberOfStops: 3,//replace with an attribue that holds the distance(in km) from point A to B
+      numberOfStops: 3, //replace with an attribue that holds the distance(in km) from point A to B
       route: {
         destination: bus?.route.destination,
         estimatedTime: bus?.route.estimatedTime,
@@ -36,5 +46,14 @@ export class BusController {
     };
 
     return busDetails;
+  }
+
+  @Patch('dashboard-details')
+  @UseGuards(AuthGuard)
+  async updateBusDetails(
+    @Param() id: number,
+    @Body() data: updateBusDetails,
+  ): Promise<void> {
+    await this.busService.updateBusDetails(id, data);
   }
 }
