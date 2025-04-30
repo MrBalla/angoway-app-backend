@@ -1,80 +1,83 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { Prisma, Bus } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
+import { updateBusDetails } from 'src/types/update-bus-details';
 
 @Injectable()
 export class BusService {
+  @Inject()
+  private readonly prisma: PrismaService;
 
-    @Inject()
-    private readonly prisma: PrismaService;
+  //Crud Basico
+  //Criando o Bus
+  async createBus(data: Prisma.BusCreateInput) {
+    return this.prisma.bus.create({ data });
+  }
 
+  //Mostrar os Buses
+  async buses(): Promise<Bus[]> {
+    return this.prisma.bus.findMany();
+  }
 
-    //Crud Basico
-    //Criando o Bus
-    async createBus(data: Prisma.BusCreateInput){
-        return this.prisma.bus.create({data})
-    }
+  async findBusById(id: number): Promise<Bus | null> {
+    return this.prisma.bus.findUnique({
+      where: {
+        id,
+      },
+    });
+  }
 
-    //Mostrar os Buses
-    async buses(): Promise<Bus[]> {
-        return this.prisma.bus.findMany();
-    }
-    
-    async findBusById(id: number): Promise<Bus | null> {
-        return this.prisma.bus.findUnique({
-            where: {
-                id
-            }
-        })
-    }
+  async findBusByDriverId(driverId: number) {
+    return this.prisma.bus.findFirst({
+      where: { driverId },
+      include: {
+        driver: {
+          select: {
+            name: true,
+            url_foto_de_perfil: true,
+          },
+        },
+        route: {
+          select: {
+            name: true,
+            estimatedTime: true,
+          },
+        },
+      },
+    });
+  }
 
-    async findBusByDriverId(driverId: number) {
-        return this.prisma.bus.findFirst({
-            where: { driverId },
-            include: {
-                driver:{
-                    select:{
-                        name:true,
-                        url_foto_de_perfil: true
-                    }
-                },
-                route:{
-                    select:{
-                        name: true,
-                        estimatedTime: true,    
-                    }
-                }
-            }
-        })
-    }
+  async updateBus(id: number, data: Prisma.BusUpdateInput): Promise<Bus> {
+    return this.prisma.bus.update({ where: { id }, data });
+  }
+  async deleteBus(id: number): Promise<Bus> {
+    return this.prisma.bus.delete({ where: { id } });
+  }
 
+  async provideBusDetails(driverId: number) {
+    return this.prisma.bus.findFirst({
+      where: { driverId },
+      include: {
+        route: {
+          select: {
+            origin: true,
+            destination: true,
+            estimatedTime: true,
+            stops: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
+      },
+    });
+  }
 
-    async updateBus(id: number, data: Prisma.BusUpdateInput): Promise<Bus> {
-        return this.prisma.bus.update({where:{id}, data})
-    }
-    async deleteBus(id: number): Promise<Bus> {
-        return this.prisma.bus.delete({where:{id}})
-    }
+  // driver app (manage screen)
+  async updateBusDetails(id: number, data: updateBusDetails) {
+    return this.prisma.bus.update({ where: { id }, data });
+  }
 
-    async provideBusDetails(driverId: number){
-        return this.prisma.bus.findFirst({
-            where: { driverId },
-            include: {
-                route: {
-                    select: {
-                        origin: true,
-                        destination: true,
-                        estimatedTime: true,
-                        stops: {
-                            select: {
-                                name: true,
-                            },
-                        },
-                    }
-                }
-            }
-        })
-    }
-
-   // async updateLocation(id: number, location)
+  // async updateLocation(id: number, location)
 }
