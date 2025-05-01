@@ -52,22 +52,22 @@ export class BusController {
     return busDetails;
   }
 
-  @Patch('dashboard-details')
+  @Patch('dashboard-details/:id')
   @UseGuards(AuthGuard)
   async updateBusDetails(
-    @Param() id: number,
+    @Param('id') id: string,
     @Body() data: updateBusDetails,
   ): Promise<void> {
-    await this.busService.updateBusDetails(id, data);
+    await this.busService.updateBusDetails(Number(id), data);
   }
 
-  @Patch('status/:id')
+  @Patch('status/:driverId')
+  @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async changeBusStatus(
-    @Param("id") id: string,
-    @Body() body:Prisma.BusUpdateInput,
+    @Param('driverId') driverId: string,
+    @Body() body: Prisma.BusUpdateInput,
   ): Promise<Bus> {
-    return await this.busService.changeStatus(Number(id), body);
-    // return `O status foi alterado para ${status}`;
+    return await this.busService.changeStatus(Number(driverId), body);
   }
 }
