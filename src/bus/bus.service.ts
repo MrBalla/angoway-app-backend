@@ -6,12 +6,15 @@ import {
 } from '@nestjs/common';
 import { Prisma, Bus } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
+import { RoutesService } from 'src/routes/routes.service';
 import { updateBusDetails } from 'src/types/update-bus-details';
 
 @Injectable()
 export class BusService {
   @Inject()
   private readonly prisma: PrismaService;
+
+  constructor(private readonly routesService: RoutesService) {}
 
   //Crud Basico
   //Criando o Bus
@@ -88,6 +91,29 @@ export class BusService {
   // driver app (manage screen)
   async updateBusDetails(id: number, data: updateBusDetails) {
     return this.prisma.bus.update({ where: { id }, data });
+  }
+
+  async changeRoute(driverId: number, newRouteId: number) {
+    const bus = await this.prisma.bus.findFirst({ where: { driverId } });
+
+    if (!bus) {
+      throw new NotFoundException('Este autocarro não existe');
+    }
+
+    if (!newRouteId) {
+      throw new BadRequestException('Informe a nova rota');
+    }
+
+    const newRoute = await this.routesService.findOne(newRouteId)
+
+    if (!newRoute) {
+      throw new NotFoundException('Esta rota não existe !');
+    }
+
+    return this.prisma.bus.update({
+      where: { id: bus.id },
+      data: { routeId: newRouteId },
+    });
   }
 
   async changeStatus(
