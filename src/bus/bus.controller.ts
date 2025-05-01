@@ -2,10 +2,14 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   Inject,
   Param,
   Patch,
   Post,
+  Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { BusService } from './bus.service';
@@ -55,5 +59,15 @@ export class BusController {
     @Body() data: updateBusDetails,
   ): Promise<void> {
     await this.busService.updateBusDetails(id, data);
+  }
+
+  @Patch('status/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async changeBusStatus(
+    @Param("id") id: string,
+    @Body() body:Prisma.BusUpdateInput,
+  ): Promise<Bus> {
+    return await this.busService.changeStatus(Number(id), body);
+    // return `O status foi alterado para ${status}`;
   }
 }
