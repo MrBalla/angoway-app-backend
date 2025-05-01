@@ -70,4 +70,14 @@ export class BusController {
   ): Promise<Bus> {
     return await this.busService.changeStatus(Number(driverId), body);
   }
+
+  @Patch('route/:driverId/:routeId')
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async changeBusRoute(
+    @Param("driverId") driverId: string,
+    @Param("routeId") newRouteId: string ,
+  ): Promise<Bus> {
+    return await this.busService.changeRoute(Number(driverId), Number(newRouteId));
+  }
 }
