@@ -32,7 +32,13 @@ export class BusService {
     });
   }
 
-  async findBusByDriverId(driverId: number) {
+  async findBusByDriverId(driverId: number): Promise<Bus | null> {
+    return this.prisma.bus.findFirst({
+      where: { driverId },
+    });
+  }
+
+  async findBusAndDetailsByDriverId(driverId: number) {
     return this.prisma.bus.findFirst({
       where: { driverId },
       include: {
@@ -84,8 +90,11 @@ export class BusService {
     return this.prisma.bus.update({ where: { id }, data });
   }
 
-  async changeStatus(id: number, data: Prisma.BusUpdateInput): Promise<Bus> {
-    const bus = await this.prisma.bus.findUnique({ where: { id } });
+  async changeStatus(
+    driverId: number,
+    data: Prisma.BusUpdateInput,
+  ): Promise<Bus> {
+    const bus = await this.prisma.bus.findFirst({ where: { driverId } });
 
     if (!bus) {
       throw new NotFoundException('Este autocarro não existe');
@@ -98,7 +107,7 @@ export class BusService {
     // if(!currentStatus) throw new BadRequestException("isso")
 
     return this.prisma.bus.update({
-      where: { id },
+      where: { id: bus.id },
       data: { status: currentStatus },
     });
   }
