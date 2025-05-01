@@ -1,4 +1,9 @@
-import { Injectable, Inject } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { Prisma, Bus } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import { updateBusDetails } from 'src/types/update-bus-details';
@@ -79,5 +84,22 @@ export class BusService {
     return this.prisma.bus.update({ where: { id }, data });
   }
 
-  // async updateLocation(id: number, location)
+  async changeStatus(id: number, data: Prisma.BusUpdateInput): Promise<Bus> {
+    const bus = await this.prisma.bus.findUnique({ where: { id } });
+
+    if (!bus) {
+      throw new NotFoundException('Este autocarro não existe');
+    }
+
+    if (!data.status) throw new BadRequestException('Informe o novo status');
+
+    const currentStatus = bus.status === data.status ? bus.status : data.status;
+
+    // if(!currentStatus) throw new BadRequestException("isso")
+
+    return this.prisma.bus.update({
+      where: { id },
+      data: { status: currentStatus },
+    });
+  }
 }
