@@ -61,7 +61,7 @@ export class DriverLocationGateway
       return;
     }
 
-    const busDetails = await this.busService.findBusByDriverId(driverId);
+    const busDetails = await this.busService.findBusAndDetailsByDriverId(driverId);
     if (!busDetails) {
       this.logger.warn(`No bus found for driverId: ${driverId}`);
       return;
