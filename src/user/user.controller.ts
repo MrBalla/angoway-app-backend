@@ -3,6 +3,7 @@ import { Prisma, User as UserModel } from '@prisma/client';
 import { UserService } from './user.service';
 import { NotFoundException } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { ResponseBody } from 'src/types/response.body';
 @Controller('user')
 export class UserController {
     
@@ -40,11 +41,30 @@ export class UserController {
   
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
-  @Delete('/:id')
-  async deleteUser(@Param('id')id:string):Promise<void>{
-    await this.userService.deleteUser({id: Number(id)})
+  @Put('profile/:id')
+  async updatePassword(
+    @Param('id') id: string,
+    @Body() password: Prisma.UserUpdateInput,
+  ): Promise<ResponseBody> {
+    const user = await this.userService.updatePassword({
+      where: { id: Number(id) },
+      data: password,
+    });
+
+    if (!user) {
+      throw new NotFoundException(`Este usuário não Existe !`);
+    }
+
+    return {
+      message: "Senha alterada com Sucesso !",
+      code:HttpStatus.OK
+    }
   }
-    
+
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  @Delete('/:id')
+  async deleteUser(@Param('id') id: string): Promise<void> {
+    await this.userService.deleteUser({ id: Number(id) });
+  }
 }
-
-
