@@ -1,6 +1,15 @@
 // user create schema
 import { z } from 'zod';
 
+export const LoginUserSchema = z.object({
+    number: z.string().nonempty(),
+    password: z.string().nonempty(),
+});
+
+export const AccessTokenResponseSchema = z.object({
+    access_token: z.string().nonempty(),
+});
+
 export const CreateUserSchema = z.object({
   name:z.string(),
   email:z.string().email(),
