@@ -48,7 +48,7 @@ export class UserController {
   ): Promise<ResponseBody> {
     const user = await this.userService.updatePassword({
       where: { id: Number(id) },
-      data: password,
+      data: { password: password.password as string },
     });
 
     if (!user) {
