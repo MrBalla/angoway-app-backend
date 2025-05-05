@@ -81,7 +81,7 @@ export class BusController {
 
   @Patch('route/:driverId/:routeId')
   @UseGuards(AuthGuard)
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.OK)
   async changeBusRoute(
     @Param("driverId") driverId: string,
     @Param("routeId") newRouteId: string ,
