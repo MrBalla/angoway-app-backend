@@ -1,9 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { ResponseBuilder } from '../../swagger/response-builder';
 
-export class LoginUserDto {
+export class LoginCredentials {
     @ApiProperty({
         description: "user's phone number (required)",
-        example: '920708419',
+        example: '931082475',
     })
     number: string;
 
@@ -22,3 +23,8 @@ export class AccessTokenDto {
     access_token: string;
 }
 
+export const AccessToken: ResponseBuilder<AccessTokenDto> = {
+    description: "user logged in successfully",
+    status: 200,
+    dto: AccessTokenDto,
+};

@@ -8,7 +8,8 @@ import {
     UseGuards
  } from '@nestjs/common';
 import { ApiResponse, ApiOkResponse, ApiBody, ApiOperation } from '@nestjs/swagger';
-import { LoginUserDto, AccessTokenDto } from './auth.dto'
+import { LoginCredentials, AccessToken } from './auth.dto'
+import { ApiDocPost } from '../../swagger/doc.decorator'
 import { Prisma } from '@prisma/client';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
@@ -19,13 +20,7 @@ export class AuthController {
     private readonly authService: AuthService;
     
     @HttpCode(HttpStatus.OK)
-    @ApiOperation({ summary: 'login user' })
-    @ApiBody({ type: LoginUserDto })
-    @ApiResponse({
-        status: 201,
-        description: 'user logged in successfully',
-        type: AccessTokenDto,
-    })
+    @ApiDocPost({ summary: 'login user',request: LoginCredentials,response: AccessToken})
     @Post('login')
     signin( @Body() body: Prisma.UserCreateInput){
         return this.authService.signin(body);
