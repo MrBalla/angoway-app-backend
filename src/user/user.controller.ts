@@ -12,9 +12,9 @@ import { CreateUserSchema } from './schema/user.schema';
 export class UserController {
     
   constructor(private readonly userService: UserService) {} 
-  @SPost('', CreateUserSchema)
+  @Post('')
   @HttpCode(HttpStatus.CREATED)
-   async signupUser(@BodyValidate(CreateUserSchema) userData: Prisma.UserCreateInput): Promise<ResponseBody> {
+   async signupUser(userData: Prisma.UserCreateInput): Promise<ResponseBody> {
     await this.userService.createUser(userData);
     return ({
         message: "Usuário criado com Sucesso !",

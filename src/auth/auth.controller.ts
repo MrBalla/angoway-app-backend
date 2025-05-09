@@ -21,8 +21,8 @@ export class AuthController {
     private readonly authService: AuthService;
     
     @HttpCode(HttpStatus.OK)
-    @SPost('login', LoginUserSchema)
-    signin( @BodyValidate(LoginUserSchema) body: Prisma.UserCreateInput){
+    @Post('login')
+    signin(body: Prisma.UserCreateInput){
         return this.authService.signin(body);
     }
 
