@@ -7,10 +7,12 @@ import {
     HttpStatus,
     UseGuards
  } from '@nestjs/common';
+import { ApiResponse, ApiOkResponse, ApiBody, ApiOperation } from '@nestjs/swagger';
+import { LoginUserBody } from '../user/schema/user.schema
+import { ApiDocPost } from '../../swagger/doc.decorator'
 import { Prisma } from '@prisma/client';
 import { AuthService } from './auth.service';
 import { AuthGuard } from './auth.guard';
-import { LoginUserSchema } from '../user/schema/user.schema'
 
 @Controller('auth')
 export class AuthController {
@@ -18,6 +20,7 @@ export class AuthController {
     private readonly authService: AuthService;
     
     @HttpCode(HttpStatus.OK)
+    @ApiDocPost({ summary: 'login user', request: LoginCredentials,})
     @Post('login')
     signin( @Body() body: Prisma.UserCreateInput){
         return this.authService.signin(body);
