@@ -150,6 +150,7 @@ async function createSampleData() {
     const buses = await prisma.bus.createMany({
       data: [
         {
+          nia:"#123",
           matricula: 'LDA-123-45',
           driverId: orlando.id,
           routeId: 1, // Luanda Central to Viana
@@ -159,6 +160,7 @@ async function createSampleData() {
           location: 'Mutamba, Luanda',
         },
         {
+          nia:"#456",
           matricula: 'LDA-678-90',
           driverId: laurentino.id,
           routeId: 2, // Luanda Sul to Cacuaco
