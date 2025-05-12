@@ -22,7 +22,7 @@ export class AuthController {
     
     @HttpCode(HttpStatus.OK)
     @Post('login')
-    signin(body: Prisma.UserCreateInput){
+    signin(@Body() body: Prisma.UserCreateInput){
         return this.authService.signin(body);
     }
 
