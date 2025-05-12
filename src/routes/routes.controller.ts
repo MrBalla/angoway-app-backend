@@ -15,6 +15,7 @@ import { Controller,
 import { Prisma } from '@prisma/client';
 import { RoutesService } from './routes.service';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { RouteResponse } from 'src/types/routes.response';
 
 @Controller('routes')
 export class RoutesController {
@@ -28,6 +29,24 @@ private readonly routesService: RoutesService
 async createRoute(@Body() routeData: Prisma.RouteCreateInput): Promise<void> {
    await this.routesService.create(routeData);
 }
+
+   @UseGuards(AuthGuard)
+  @Get('/search/:query')
+  async findByName(@Param('query') query: string): Promise<RouteResponse[]> {
+    const routes = await this.routesService.findByName(query);
+    if (!routes || routes.length === 0) {
+      throw new NotFoundException(`Rota ${query} não encontrada `);
+    }
+     return routes.map((route) => ({
+        id: route.id,
+        origin: route.origin,
+        destination: route.destination,
+         stops: route.stops.map((stop) => ({
+            id: stop.id,
+            name: stop.name,
+         })),
+      }));
+  }
 
 //Só para Admnistrador, entt têm que se por auth para Admin
 @Put('/:id')

@@ -50,23 +50,24 @@ export class UserService {
 
   async updatePassword(params: {
     where: Prisma.UserWhereUniqueInput;
-    data: Prisma.UserUpdateInput;
+    data: { password: string };
   }): Promise<User> {
     const { where, data } = params;
+
+    if (typeof data.password !== 'string') {
+      throw new BadRequestException('A senha deve ser uma string');
+    }
     const hashPassword = await bcrypt.hash(data.password, 10);
     return this.prisma.user.update({
-      data,
+      data: { password: hashPassword },
       where,
     });
   }
 
-  //Deletar Usuarop
+
   async deleteUser(where: Prisma.UserWhereUniqueInput): Promise<User> {
     return this.prisma.user.delete({
       where,
     });
   }
-
-  //Acredito que não há necessidade de mostrar todos os usuarios acho se have
-  //será na API do ADMIN
 }
