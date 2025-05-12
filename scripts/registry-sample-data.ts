@@ -15,54 +15,64 @@ async function createSampleData() {
         {
           name: 'Dario',
           email: 'dario@gmail.com',
-          number: '945193073',
+          number: '912345678',
           password: hashedPassword,
           role: 'USER',
         },
         {
           name: 'Pedro',
           email: 'pedro@gmail.com',
-          number: '934945740',
+          number: '912345677',
           password: hashedPassword,
           role: 'USER',
         },
         {
           name: 'Rebeca',
           email: 'rebeca@gmail.com',
-          number: '912345678', // Generated phone number
+          number: '912345676', // Generated phone number
           password: hashedPassword,
           role: 'USER',
         },
         {
           name: 'Fernando',
           email: 'fernando@gmail.com',
-          number: '923456789', // Generated phone number
+          number: '912345675', // Generated phone number
           password: hashedPassword,
           role: 'ADMIN',
-        },
-        {
-          name: 'Orlando',
-          email: 'orlando@gmail.com',
-          number: '911223344',
-          password: hashedPassword,
-          role: 'DRIVER',
-        },
-        {
-          name: 'Laurentino',
-          email: 'laurentino@gmail.com',
-          number: '922334455',
-          password: hashedPassword,
-          role: 'DRIVER',
         },
       ],
     });
     console.log('Users created:', users.count);
 
+    const drivers = await prisma.driver.createMany({
+      data: [
+        {
+          name: 'Orlando',
+          email: 'orlando@gmail.com',
+          phone: '912345674',
+          password: hashedPassword,
+          licenseNumber: 'AO202520252025',
+          experienceTime: 10,
+          urlProfilePicture: 'null',
+        },
+        {
+          name: 'Laurentino',
+          email: 'laurentino@gmail.com',
+          phone: '912345673',
+          password: hashedPassword,
+          licenseNumber: 'AO202520252026',
+          experienceTime: 5,
+          urlProfilePicture: 'null',
+        },
+      ],
+    });
+    console.log('Drivers created:', drivers.count);
+
     // Fetch driver users for bus assignment
-    const orlando = await prisma.user.findUnique({
+    const orlando = await prisma.driver.findUnique({
       where: { email: 'orlando@gmail.com' },
     });
-    const laurentino = await prisma.user.findUnique({
+    const laurentino = await prisma.driver.findUnique({
       where: { email: 'laurentino@gmail.com' },
     });
 
