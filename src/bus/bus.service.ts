@@ -48,7 +48,7 @@ export class BusService {
         driver: {
           select: {
             name: true,
-            url_foto_de_perfil: true,
+            urlProfilePicture: true,
           },
         },
         route: {
