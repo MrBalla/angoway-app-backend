@@ -7,11 +7,12 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { AuthModule } from 'src/auth/auth.module';
 import { DriverLocationGateway } from 'src/gateways/driver-location.gateway';
 import { BusModule } from 'src/bus/bus.module';
+import { AlertsChannelGateway } from 'src/gateways/alert-channel.gateway';
 
 @Module({
   imports:[DatabaseModule,forwardRef(()=>AuthModule),BusModule],
   controllers: [UserController],
-  providers: [UserService,DriverLocationGateway],
+  providers: [UserService,DriverLocationGateway,AlertsChannelGateway],
   exports:[UserService]
 })
 export class UserModule {}
