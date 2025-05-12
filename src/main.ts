@@ -12,6 +12,12 @@ async function bootstrap() {
 
     const config = new DocumentBuilder().setTitle('AngowayApp API')
     .setDescription('Angoway App Backend Description')
+    .addBearerAuth({
+            type: 'http',
+            scheme: 'bearer',
+            bearerFormat: 'JWT',
+        },
+        'access-token')
     .setVersion('1.2')
     .build();
 

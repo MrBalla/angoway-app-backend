@@ -4,17 +4,25 @@ import { UserService } from './user.service';
 import { NotFoundException } from '@nestjs/common';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { ResponseBody } from 'src/types/response.body';
+import { SPost } from '../../swagger/swagger.decorator';
+import { BodyValidate, NeedAuth } from '../../swagger/validate.decorator';
+import { CreateUserSchema } from './schema/user.schema';
+
 @Controller('user')
 export class UserController {
     
   constructor(private readonly userService: UserService) {} 
   @Post('')
   @HttpCode(HttpStatus.CREATED)
-   async signupUser(@Body() userData: Prisma.UserCreateInput): Promise<void> {
+   async signupUser(userData: Prisma.UserCreateInput): Promise<ResponseBody> {
     await this.userService.createUser(userData);
+    return ({
+        message: "Usuário criado com Sucesso !",
+        code:HttpStatus.CREATED
+    });
   }
 
-  @UseGuards(AuthGuard)
+  @NeedAuth()
   @Get('/:id')
   async getUserById(@Param('id') id: string): Promise<Omit<UserModel, 'password'>> {
     const user = await this.userService.user({ id: Number(id) });
@@ -26,7 +34,7 @@ export class UserController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard)
+  @NeedAuth()
   @Put('/:id')
   async updateUser(@Param('id') id: string, @Body() userData:Prisma.UserUpdateInput
     ):Promise<void>{
@@ -40,7 +48,7 @@ export class UserController {
   } 
   
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard)
+  @NeedAuth()
   @Put('profile/:id')
   async updatePassword(
     @Param('id') id: string,
@@ -48,7 +56,7 @@ export class UserController {
   ): Promise<ResponseBody> {
     const user = await this.userService.updatePassword({
       where: { id: Number(id) },
-      data: password,
+      data: { password: password.password as string },
     });
 
     if (!user) {
@@ -62,9 +70,13 @@ export class UserController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @UseGuards(AuthGuard)
+  @NeedAuth()
   @Delete('/:id')
-  async deleteUser(@Param('id') id: string): Promise<void> {
+  async deleteUser(@Param('id') id: string): Promise<ResponseBody> {
     await this.userService.deleteUser({ id: Number(id) });
+     return {
+      message: " Usuário deletado com Sucesso !",
+      code:HttpStatus.OK
+    }
   }
 }
