@@ -32,14 +32,32 @@ export class DriverService {
         });
     }
 
-    //Pegar Motoristas
+    //busca o motorista pelo id
     async driver(
         driverWhereUniqueInput: Prisma.DriverWhereUniqueInput,
       ): Promise<Driver | null> {
         return this.prisma.driver.findUnique({
           where: driverWhereUniqueInput,
         });
-      }
+    }
+
+    async getDriversAvailable(): Promise<Driver[]>{
+        return this.prisma.driver.findMany({
+            where: {
+                status: 'AVAILABLE',
+            },
+        });
+    }
+
+    async getDriversOnRoute(): Promise<Driver[]>{
+        return this.prisma.driver.findMany({
+            where: {
+                status: 'ON_ROUTE',
+            },
+        });
+    }
+
+
     async updateDriver(params: {
         where: Prisma.DriverWhereUniqueInput;
         data: Prisma.DriverUpdateInput;
@@ -79,7 +97,7 @@ export class DriverService {
         });
     }
 
-    async allUsers(): Promise<Driver[]> {
+    async allDrivers(): Promise<Driver[]> {
         return this.prisma.driver.findMany();
     }
 
