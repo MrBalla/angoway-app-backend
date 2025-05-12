@@ -56,6 +56,9 @@ export class DriverService {
         data: Prisma.DriverUpdateInput;
     }): Promise<Driver> {
         const { where, data } = params;
+        if (typeof data.password !== 'string') {
+            throw new BadRequestException('A senha deve ser uma string');
+        }
         const hashPasssword = await bcrypt.hash(data.password, 10);
         return this.prisma.driver.update({
             data: { ...data, password: hashPasssword },
