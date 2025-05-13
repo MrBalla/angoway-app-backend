@@ -11,6 +11,6 @@ import { BusModule } from 'src/bus/bus.module';
   imports:[DatabaseModule,forwardRef(()=> AuthModule),BusModule],
   controllers: [DriverController],
   providers: [DriverService,DriverLocationGateway,AlertsChannelGateway],
-  exports:[DriverService]
+  exports:[DriverService,DriverModule]
 })
 export class DriverModule {}
