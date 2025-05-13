@@ -9,9 +9,10 @@ import { DriverLocationGateway } from 'src/gateways/driver-location.gateway';
 import { BusModule } from 'src/bus/bus.module';
 import { AlertsChannelGateway } from 'src/gateways/alert-channel.gateway';
 import { DriverModule } from 'src/driver/driver.module';
+import { RoutesModule } from 'src/routes/routes.module';
 
 @Module({
-  imports:[DatabaseModule,forwardRef(()=>AuthModule),BusModule,DriverModule],
+  imports:[DatabaseModule,forwardRef(()=>AuthModule),BusModule,DriverModule,RoutesModule],
   controllers: [UserController],
   providers: [UserService,DriverLocationGateway,AlertsChannelGateway],
   exports:[UserService]
