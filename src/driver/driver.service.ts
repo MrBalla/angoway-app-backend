@@ -184,5 +184,16 @@ export class DriverService {
             },
         });
     }
+
+    async updateLocation(id: number, lat: number, long: number): Promise<Driver>
+    {
+        return this.prisma.driver.update({
+            where: { id },
+            data: {
+                currentLatitude: lat,
+                currentLongitude: long,
+            },
+        });
+    }
     
 }
