@@ -21,6 +21,7 @@ model User {
   feedbacks          Feedback[]
   notifications      Notification[]
 }
+
 model Driver {
   id                Int       @id @default(autoincrement())
   name              String
@@ -28,9 +29,8 @@ model Driver {
   phone             String    @unique
   password          String
   licenseNumber     String    @unique
-  url_foto_de_perfil String
+  url_foto_de_perfil String?
   experienceTime    Int
-
   status            String    @default("AVAILABLE") // AVAILABLE, ON_ROUTE OFFLINE
   currentLatitude   Float?
   currentLongitude  Float?
@@ -38,13 +38,10 @@ model Driver {
   deviceToken       String?
   isVerified        Boolean   @default(false)
   rating            Float     @default(0)
-
   assignedBus       Bus?      @relation("DriverBus")
   assignedBusNia    String?
-
   feedbacks         Feedback[]
   notifications     Notification[]
-
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 }
@@ -60,8 +57,7 @@ model Bus {
   currentLoad Int
   location    String
   updatedAt   DateTime  @updatedAt
-
-  driver      Driver?   @relation("DriverBus", fields: [driverId], references: [id]) // Agora com Driver
+  driver      Driver?   @relation("DriverBus", fields: [driverId], references: [id])
   route       Route     @relation(fields: [routeId], references: [id])
   feedbacks   Feedback[]
 }
@@ -71,12 +67,23 @@ model Route {
   name          String
   origin        String
   destination   String
-  departureTime String
-  estimatedTime String
-  arrivalTime   String
   status        String @default("active")
   buses         Bus[]
   stops         Stop[] @relation("RouteStops")
+}
+
+model RouteSchedule {
+  id                        Int       @id @default(autoincrement())
+  routeId                   Int       
+  departureLocation         String
+  arrivalLocation           String
+  departureTime             String
+  arrivalTime               String
+  estimatedDurationMinutes  Int
+  status                    String
+  distanceKM                Decimal   
+  createdAt                 DateTime  @default(now())
+  updatedAt                 DateTime  @updatedAt
 }
 
 model Stop {
@@ -107,7 +114,6 @@ model Notification {
   message   String
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
-
   user      User     @relation(fields: [userId], references: [id])
   driver    Driver   @relation(fields: [driverId], references: [id])
 }

@@ -30,72 +30,80 @@ async function createSampleData() {
           number: '923456789', 
           password: hashedPassword, 
           role: 'ADMIN' },
-        { name: 'Orlando', 
-          email: 'orlando@gmail.com',
-           number: '911223344', 
-          password: hashedPassword, 
-          role: 'DRIVER' },
-        { name: 'Laurentino', 
-          email: 'laurentino@gmail.com', 
-          number: '922334455', 
-          password: hashedPassword, 
-          role: 'DRIVER' 
-        },
-      ],
+        ]
+    });
+    const drivers = await prisma.driver.createMany({
+        data:[
+            { 
+                name: 'Orlando', 
+                email: 'orlando@gmail.com',
+                phone: '911223344', 
+                password: hashedPassword,
+                licenseNumber: 'cb9a8f',
+                experienceTime: 1
+            },
+            {    
+                name: 'Laurentino', 
+                email: 'laurentino@gmail.com', 
+                phone: '922334455', 
+                password: hashedPassword,
+                licenseNumber: 'a922d0',
+                experienceTime: 3
+            },
+        ],
     });
     console.log('Users created:', users.count);
+    console.log('Drivers created', drivers.count);
 
-    const orlando = await prisma.user.findUnique({ where: { email: 'orlando@gmail.com' } });
-    const laurentino = await prisma.user.findUnique({ where: { email: 'laurentino@gmail.com' } });
+    const orlando = await prisma.driver.findUnique({ where: { email: 'orlando@gmail.com' } });
+    const laurentino = await prisma.driver.findUnique({ where: { email: 'laurentino@gmail.com' } });
 
     if (!orlando || !laurentino) {
       throw new Error('Failed to find driver users.');
     }
 
-    const routes = await prisma.route.createMany({
-      
+    const routes = await prisma.route.createMany({ 
       data: [
         { name: 'Luanda Central to Viana', 
           origin: 'Luanda Central', 
-          destination: 'Viana', 
-          departureTime: '08:00', 
-          estimatedTime: '01:00', 
-          arrivalTime: '09:00', 
+          destination: 'Viana',
           status: 'active' 
         },
         { name: 'Luanda Sul to Cacuaco', 
           origin: 'Luanda Sul', 
           destination: 'Cacuaco', 
-          departureTime: '07:30', 
-          estimatedTime: '01:30', 
-          arrivalTime: '09:00', 
           status: 'active' 
         },
         { name: 'Luanda to Talatona', 
           origin: 'Luanda Central', 
           destination: 'Talatona', 
-          departureTime: '09:00', 
-          estimatedTime: '00:45', 
-          arrivalTime: '09:45', 
           status: 'active' 
         },
         { name: 'Luanda to Kilamba', 
           origin: 'Luanda Central', 
-          destination: 'Kilamba', 
-          departureTime: '10:00', 
-          estimatedTime: '01:15', 
-          arrivalTime: '11:15', 
+          destination: 'Kilamba',
           status: 'active' 
         },
         { name: 'Luanda to Benfica', 
           origin: 'Luanda Central', 
-          destination: 'Benfica', 
-          departureTime: '11:00', 
-          estimatedTime: '01:00', 
-          arrivalTime: '12:00', 
+          destination: 'Benfica',
           status: 'active' 
         },
       ],
+    });
+    const routeSchedules = await prisma.routeSchedule.createMany({
+        data: [
+            {
+                routeId: 1,
+                departureLocation: 'Luanda Central',
+                arrivalLocation: 'Cacuaco Park',
+                departureTime: '06:30:00',
+                arrivalTime: '07:25:00',
+                estimatedDurationMinutes: 55,
+                status: 'active',
+                distanceKM: 56.00
+            }
+        ]  
     });
     console.log('Routes created:', routes.count);
 
@@ -114,7 +122,6 @@ async function createSampleData() {
       ],
     });
     console.log('Stops created:', stops.count);
-
     const buses = await prisma.bus.createMany({
       data: [
         {
@@ -139,6 +146,9 @@ async function createSampleData() {
         },
       ],
     });
+
+      
+
     console.log('Buses created:', buses.count);
 
     console.log('✅ Sample data created successfully.');
