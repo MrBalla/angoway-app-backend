@@ -1,6 +1,9 @@
 /*
   Warnings:
 
+  - You are about to drop the column `arrivalTime` on the `Route` table. All the data in the column will be lost.
+  - You are about to drop the column `departureTime` on the `Route` table. All the data in the column will be lost.
+  - You are about to drop the column `estimatedTime` on the `Route` table. All the data in the column will be lost.
   - Added the required column `nia` to the `Bus` table without a default value. This is not possible if the table is not empty.
   - Added the required column `driverId` to the `Feedback` table without a default value. This is not possible if the table is not empty.
   - Added the required column `driverId` to the `Notification` table without a default value. This is not possible if the table is not empty.
@@ -14,7 +17,7 @@ CREATE TABLE "Driver" (
     "phone" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "licenseNumber" TEXT NOT NULL,
-    "url_foto_de_perfil" TEXT NOT NULL,
+    "url_foto_de_perfil" TEXT,
     "experienceTime" INTEGER NOT NULL,
     "status" TEXT NOT NULL DEFAULT 'AVAILABLE',
     "currentLatitude" REAL,
@@ -26,6 +29,22 @@ CREATE TABLE "Driver" (
     "assignedBusNia" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL
+);
+
+-- CreateTable
+CREATE TABLE "RouteSchedule" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "routeId" INTEGER NOT NULL,
+    "departureLocation" TEXT NOT NULL,
+    "arrivalLocation" TEXT NOT NULL,
+    "departureTime" DATETIME NOT NULL,
+    "arrivalTime" DATETIME NOT NULL,
+    "estimatedDurationMinutes" INTEGER NOT NULL,
+    "status" TEXT NOT NULL,
+    "distanceKM" DECIMAL NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL,
+    CONSTRAINT "RouteSchedule_routeId_fkey" FOREIGN KEY ("routeId") REFERENCES "Route" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- RedefineTables
@@ -80,6 +99,16 @@ CREATE TABLE "new_Notification" (
 INSERT INTO "new_Notification" ("createdAt", "id", "message", "read", "title", "userId") SELECT "createdAt", "id", "message", "read", "title", "userId" FROM "Notification";
 DROP TABLE "Notification";
 ALTER TABLE "new_Notification" RENAME TO "Notification";
+CREATE TABLE "new_Route" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "name" TEXT NOT NULL,
+    "origin" TEXT NOT NULL,
+    "destination" TEXT NOT NULL,
+    "status" TEXT NOT NULL DEFAULT 'active'
+);
+INSERT INTO "new_Route" ("destination", "id", "name", "origin", "status") SELECT "destination", "id", "name", "origin", "status" FROM "Route";
+DROP TABLE "Route";
+ALTER TABLE "new_Route" RENAME TO "Route";
 PRAGMA foreign_keys=ON;
 PRAGMA defer_foreign_keys=OFF;
 

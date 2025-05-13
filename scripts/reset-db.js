@@ -48,7 +48,7 @@ function resetDatabase() {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 8, 9, 11]);
+                    _a.trys.push([0, 9, 10, 12]);
                     // Delete records in the correct order to avoid foreign key constraint issues
                     return [4 /*yield*/, prisma.notification.deleteMany({})];
                 case 1:
@@ -69,22 +69,25 @@ function resetDatabase() {
                     return [4 /*yield*/, prisma.user.deleteMany({})];
                 case 6:
                     _a.sent();
+                    return [4 /*yield*/, prisma.driver.deleteMany({})];
+                case 7:
+                    _a.sent();
                     // Reset SQLite auto-increment sequences
                     return [4 /*yield*/, prisma.$executeRaw(templateObject_1 || (templateObject_1 = __makeTemplateObject(["DELETE FROM sqlite_sequence;"], ["DELETE FROM sqlite_sequence;"])))];
-                case 7:
+                case 8:
                     // Reset SQLite auto-increment sequences
                     _a.sent();
                     console.log('Database reset successfully.');
-                    return [3 /*break*/, 11];
-                case 8:
+                    return [3 /*break*/, 12];
+                case 9:
                     error_1 = _a.sent();
                     console.error('Error resetting database:', error_1);
                     throw error_1;
-                case 9: return [4 /*yield*/, prisma.$disconnect()];
-                case 10:
+                case 10: return [4 /*yield*/, prisma.$disconnect()];
+                case 11:
                     _a.sent();
                     return [7 /*endfinally*/];
-                case 11: return [2 /*return*/];
+                case 12: return [2 /*return*/];
             }
         });
     });

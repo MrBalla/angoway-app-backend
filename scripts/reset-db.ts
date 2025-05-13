@@ -11,6 +11,7 @@ async function resetDatabase() {
     await prisma.bus.deleteMany({});
     await prisma.route.deleteMany({});
     await prisma.user.deleteMany({});
+    await prisma.driver.deleteMany({});
 
     // Reset SQLite auto-increment sequences
     await prisma.$executeRaw`DELETE FROM sqlite_sequence;`;

@@ -63,13 +63,14 @@ model Bus {
 }
 
 model Route {
-  id            Int    @id @default(autoincrement())
+  id            Int              @id @default(autoincrement())
   name          String
   origin        String
   destination   String
-  status        String @default("active")
+  status        String           @default("active")
   buses         Bus[]
-  stops         Stop[] @relation("RouteStops")
+  stops         Stop[]           @relation("RouteStops")
+  schedules     RouteSchedule[]  @relation("RouteSchedule")
 }
 
 model RouteSchedule {
@@ -77,11 +78,12 @@ model RouteSchedule {
   routeId                   Int       
   departureLocation         String
   arrivalLocation           String
-  departureTime             String
-  arrivalTime               String
+  departureTime             DateTime
+  arrivalTime               DateTime
   estimatedDurationMinutes  Int
   status                    String
   distanceKM                Decimal   
+  route                     Route     @relation("RouteSchedule", fields: [routeId], references: [id])
   createdAt                 DateTime  @default(now())
   updatedAt                 DateTime  @updatedAt
 }

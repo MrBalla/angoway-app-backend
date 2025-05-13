@@ -97,8 +97,8 @@ async function createSampleData() {
                 routeId: 1,
                 departureLocation: 'Luanda Central',
                 arrivalLocation: 'Cacuaco Park',
-                departureTime: '06:30:00',
-                arrivalTime: '07:25:00',
+                departureTime: '2025-12-05T14:30:00Z',
+                arrivalTime: '2025-12-05T15:25:00Z',
                 estimatedDurationMinutes: 55,
                 status: 'active',
                 distanceKM: 56.00
