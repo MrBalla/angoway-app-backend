@@ -10,6 +10,7 @@ import { UserService } from 'src/user/user.service';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { DriverService } from 'src/driver/driver.service';
+import { BusService } from 'src/bus/bus.service';
 
 @Injectable()
 export class AuthService {
@@ -17,6 +18,8 @@ export class AuthService {
   private readonly userService: UserService;
   @Inject()
   private readonly driverService: DriverService;
+  @Inject()
+  private readonly busService: BusService;
   @Inject()
   private readonly jwtService: JwtService;
 
@@ -51,6 +54,12 @@ export class AuthService {
       throw new NotFoundException(
         'Nenhum motorista com estes dados !',
       );
+    
+    const assignedBus = await this.busService.findBusByDriverId(driver.id);
+    if (!assignedBus)
+      throw new NotFoundException(
+        'Nenhum ônibus atribuído a este motorista !',
+      );
 
     const passwordMatch = await bcrypt.compare(
       Params.password,
@@ -61,7 +70,7 @@ export class AuthService {
         'Verifique a senha e Tente novamente !',
       );
     //retornar o usuario
-    const payload = { sub: driver.id, phone: driver.phone, busId: driver.assignedBusId || null };
+    const payload = { sub: driver.id, phone: driver.phone, busId: assignedBus.id|| null };
 
     return { access_token: await this.jwtService.signAsync(payload) };
   }
