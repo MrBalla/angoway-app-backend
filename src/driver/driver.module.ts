@@ -8,7 +8,7 @@ import { DriverLocationGateway } from 'src/gateways/driver-location.gateway';
 import { BusModule } from 'src/bus/bus.module';
 
 @Module({
-  imports: [DatabaseModule, forwardRef(() => AuthModule), UserModule, BusModule],
+  imports: [DatabaseModule, forwardRef(() => AuthModule), forwardRef(()=>UserModule), BusModule],
   controllers: [DriverController],
   providers: [DriverService, DriverLocationGateway,],
   exports:[DriverService]
