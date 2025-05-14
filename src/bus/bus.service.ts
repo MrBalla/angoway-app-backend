@@ -48,7 +48,7 @@ export class BusService {
         driver: {
           select: {
             name: true,
-            urlProfilePicture: true,
+            url_foto_de_perfil: true,
           },
         },
         route: {
@@ -78,7 +78,9 @@ export class BusService {
             destination: true,
             schedules:{ 
                 select: {
-                    estimatedDurationMinutes: true,
+                estimatedDurationMinutes: true,
+                departureTime: true,
+                arrivalTime: true,
                 },
             },
             stops: {
