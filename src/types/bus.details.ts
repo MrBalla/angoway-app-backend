@@ -6,7 +6,7 @@ export type busDetails = {
   route: {
     origin: string | undefined;
     destination: string | undefined;
-    estimatedTime: string | undefined;
+    schedules: {}[] | undefined;
     stops: {}[] | undefined;
   };
 };
