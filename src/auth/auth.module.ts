@@ -5,13 +5,15 @@ import { UserModule } from 'src/user/user.module';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthGuard } from './auth.guard';
 import { DriverModule } from 'src/driver/driver.module';
+import { BusModule } from 'src/bus/bus.module';
 
 @Module({
   imports: [forwardRef(()=>UserModule), JwtModule.register({
     global: true,
     secret: process.env.SECRET,
     signOptions: { expiresIn: '1d' },
-  }),forwardRef(()=> DriverModule)],
+  }), forwardRef(() => DriverModule),
+  forwardRef(()=>BusModule)],
   controllers: [AuthController],
   providers: [AuthService, AuthGuard],
   exports: [AuthService, AuthGuard],
