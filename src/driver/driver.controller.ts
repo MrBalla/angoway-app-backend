@@ -1,4 +1,39 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, HttpCode, HttpStatus, NotFoundException, Param, Post } from '@nestjs/common';
+import { DriverService } from './driver.service';
+import { Prisma } from '@prisma/client';
+import { ResponseBody } from 'src/types/response.body';
+import { DriverModule } from './driver.module';
 
 @Controller('driver')
-export class DriverController {}
+export class DriverController {
+    constructor(private readonly driverService: DriverService) {}
+
+    @Post('')
+    @HttpCode(HttpStatus.CREATED)
+    async createDriver(driverData: Prisma.DriverCreateInput): Promise<ResponseBody> {
+        await this.driverService.createDriver(driverData);
+        return ({
+            message: "Motorista criado com Sucesso !",
+            code:HttpStatus.CREATED
+        });
+    }
+
+    @Get('/:id')
+    async getDriverById(@Param('id') id: string): Promise<Omit<DriverModule, 'password'>> {
+        const driver = await this.driverService.driver({ id: Number(id) });
+        if (!driver) {
+            throw new NotFoundException(`Motorista com ID ${id} não encontrado`);
+        }
+        const { password, ...driverWithoutPassword } = driver;
+        return driverWithoutPassword;
+    }
+
+    @Get('/all')
+    async getAllDrivers(): Promise<Omit<DriverModule, 'password'>[]> {
+        const drivers = await this.driverService.drivers({});
+        return drivers.map(driver => {
+            const { password, ...driverWithoutPassword } = driver;
+            return driverWithoutPassword;
+        });
+    }
+}
