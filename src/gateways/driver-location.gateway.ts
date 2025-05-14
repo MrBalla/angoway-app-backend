@@ -74,7 +74,6 @@ export class DriverLocationGateway
       lat: location.lat,
       lng: location.lng,
       status: busDetails.status,
-      schedules: busDetails.route?.schedules,
       driverPhoto: busDetails.driver?.url_foto_de_perfil,
     };
 

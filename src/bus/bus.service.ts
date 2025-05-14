@@ -54,7 +54,6 @@ export class BusService {
         route: {
           select: {
             name: true,
-            schedules: true,
           },
         },
       },
@@ -76,13 +75,6 @@ export class BusService {
           select: {
             origin: true,
             destination: true,
-            schedules:{ 
-                select: {
-                estimatedDurationMinutes: true,
-                departureTime: true,
-                arrivalTime: true,
-                },
-            },
             stops: {
               select: {
                 name: true,
