@@ -48,13 +48,12 @@ export class BusService {
         driver: {
           select: {
             name: true,
-            urlProfilePicture: true,
+            url_foto_de_perfil: true,
           },
         },
         route: {
           select: {
             name: true,
-            schedules: true,
           },
         },
       },
@@ -76,11 +75,6 @@ export class BusService {
           select: {
             origin: true,
             destination: true,
-            schedules:{ 
-                select: {
-                    estimatedDurationMinutes: true,
-                },
-            },
             stops: {
               select: {
                 name: true,
