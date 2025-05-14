@@ -1,4 +1,6 @@
 import { Controller } from '@nestjs/common';
 
 @Controller('driver')
-export class DriverController {}
+export class DriverController {
+
+}
