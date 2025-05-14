@@ -25,8 +25,8 @@ model User {
 model Driver {
   id                Int       @id @default(autoincrement())
   name              String
-  email             String    @unique
-  phone             String    @unique
+  email             String @unique
+  phone             String @unique
   password          String
   licenseNumber     String    @unique
   url_foto_de_perfil String?
@@ -52,7 +52,7 @@ model Bus {
   nia         String    @unique
   driverId    Int?      @unique
   routeId     Int
-  status      String    @default("IN_TRANSIT")
+  status      String   @default("IN_TRANSIT")
   capacity    Int
   currentLoad Int
   location    String
