@@ -86,4 +86,16 @@ export class BusController {
   ): Promise<Bus> {
     return await this.busService.changeRoute(Number(driverId), Number(newRouteId));
   }
+
+    @Get('count')
+    //@UseGuards(AuthGuard)
+    async countBuses(): Promise<{ count: number }>{
+        return await this.busService.countBuses();
+    }
+
+    @Get('pending')
+    //@UseGuards(AuthGuard)
+    async pendingBuses(): Promise<{ count:number, buses: Bus[] }>{
+        return await this.busService.pendingBuses();
+    }
 }
