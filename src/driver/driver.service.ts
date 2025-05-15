@@ -104,6 +104,38 @@ export class DriverService {
         return this.prisma.driver.findMany();
     }
 
+    async countDrivers(): Promise<number> {
+        const driversCount = this.prisma.driver.count();
+        return (driversCount);
+    }
+
+    async countActiveDrivers(): Promise<number>{
+        const activeDrivers = await this.getDriversAvailable();
+        return (activeDrivers.length);
+    }
+
+    async countInactiveDrivers(): Promise<number> {
+        const inactiveDrivers = await this.prisma.driver.findMany({
+            where: {
+                status: 'OFFLINE'
+            }
+        });
+        return (inactiveDrivers.length);
+    }
+
+    async countDriversByStatus(): Promise<{ available: number, on_route: number, offline: number }>
+        {   
+            const available = await this.countActiveDrivers();
+            const offline = await this.countInactiveDrivers();
+            const onRouteDrivers = await this.getDriversOnRoute();
+            const on_route = onRouteDrivers.length;
+            return ({
+                available,
+                on_route,
+                offline
+            })
+        }
+
     async updateStatus(id: number, status: 'AVAILABLE' | 'ON_ROUTE' | 'OFFLINE'): Promise<Driver | null> {
         //Verificar se o Status é valido
         const validStatuses = ['AVAILABLE', 'ON_ROUTE', 'OFFLINE'];
