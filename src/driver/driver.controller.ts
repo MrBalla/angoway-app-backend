@@ -30,10 +30,38 @@ export class DriverController {
 
     @Get('/all')
     async getAllDrivers(): Promise<Omit<DriverModule, 'password'>[]> {
-        const drivers = await this.driverService.drivers({});
+        const drivers = await this.driverService.allDrivers();
         return drivers.map(driver => {
             const { password, ...driverWithoutPassword } = driver;
             return driverWithoutPassword;
         });
     }
+
+    @Get('/available')
+    async getAvailableDrivers(): Promise<Omit<DriverModule, 'password'>[]> {
+        const drivers = await this.driverService.getDriversAvailable();
+        return drivers.map(driver => {
+            const { password, ...driverWithoutPassword } = driver;
+            return driverWithoutPassword
+        });
+    }
+
+    @Get('/working')
+    async getWorkingDrivers(): Promise<Omit<DriverModule, 'password'>[]> {
+        const drivers = await this.driverService.getDriversOnRoute();
+        return drivers.map(driver => {
+            const { password, ...driverWithoutPassword } = driver;
+            return driver
+        });
+    }
+
+    @Post('atribuir-autocarro/:id')
+    @HttpCode(HttpStatus.OK)
+    async assignBusToDriver(@Param('id') id: string, @Param('busNia') busNia: string): Promise<DriverModule> {
+        const driver = await this.driverService.assignBus(Number(id), busNia);
+        return driver;
+    }
+
+    
+
 }
