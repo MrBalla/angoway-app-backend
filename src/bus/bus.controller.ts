@@ -33,20 +33,18 @@ export class BusController {
     return this.busService.buses();
   }
 
-  @Get('dashboard-details')
+  @Get('dashboard-details/:driverId')
   @UseGuards(AuthGuard)
-  async getBusDetails(@Body() driverId: number): Promise<busDetails | null> {
-    const bus = await this.busService.provideBusDetails(driverId);
+  async getBusDetails(@Param('driverId') driverId: string): Promise<busDetails | null> {
+    const bus = await this.busService.provideBusDetails(Number(driverId));
     const busDetails: busDetails = {
       status: bus?.status,
       currentLoad: bus?.currentLoad,
       capacity: bus?.capacity,
-      numberOfStops: 3, //replace with an attribue that holds the distance(in km) from point A to B
       route: {
         destination: bus?.route.destination,
-        estimatedTime: bus?.route.estimatedTime,
         origin: bus?.route.origin,
-        stops: bus?.route.stops,
+        stops: bus?.route.stops
       },
     };
 
