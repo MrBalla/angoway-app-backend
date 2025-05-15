@@ -132,7 +132,6 @@ async function createSampleData() {
           status: 'IN_TRANSIT',
           capacity: 50,
           currentLoad: 30,
-          location: 'Mutamba, Luanda',
         },
         {
           nia: 'BUS002',
@@ -142,7 +141,6 @@ async function createSampleData() {
           status: 'IN_TRANSIT',
           capacity: 40,
           currentLoad: 25,
-          location: 'Calemba, Luanda',
         },
       ],
     });
