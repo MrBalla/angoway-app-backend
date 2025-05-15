@@ -4,6 +4,7 @@
 /build
 /prisma/prisma/client/
 prisma/prisma/client/*.js
+scripts/*.js
 # Logs
 logs
 *.log
