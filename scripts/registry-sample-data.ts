@@ -3,6 +3,14 @@ import * as bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
 
+function generateRandomDate(monthOffset: number) {
+  const today = new Date();
+  const randomDay = Math.floor(Math.random() * 28) + 1; // Para garantir que o dia seja válido (1-28)
+  today.setMonth(today.getMonth() + monthOffset);
+  today.setDate(randomDay);
+  return today;
+}
+
 async function createSampleData() {
   try {
     const password = '108449123Dss';
@@ -144,11 +152,41 @@ async function createSampleData() {
         },
       ],
     });
-
-      
-
     console.log('Buses created:', buses.count);
+    
+    const driversIDs = [1, 2]; // IDs dos 2 drivers
+    const busesIDs = [1, 2];   // IDs dos 2 buses
+    const routesIDs = [1, 2, 3, 4, 5]; // IDs das 5 rotas
+    const profits = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
 
+    for (let i = 0; i < 20; i++) {
+        const monthOffset = Math.floor(i / 5); // Definindo qual mês será para o Travel (5 registros por mês)
+        const createdAt = generateRandomDate(monthOffset); // Gerando a data para o 'createdAt'
+
+        const routeId = routesIDs[Math.floor(Math.random() * routesIDs.length)];
+        const driverId = driversIDs[Math.floor(Math.random() * driversIDs.length)];
+        const busId = busesIDs[Math.floor(Math.random() * busesIDs.length)];
+        const profit = profits[Math.floor(Math.random() * profits.length)];
+
+        const departureTime = new Date(createdAt.getTime());
+        departureTime.setHours(departureTime.getHours() + Math.floor(Math.random() * 4));
+        const arrivalTime = new Date(departureTime.getTime());
+        arrivalTime.setHours(arrivalTime.getHours() + Math.floor(Math.random() * 4) + 1);
+
+        await prisma.travel.create({
+                data: {
+                routeId,
+                driverId,
+                busId,
+                profit,
+                departureTime,
+                arrivalTime,
+                createdAt
+            },
+        });
+    }
+
+    console.log('Travel created:', this.prisma.travel.count());
     console.log('✅ Sample data created successfully.');
   } catch (error) {
     console.error('❌ Error creating sample data:', error);
