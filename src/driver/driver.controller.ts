@@ -8,6 +8,16 @@ import { DriverModule } from './driver.module';
 export class DriverController {
     constructor(private readonly driverService: DriverService) {}
 
+
+    @Get('/all')
+    async getAllDrivers(): Promise<Omit<DriverModule, 'password'>[]> {
+        const drivers = await this.driverService.allDrivers();
+        return drivers.map(driver => {
+            const { password, ...driverWithoutPassword } = driver;
+            return driverWithoutPassword;
+        });
+    }
+    
     @Post('')
     @HttpCode(HttpStatus.CREATED)
     async createDriver(@Body() driverData: Prisma.DriverCreateInput): Promise<ResponseBody> {
@@ -26,15 +36,6 @@ export class DriverController {
         }
         const { password, ...driverWithoutPassword } = driver;
         return driverWithoutPassword;
-    }
-
-    @Get('/all')
-    async getAllDrivers(): Promise<Omit<DriverModule, 'password'>[]> {
-        const drivers = await this.driverService.allDrivers();
-        return drivers.map(driver => {
-            const { password, ...driverWithoutPassword } = driver;
-            return driverWithoutPassword;
-        });
     }
 
     @Get('/available')
