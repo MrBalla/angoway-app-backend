@@ -98,7 +98,7 @@ export class BusService {
                     },
                     {
                         status: {
-                            in: ['ACCIDRNT', 'BREAKDOWN']
+                            in: ['ACCIDENT', 'BREAKDOWN']
                         }
                     }
                 ]
