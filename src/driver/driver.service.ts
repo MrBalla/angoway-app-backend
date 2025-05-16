@@ -135,6 +135,13 @@ export class DriverService {
         });
     }
 
+    async effectDriver(id: number) :Promise<Driver | null>{
+        return this.prisma.driver.update({
+            where: { id },
+            data: { effectiveDate: new Date() }
+        })
+    }
+
     async verifyDriver(where: Prisma.DriverWhereUniqueInput): Promise<Driver> {
         const driver = await this.driver(where);
         if (!driver) {
