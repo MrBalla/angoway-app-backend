@@ -11,6 +11,7 @@ async function resetDatabase() {
     await prisma.routeSchedule.deleteMany({})
     await prisma.route.deleteMany({});
     await prisma.bus.deleteMany({});
+    await prisma.travel.deleteMany({});
     await prisma.user.deleteMany({});
     await prisma.driver.deleteMany({});
 

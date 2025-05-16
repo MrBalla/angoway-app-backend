@@ -31,20 +31,20 @@ model Driver {
   licenseNumber      String         @unique
   url_foto_de_perfil String?
   experienceTime     Int
-  status             String         @default("AVAILABLE") // AVAILABLE, ON_ROUTE OFFLINE
+  status             String         @default("AVAILABLE")
   currentLatitude    Float?
   currentLongitude   Float?
   lastLogin          DateTime?
   deviceToken        String?
   isVerified         Boolean        @default(false)
   rating             Float          @default(0)
-  assignedBus        Bus?           @relation("DriverBus")
   assignedBusNia     String?
-  travels            Travel[]
-  feedbacks          Feedback[]
-  notifications      Notification[]
   createdAt          DateTime       @default(now())
   updatedAt          DateTime       @updatedAt
+  assignedBus        Bus?           @relation("DriverBus")
+  feedbacks          Feedback[]
+  notifications      Notification[]
+  travels            Travel[]
 }
 
 model Bus {
@@ -57,22 +57,22 @@ model Bus {
   capacity    Int
   currentLoad Int
   updatedAt   DateTime   @updatedAt
-  driver      Driver?    @relation("DriverBus", fields: [driverId], references: [id])
   route       Route      @relation(fields: [routeId], references: [id])
-  travels     Travel[]
+  driver      Driver?    @relation("DriverBus", fields: [driverId], references: [id])
   feedbacks   Feedback[]
+  travels     Travel[]
 }
 
-model Travel{
-    id        Int        @id @default(autoincrement())
-    routeId   Int        
-    driverId  Int   
-    busId     Int
-    profit    Decimal
-    route     Route      @relation(fields: [routeId], references: [id])
-    driver    Driver     @relation(fields: [driverId], references: [id])
-    bus       Bus        @relation(fields: [busId], references: [id])
-    createdAt DateTime   @default(now())
+model Travel {
+  id        Int      @id @default(autoincrement())
+  routeId   Int
+  driverId  Int
+  busId     Int
+  profit    Decimal
+  createdAt DateTime @default(now())
+  bus       Bus      @relation(fields: [busId], references: [id])
+  driver    Driver   @relation(fields: [driverId], references: [id])
+  route     Route    @relation(fields: [routeId], references: [id])
 }
 
 model Route {
@@ -82,8 +82,8 @@ model Route {
   destination String
   status      String          @default("active")
   buses       Bus[]
-  stops       Stop[]          @relation("RouteStops")
   schedules   RouteSchedule[] @relation("RouteSchedule")
+  stops       Stop[]          @relation("RouteStops")
   travels     Travel[]
 }
 
@@ -97,9 +97,9 @@ model RouteSchedule {
   estimatedDurationMinutes Int
   status                   String
   distanceKM               Decimal
-  route                    Route    @relation("RouteSchedule", fields: [routeId], references: [id])
   createdAt                DateTime @default(now())
   updatedAt                DateTime @updatedAt
+  route                    Route    @relation("RouteSchedule", fields: [routeId], references: [id])
 }
 
 model Stop {
@@ -117,9 +117,9 @@ model Feedback {
   rating    Int
   comment   String
   createdAt DateTime @default(now())
-  bus       Bus      @relation(fields: [busId], references: [id])
-  user      User     @relation(fields: [userId], references: [id])
   driver    Driver   @relation(fields: [driverId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  bus       Bus      @relation(fields: [busId], references: [id])
 }
 
 model Notification {
@@ -130,6 +130,6 @@ model Notification {
   message   String
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
   driver    Driver   @relation(fields: [driverId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 }
