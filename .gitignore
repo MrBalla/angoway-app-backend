@@ -4,6 +4,7 @@
 /build
 /prisma/prisma/client/
 /prisma/angoway.db
+/prisma/angoway
 prisma/prisma/client/*.js
 
 # Logs
