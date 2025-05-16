@@ -60,13 +60,13 @@ function resetDatabase() {
                     return [4 /*yield*/, prisma.stop.deleteMany({})];
                 case 3:
                     _a.sent();
-                    return [4 /*yield*/, prisma.bus.deleteMany({})];
+                    return [4 /*yield*/, prisma.routeSchedule.deleteMany({})];
                 case 4:
                     _a.sent();
                     return [4 /*yield*/, prisma.route.deleteMany({})];
                 case 5:
                     _a.sent();
-                    return [4 /*yield*/, prisma.routeSchedule.deleteMany({})];
+                    return [4 /*yield*/, prisma.bus.deleteMany({})];
                 case 6:
                     _a.sent();
                     return [4 /*yield*/, prisma.user.deleteMany({})];

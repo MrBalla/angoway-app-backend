@@ -88,14 +88,25 @@ export class BusController {
   }
 
     @Get('count')
-    //@UseGuards(AuthGuard)
+    @UseGuards(AuthGuard)
     async countBuses(): Promise<{ count: number }>{
         return await this.busService.countBuses();
     }
 
     @Get('pending')
-    //@UseGuards(AuthGuard)
+    @UseGuards(AuthGuard)
     async pendingBuses(): Promise<{ count:number, buses: Bus[] }>{
         return await this.busService.pendingBuses();
+    }
+
+    @Get('count-inactive')
+    @UseGuards(AuthGuard)
+    async countInactiveBuses(): Promise<{ count:number, buses:Bus[] }>{
+        return await this.busService.countInactiveBuses();
+    }
+    @Get('count-active')
+    @UseGuards(AuthGuard)
+    async countAvailableBuses(): Promise<{ count:number, buses: Bus[] }>{
+        return await this.busService.countAvailableBuses();
     }
 }
