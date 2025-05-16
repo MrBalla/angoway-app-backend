@@ -38,8 +38,8 @@ export class BusService {
             const { route, driver, ...simplifiedBus } = bus;
             return {
                 ...simplifiedBus,
-                driver_name: driver?.name || 'N/A',
-                route_title: route?.name || 'N/A'    
+                driverName: driver?.name || 'N/A',
+                route: route?.name || 'N/A'    
             }
         });
     }
