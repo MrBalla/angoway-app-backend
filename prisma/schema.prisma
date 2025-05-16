@@ -40,6 +40,7 @@ model Driver {
   rating             Float          @default(0)
   assignedBus        Bus?           @relation("DriverBus")
   assignedBusNia     String?
+  travels            Travel[]
   feedbacks          Feedback[]
   notifications      Notification[]
   createdAt          DateTime       @default(now())
@@ -55,11 +56,25 @@ model Bus {
   status      String     @default("IN_TRANSIT")
   capacity    Int
   currentLoad Int
-  location    String
   updatedAt   DateTime   @updatedAt
   driver      Driver?    @relation("DriverBus", fields: [driverId], references: [id])
   route       Route      @relation(fields: [routeId], references: [id])
+  travels     Travel[]
   feedbacks   Feedback[]
+}
+
+model Travel{
+    id             Int        @id @default(autoincrement())
+    routeId        Int        
+    driverId       Int   
+    busId          Int
+    profit         Decimal
+    arrivalTime    DateTime?
+    departureTime  DateTime?
+    route          Route      @relation(fields: [routeId], references: [id])
+    driver         Driver     @relation(fields: [driverId], references: [id])
+    bus            Bus        @relation(fields: [busId], references: [id])
+    createdAt      DateTime   @default(now())
 }
 
 model Route {
@@ -71,6 +86,7 @@ model Route {
   buses       Bus[]
   stops       Stop[]          @relation("RouteStops")
   schedules   RouteSchedule[] @relation("RouteSchedule")
+  travels     Travel[]
 }
 
 model RouteSchedule {

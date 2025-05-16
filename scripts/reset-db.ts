@@ -4,17 +4,15 @@ const prisma = new PrismaClient();
 
 async function resetDatabase() {
   try {
-    // Delete records in the correct order to avoid foreign key constraint issues
     await prisma.notification.deleteMany({});
     await prisma.feedback.deleteMany({});
+    await prisma.travel.deleteMany({});
     await prisma.stop.deleteMany({});
+    await prisma.routeSchedule.deleteMany({});
     await prisma.bus.deleteMany({});
-    await prisma.route.deleteMany({});
-    await prisma.routeSchedule.deleteMany({})
-    await prisma.user.deleteMany({});
     await prisma.driver.deleteMany({});
-
-    // Reset SQLite auto-increment sequences
+    await prisma.route.deleteMany({});
+    await prisma.user.deleteMany({}); 
     await prisma.$executeRaw`DELETE FROM sqlite_sequence;`;
 
     console.log('Database reset successfully.');

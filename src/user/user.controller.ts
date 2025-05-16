@@ -2,11 +2,9 @@ import { Controller, Get, Param, Post, Body, Put, Delete,HttpCode, HttpStatus, U
 import { Prisma, User as UserModel } from '@prisma/client';
 import { UserService } from './user.service';
 import { NotFoundException } from '@nestjs/common';
-import { AuthGuard } from 'src/auth/auth.guard';
 import { ResponseBody } from 'src/types/response.body';
-import { SPost } from '../../swagger/swagger.decorator';
-import { BodyValidate, NeedAuth } from '../../swagger/validate.decorator';
-import { CreateUserSchema } from './schema/user.schema';
+import { NeedAuth } from '../../swagger/validate.decorator';
+
 
 @Controller('user')
 export class UserController {
