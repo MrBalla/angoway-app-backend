@@ -1,4 +1,4 @@
-import { Controller, Get, HttpCode, HttpStatus, NotFoundException, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, NotFoundException, Param, Post } from '@nestjs/common';
 import { DriverService } from './driver.service';
 import { Prisma } from '@prisma/client';
 import { ResponseBody } from 'src/types/response.body';
@@ -10,7 +10,7 @@ export class DriverController {
 
     @Post('')
     @HttpCode(HttpStatus.CREATED)
-    async createDriver(driverData: Prisma.DriverCreateInput): Promise<ResponseBody> {
+    async createDriver(@Body() driverData: Prisma.DriverCreateInput): Promise<ResponseBody> {
         await this.driverService.createDriver(driverData);
         return ({
             message: "Motorista criado com Sucesso !",
@@ -42,7 +42,7 @@ export class DriverController {
         const drivers = await this.driverService.getDriversAvailable();
         return drivers.map(driver => {
             const { password, ...driverWithoutPassword } = driver;
-            return driverWithoutPassword
+            return driverWithoutPassword;
         });
     }
 
@@ -51,13 +51,13 @@ export class DriverController {
         const drivers = await this.driverService.getDriversOnRoute();
         return drivers.map(driver => {
             const { password, ...driverWithoutPassword } = driver;
-            return driver
+            return driverWithoutPassword;
         });
     }
 
     @Post('atribuir-autocarro/:id')
     @HttpCode(HttpStatus.OK)
-    async assignBusToDriver(@Param('id') id: string, @Param('busNia') busNia: string): Promise<DriverModule> {
+    async assignBusToDriver(@Param('id') id: string, @Body('busNia') busNia: string): Promise<DriverModule> {
         const driver = await this.driverService.assignBus(Number(id), busNia);
         return driver;
     }
