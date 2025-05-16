@@ -48,49 +48,48 @@ function resetDatabase() {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 10, 11, 13]);
-                    // Delete records in the correct order to avoid foreign key constraint issues
+                    _a.trys.push([0, 11, 12, 14]);
                     return [4 /*yield*/, prisma.notification.deleteMany({})];
                 case 1:
-                    // Delete records in the correct order to avoid foreign key constraint issues
                     _a.sent();
                     return [4 /*yield*/, prisma.feedback.deleteMany({})];
                 case 2:
                     _a.sent();
-                    return [4 /*yield*/, prisma.stop.deleteMany({})];
+                    return [4 /*yield*/, prisma.travel.deleteMany({})];
                 case 3:
                     _a.sent();
-                    return [4 /*yield*/, prisma.routeSchedule.deleteMany({})];
+                    return [4 /*yield*/, prisma.stop.deleteMany({})];
                 case 4:
                     _a.sent();
-                    return [4 /*yield*/, prisma.route.deleteMany({})];
+                    return [4 /*yield*/, prisma.routeSchedule.deleteMany({})];
                 case 5:
                     _a.sent();
                     return [4 /*yield*/, prisma.bus.deleteMany({})];
                 case 6:
                     _a.sent();
-                    return [4 /*yield*/, prisma.user.deleteMany({})];
+                    return [4 /*yield*/, prisma.driver.deleteMany({})];
                 case 7:
                     _a.sent();
-                    return [4 /*yield*/, prisma.driver.deleteMany({})];
+                    return [4 /*yield*/, prisma.route.deleteMany({})];
                 case 8:
                     _a.sent();
-                    // Reset SQLite auto-increment sequences
-                    return [4 /*yield*/, prisma.$executeRaw(templateObject_1 || (templateObject_1 = __makeTemplateObject(["DELETE FROM sqlite_sequence;"], ["DELETE FROM sqlite_sequence;"])))];
+                    return [4 /*yield*/, prisma.user.deleteMany({})];
                 case 9:
-                    // Reset SQLite auto-increment sequences
+                    _a.sent();
+                    return [4 /*yield*/, prisma.$executeRaw(templateObject_1 || (templateObject_1 = __makeTemplateObject(["DELETE FROM sqlite_sequence;"], ["DELETE FROM sqlite_sequence;"])))];
+                case 10:
                     _a.sent();
                     console.log('Database reset successfully.');
-                    return [3 /*break*/, 13];
-                case 10:
+                    return [3 /*break*/, 14];
+                case 11:
                     error_1 = _a.sent();
                     console.error('Error resetting database:', error_1);
                     throw error_1;
-                case 11: return [4 /*yield*/, prisma.$disconnect()];
-                case 12:
+                case 12: return [4 /*yield*/, prisma.$disconnect()];
+                case 13:
                     _a.sent();
                     return [7 /*endfinally*/];
-                case 13: return [2 /*return*/];
+                case 14: return [2 /*return*/];
             }
         });
     });

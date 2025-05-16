@@ -39,13 +39,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var client_1 = require("@prisma/client");
 var bcrypt = require("bcrypt");
 var prisma = new client_1.PrismaClient();
+function generateRandomDate(monthOffset) {
+    var today = new Date();
+    var randomDay = Math.floor(Math.random() * 28) + 1; // Para garantir que o dia seja válido (1-28)
+    today.setMonth(today.getMonth() + monthOffset);
+    today.setDate(randomDay);
+    return today;
+}
 function createSampleData() {
     return __awaiter(this, void 0, void 0, function () {
-        var password, hashedPassword, users, drivers, orlando, laurentino, routes, routeSchedules, stops, buses, error_1;
+        var password, hashedPassword, users, drivers, orlando, laurentino, routes, routeSchedules, stops, buses, driversIDs, busesIDs, routesIDs, profits, i, monthOffset, createdAt, routeId, driverId, busId, profit, departureTime, arrivalTime, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 10, 11, 13]);
+                    _a.trys.push([0, 14, 15, 17]);
                     password = '108449123Dss';
                     return [4 /*yield*/, bcrypt.hash(password, 10)];
                 case 1:
@@ -199,17 +206,55 @@ function createSampleData() {
                 case 9:
                     buses = _a.sent();
                     console.log('Buses created:', buses.count);
-                    console.log('✅ Sample data created successfully.');
-                    return [3 /*break*/, 13];
+                    driversIDs = [1, 2];
+                    busesIDs = [1, 2];
+                    routesIDs = [1, 2, 3, 4, 5];
+                    profits = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
+                    i = 0;
+                    _a.label = 10;
                 case 10:
+                    if (!(i < 20)) return [3 /*break*/, 13];
+                    monthOffset = Math.floor(i / 5);
+                    createdAt = generateRandomDate(monthOffset);
+                    routeId = routesIDs[Math.floor(Math.random() * routesIDs.length)];
+                    driverId = driversIDs[Math.floor(Math.random() * driversIDs.length)];
+                    busId = busesIDs[Math.floor(Math.random() * busesIDs.length)];
+                    profit = profits[Math.floor(Math.random() * profits.length)];
+                    departureTime = new Date(createdAt.getTime());
+                    departureTime.setHours(departureTime.getHours() + Math.floor(Math.random() * 4));
+                    arrivalTime = new Date(departureTime.getTime());
+                    arrivalTime.setHours(arrivalTime.getHours() + Math.floor(Math.random() * 4) + 1);
+                    return [4 /*yield*/, prisma.travel.create({
+                            data: {
+                                routeId: routeId,
+                                driverId: driverId,
+                                busId: busId,
+                                profit: profit,
+                                departureTime: departureTime,
+                                arrivalTime: arrivalTime,
+                                createdAt: createdAt
+                            },
+                        })];
+                case 11:
+                    _a.sent();
+                    console.log("Travel ".concat(i + 1, " criado!"));
+                    _a.label = 12;
+                case 12:
+                    i++;
+                    return [3 /*break*/, 10];
+                case 13:
+                    console.log('20 Travels created:', buses.count);
+                    console.log('✅ Sample data created successfully.');
+                    return [3 /*break*/, 17];
+                case 14:
                     error_1 = _a.sent();
                     console.error('❌ Error creating sample data:', error_1);
                     throw error_1;
-                case 11: return [4 /*yield*/, prisma.$disconnect()];
-                case 12:
+                case 15: return [4 /*yield*/, prisma.$disconnect()];
+                case 16:
                     _a.sent();
                     return [7 /*endfinally*/];
-                case 13: return [2 /*return*/];
+                case 17: return [2 /*return*/];
             }
         });
     });
