@@ -64,11 +64,21 @@ export class BusService {
     async countInactiveBuses(): Promise<{ count: number, buses: Bus[] }>{
         const inactiveBuses = await this.prisma.bus.findMany({
             where: {
-                driver: {
-                    status: 'OFFLINE'
-                }
+                OR: [
+                    {
+                        driver: {
+                            status: 'OFFLINE'
+                        }
+                    },
+                    {
+                        status: {
+                            in: ['ACCIDRNT', 'BREAKDOWN']
+                        }
+                    }
+                ]
             }
         });
+        
         return {
             count: inactiveBuses.length,
             buses: inactiveBuses
