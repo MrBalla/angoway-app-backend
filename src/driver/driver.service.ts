@@ -11,6 +11,16 @@ export class DriverService {
         return this.prisma.driver.findMany();
     }
     
+    async assignedBusDriver() :Promise<Driver[]>{
+        return this.prisma.driver.findMany({
+            where: {
+                assignedBus: { 
+                    NOT: { id: undefined } 
+                }    
+            }
+        });
+    }
+    
     async createDriver(data: Prisma.DriverCreateInput){
         const isEmailUsed = await this.driver({ email: data.email });
         if(isEmailUsed)
@@ -60,6 +70,8 @@ export class DriverService {
             },
         });
     }
+
+    
 
     async countActiveDrivers(): Promise<{ count: number }>{
         const driversOnRoute = await this.getDriversOnRoute();

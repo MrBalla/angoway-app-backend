@@ -24,7 +24,6 @@ model User {
 
 model Driver {
   id                 Int            @id @default(autoincrement())
-  nia                String?
   name               String
   email              String         @unique
   phone              String         @unique
