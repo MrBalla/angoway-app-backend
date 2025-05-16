@@ -61,6 +61,22 @@ export class DriverService {
         });
     }
 
+    async countActiveDrivers(): Promise<{ count: number }>{
+        const driversOnRoute = await this.getDriversOnRoute();
+        const driversAvailables = await this.getDriversAvailable();
+        const count = driversOnRoute.length + driversAvailables.length;
+        return { count };
+    }
+
+    async countInactiveDrivers(): Promise<{ count: number }>{
+        const count = await this.prisma.driver.count({
+            where: {
+                status: "OFFLINE"
+            }
+        })
+        return { count };
+    }
+
 
     async updateDriver(params: {
         where: Prisma.DriverWhereUniqueInput;
