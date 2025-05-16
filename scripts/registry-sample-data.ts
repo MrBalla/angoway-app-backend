@@ -157,11 +157,8 @@ async function createSampleData() {
     const driversIDs = [1, 2]; // IDs dos 2 drivers
     const busesIDs = [1, 2];   // IDs dos 2 buses
     const routesIDs = [1, 2, 3, 4, 5]; // IDs das 5 rotas
-
-  // Array de profits para variar os lucros
     const profits = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
 
-  // Criando 20 Travels
     for (let i = 0; i < 20; i++) {
         const monthOffset = Math.floor(i / 5); // Definindo qual mês será para o Travel (5 registros por mês)
         const createdAt = generateRandomDate(monthOffset); // Gerando a data para o 'createdAt'
@@ -187,10 +184,9 @@ async function createSampleData() {
                 createdAt
             },
         });
-
-        console.log(`Travel ${i + 1} criado!`);
     }
-    console.log('20 Travels created:', buses.count);
+
+    console.log('Travel created:', this.prisma.travel.count());
     console.log('✅ Sample data created successfully.');
   } catch (error) {
     console.error('❌ Error creating sample data:', error);
