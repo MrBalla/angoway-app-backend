@@ -23,9 +23,23 @@ export class BusService {
   }
 
   //Mostrar os Buses
-  async buses(): Promise<Bus[]> {
-    return this.prisma.bus.findMany();
-  }
+    async buses(): Promise<Bus[]> {
+        const buses = await this.prisma.bus.findMany({
+            include: {
+                driver: {
+                    select: { name: true,}
+                },
+                route: {
+                    select: { name: true,}
+                }
+            }
+        });
+        return buses.map((bus) => ({
+            ...bus,
+            driver_name: bus.driver?.name || 'N/A',
+            route_title: bus.route?.name || 'N/A'
+        }));
+    }
     async countBuses(): Promise<{ count:number }> {
         const count = await this.prisma.bus.count();
         return { count };
