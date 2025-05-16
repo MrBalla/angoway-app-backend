@@ -34,12 +34,24 @@ export class BusService {
                 }
             }
         });
-        return buses.map((bus) => ({
-            ...bus,
-            driver_name: bus.driver?.name || 'N/A',
-            route_title: bus.route?.name || 'N/A'
-        }));
+        return buses.map((bus) => {
+            const { route, driver, ...simplifiedBus } = bus;
+            return {
+                ...simplifiedBus,
+                driver_name: driver?.name || 'N/A',
+                route_title: route?.name || 'N/A'    
+            }
+        });
     }
+
+    async busesWithRoute() :Promise<Bus[]>{
+        return await this.prisma.bus.findMany({
+            where: {
+                routeId: { not: undefined },
+            }
+        });
+    }
+
     async countBuses(): Promise<{ count:number }> {
         const count = await this.prisma.bus.count();
         return { count };
