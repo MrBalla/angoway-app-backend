@@ -33,16 +33,47 @@ export class BusService {
 
 
     async pendingBuses(): Promise<{ count:number, buses: Bus[] }>{
-        const buses = await this.prisma.bus.findMany({
+        const pendingBuses = await this.prisma.bus.findMany({
             where: {
                 driverId: null,
             }
         });
-        const countPending = buses.length;
+        const countPending = pendingBuses.length;
         return {
             count: countPending,
-            buses
+            buses: pendingBuses,
         };
+    }
+
+    async countAvailableBuses(): Promise<{ count: number, buses: Bus[] }>{
+        const availableBuses = await this.prisma.bus.findMany({
+            where: {
+                driver: {
+                    status: {
+                        in: ['AVAILABLE', 'ON_ROUTE']    
+                    }
+                }
+            }
+        });
+        return {
+            count: availableBuses.length,
+            buses: availableBuses
+        }
+    }
+
+    async countInactiveBuses(): Promise<{ count: number, buses: Bus[] }>{
+        const inactiveBuses = await this.prisma.bus.findMany({
+            where: {
+                driver: {
+                    status: 'OFFLINE'
+                }
+            }
+        });
+        return {
+            count: inactiveBuses.length,
+            buses: inactiveBuses
+        }
+
     }
 
   async findBusById(id: number): Promise<Bus | null> {
