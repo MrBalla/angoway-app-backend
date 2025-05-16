@@ -1,6 +1,6 @@
 
 # Angoway back end
-## Installation
+## Setup
 
 **Don't forget to copy the `.env.example` file and rename it to `.env` and assign values as environment variables**
 

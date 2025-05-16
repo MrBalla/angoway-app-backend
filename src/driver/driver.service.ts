@@ -7,6 +7,10 @@ export class DriverService {
     @Inject()
     private readonly prisma: PrismaService;
 
+    async allDrivers(): Promise<Driver[]> {
+        return this.prisma.driver.findMany();
+    }
+    
     async createDriver(data: Prisma.DriverCreateInput){
         const isEmailUsed = await this.driver({ email: data.email });
         if(isEmailUsed)
@@ -100,9 +104,7 @@ export class DriverService {
         });
     }
 
-    async allDrivers(): Promise<Driver[]> {
-        return this.prisma.driver.findMany();
-    }
+    
 
     async updateStatus(id: number, status: 'AVAILABLE' | 'ON_ROUTE' | 'OFFLINE'): Promise<Driver | null> {
         //Verificar se o Status é valido
