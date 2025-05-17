@@ -56,6 +56,7 @@ model Bus {
   status      String     @default("IN_TRANSIT")
   capacity    Int
   currentLoad Int
+  createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   driver      Driver?    @relation("DriverBus", fields: [driverId], references: [id])
   route       Route      @relation(fields: [routeId], references: [id])

@@ -16,10 +16,29 @@ export class BusService {
 
   constructor(private readonly routesService: RoutesService) {}
 
-  //Crud Basico
+  async generateNIA(): Promise<string>{
+    const lastBus = await this.prisma.bus.findFirst({
+      orderBy: { updatedAt: 'desc' },
+      select: { nia: true }
+    })
+    let number = 1;
+    if (lastBus?.nia){
+      const match = lastBus.nia.match(/BUS-(\d+)/);
+      if(match)
+        number = parseInt(match[1])+1;
+    }
+    return `BUS-${String(number).padStart(4, '0')}`
+  }
   //Criando o Bus
   async createBus(data: Prisma.BusCreateInput) {
-    return this.prisma.bus.create({ data });
+    const nia = await this.generateNIA();
+
+    return this.prisma.bus.create({ 
+      data:{
+        ... data,
+        nia,
+      } 
+    });
   }
 
   //Mostrar os Buses
