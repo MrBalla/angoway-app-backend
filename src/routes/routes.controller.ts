@@ -16,6 +16,7 @@ import { Prisma } from '@prisma/client';
 import { RoutesService } from './routes.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { RouteResponse } from 'src/types/routes.response';
+import { ResponseBody } from 'src/types/response.body';
 
 @Controller('routes')
 export class RoutesController {
@@ -26,11 +27,15 @@ private readonly routesService: RoutesService
 //Só para Admnistrador, entt têm que se por auth para Admin
 @Post('')
 @HttpCode(HttpStatus.CREATED)
-async createRoute(@Body() routeData: Prisma.RouteCreateInput): Promise<void> {
+async createRoute(@Body() routeData: Prisma.RouteCreateInput): Promise<ResponseBody> {
    await this.routesService.create(routeData);
+   return({
+      message: "Rota criada com Sucesso!",
+      code: HttpStatus.CREATED
+   })
 }
 
-   @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard)
   @Get('/search/:query')
   async findByName(@Param('query') query: string): Promise<RouteResponse[]> {
     const routes = await this.routesService.findByName(query);
