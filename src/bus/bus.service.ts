@@ -23,9 +23,35 @@ export class BusService {
   }
 
   //Mostrar os Buses
-  async buses(): Promise<Bus[]> {
-    return this.prisma.bus.findMany();
-  }
+    async buses(): Promise<Bus[]> {
+        const buses = await this.prisma.bus.findMany({
+            include: {
+                driver: {
+                    select: { name: true,}
+                },
+                route: {
+                    select: { name: true,}
+                }
+            }
+        });
+        return buses.map((bus) => {
+            const { route, driver, ...simplifiedBus } = bus;
+            return {
+                ...simplifiedBus,
+                driverName: driver?.name || 'N/A',
+                route: route?.name || 'N/A'    
+            }
+        });
+    }
+
+    async busesWithRoute() :Promise<Bus[]>{
+        return await this.prisma.bus.findMany({
+            where: {
+                routeId: { not: undefined },
+            }
+        });
+    }
+
     async countBuses(): Promise<{ count:number }> {
         const count = await this.prisma.bus.count();
         return { count };
@@ -64,11 +90,21 @@ export class BusService {
     async countInactiveBuses(): Promise<{ count: number, buses: Bus[] }>{
         const inactiveBuses = await this.prisma.bus.findMany({
             where: {
-                driver: {
-                    status: 'OFFLINE'
-                }
+                OR: [
+                    {
+                        driver: {
+                            status: 'OFFLINE'
+                        }
+                    },
+                    {
+                        status: {
+                            in: ['ACCIDENT', 'BREAKDOWN']
+                        }
+                    }
+                ]
             }
         });
+        
         return {
             count: inactiveBuses.length,
             buses: inactiveBuses

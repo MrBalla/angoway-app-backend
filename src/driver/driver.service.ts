@@ -11,6 +11,16 @@ export class DriverService {
         return this.prisma.driver.findMany();
     }
     
+    async assignedBusDriver() :Promise<Driver[]>{
+        return this.prisma.driver.findMany({
+            where: {
+                assignedBus: { 
+                    NOT: { id: undefined } 
+                }    
+            }
+        });
+    }
+    
     async createDriver(data: Prisma.DriverCreateInput){
         const isEmailUsed = await this.driver({ email: data.email });
         if(isEmailUsed)
@@ -59,6 +69,24 @@ export class DriverService {
                 status: 'ON_ROUTE',
             },
         });
+    }
+
+    
+
+    async countActiveDrivers(): Promise<{ count: number }>{
+        const driversOnRoute = await this.getDriversOnRoute();
+        const driversAvailables = await this.getDriversAvailable();
+        const count = driversOnRoute.length + driversAvailables.length;
+        return { count };
+    }
+
+    async countInactiveDrivers(): Promise<{ count: number }>{
+        const count = await this.prisma.driver.count({
+            where: {
+                status: "OFFLINE"
+            }
+        })
+        return { count };
     }
 
 
@@ -117,6 +145,13 @@ export class DriverService {
             where: { id },
             data: { status },
         });
+    }
+
+    async effectDriver(id: number) :Promise<Driver | null>{
+        return this.prisma.driver.update({
+            where: { id },
+            data: { effectiveDate: new Date() }
+        })
     }
 
     async verifyDriver(where: Prisma.DriverWhereUniqueInput): Promise<Driver> {

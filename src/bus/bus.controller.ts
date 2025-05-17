@@ -32,6 +32,10 @@ export class BusController {
   async buses(): Promise<Bus[]> {
     return this.busService.buses();
   }
+  @Get('with-route')
+    async busesWithRoute(): Promise<Bus[]>{
+        return this.busService.busesWithRoute();
+    }
 
   @Get('dashboard-details/:driverId')
   @UseGuards(AuthGuard)
