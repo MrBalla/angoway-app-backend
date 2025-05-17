@@ -3,7 +3,10 @@
 /node_modules
 /build
 /prisma/prisma/client/
+/prisma/angoway.db
+/prisma/angoway
 prisma/prisma/client/*.js
+
 # Logs
 logs
 *.log

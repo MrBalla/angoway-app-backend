@@ -55,6 +55,15 @@ export class DriverController {
             return driverWithoutPassword;
         });
     }
+    @Get('count-active')
+    async countActiveDrivers() :Promise<{ count: number }>{
+        return await this.driverService.countActiveDrivers();
+    }
+
+    @Get('count-inactive')
+    async countInactiveDrivers(): Promise<{ count: number }>{
+        return await this.driverService.countInactiveDrivers();
+    }
 
     @Post('atribuir-autocarro/:id')
     @HttpCode(HttpStatus.OK)

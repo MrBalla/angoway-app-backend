@@ -14,3 +14,7 @@ you can start the project for **DEVELOPMENT** this way
     npm run setup
 ```
 
+```bash
+    npm run db:reset    // record simple data for testing and development
+    npm run db:set      // reset the database
+```

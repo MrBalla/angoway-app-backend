@@ -31,6 +31,7 @@ model Driver {
   licenseNumber      String         @unique
   url_foto_de_perfil String?
   experienceTime     Int
+  effectiveDate      DateTime?
   status             String         @default("AVAILABLE") // AVAILABLE, ON_ROUTE OFFLINE
   currentLatitude    Float?
   currentLongitude   Float?

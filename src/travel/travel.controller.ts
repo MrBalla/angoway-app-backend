@@ -12,6 +12,7 @@ export class TravelController {
   create(@Body() createTravelDto: CreateTravelDto) {
     return this.travelService.create(createTravelDto);
   }
+
     @Get('monthly-count')
     async monthlyCount(): Promise<countMonthly>{
         return await this.travelService.monthlyCount();
