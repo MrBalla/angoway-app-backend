@@ -7,10 +7,26 @@ export class RoutesService {
   @Inject()
   private readonly prisma: PrismaService;
 
-  async create(data: Prisma.RouteCreateInput) {
-    return await this.prisma.route.create({
-      data,
+  async createRouteWithStops(data: {
+    name: string;
+    origin: string;
+    destination: string;
+    stopIdsInOrder: number[];
+  }) {
+    const { name, origin, destination, stopIdsInOrder } = data;
+
+    const route = await this.prisma.route.create({
+      data: { name, origin,destination },
     });
+
+    await this.prisma.routeStop.createMany({
+      data: stopIdsInOrder.map((stopId, index) => ({
+        routeId: route.id,
+        stopId,
+        order: index + 1,
+      })),
+    })
+    return route;
   }
 
   async findByName(name: string) {
@@ -22,12 +38,17 @@ export class RoutesService {
         },
       },
       include: {
-        stops: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
+        routeStops:{
+          select:{
+            stop: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          }
+        },  
+        buses: true,   
       },
     });
   }
@@ -35,7 +56,16 @@ export class RoutesService {
   async findAll(): Promise<Route[]> {
     return await this.prisma.route.findMany({
       include: {
-        stops: true,
+        routeStops: {
+          select: {
+            stop: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
         buses: true,
       },
     });
@@ -48,7 +78,16 @@ export class RoutesService {
     return await this.prisma.route.findUnique({
       where: { id },
       include: {
-        stops: true,
+        routeStops:{
+          select:{
+            stop:{
+              select:{
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
         buses: true,
       },
     });
@@ -65,7 +104,16 @@ export class RoutesService {
         ],
       },
       include: {
-        stops: true,
+        routeStops: {
+          select: {
+            stop: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
         buses: true,
       },
     });
@@ -73,16 +121,27 @@ export class RoutesService {
   async findByStops(stopName: string): Promise<Route[]> {
     return await this.prisma.route.findMany({
       where: {
-        stops: {
+        routeStops: {
           some: {
-            name: {
-              contains: stopName /*mode: 'insensitive'*/,
+            stop: {
+              name: {
+                contains: stopName /*mode: 'insensitive'*/,
+              },
             },
           },
         },
       },
       include: {
-        stops: true,
+        routeStops: {
+          select: {
+            stop: {
+              select: {
+                id: true,
+                name: true,
+              },
+            },
+          },
+        },
         buses: true,
       },
     });
