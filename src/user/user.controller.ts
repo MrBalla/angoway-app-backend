@@ -10,6 +10,7 @@ import { NeedAuth } from '../../swagger/validate.decorator';
 export class UserController {
     
   constructor(private readonly userService: UserService) {} 
+  
   @Post('')
   @HttpCode(HttpStatus.CREATED)
    async signupUser(userData: Prisma.UserCreateInput): Promise<ResponseBody> {
