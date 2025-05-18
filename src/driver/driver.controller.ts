@@ -1,6 +1,18 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  NotFoundException,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { DriverService } from './driver.service';
-import { Prisma } from '@prisma/client';
+import { Driver, Prisma } from '@prisma/client';
 import { ResponseBody } from 'src/types/response.body';
 import { DriverModule } from './driver.module';
 import { AuthGuard } from 'src/auth/auth.guard';
@@ -24,7 +36,7 @@ export class DriverController {
 
   @Get('/all')
   @UseGuards(AuthGuard)
-  async getAllDrivers(): Promise<Omit<DriverModule, 'password'>[]> {
+  async getAllDrivers(): Promise<Omit<Driver, 'password'>[]> {
     const drivers = await this.driverService.allDrivers();
     return drivers.map((driver) => {
       const { password, ...driverWithoutPassword } = driver;
@@ -36,8 +48,10 @@ export class DriverController {
   @UseGuards(AuthGuard)
   async getDriverById(
     @Param('id') id: string,
-  ): Promise<Omit<DriverModule, 'password'>> {
-    const driver = await this.driverService.driver({ id: Number(id) });
+  ): Promise<Omit<Driver, 'password'>> {
+    const driver = await this.driverService.driver({
+      id: parseInt(id, 10),
+    });
     if (!driver) {
       throw new NotFoundException(`Motorista com ID ${id} não encontrado`);
     }
@@ -47,7 +61,7 @@ export class DriverController {
 
   @Get('/available')
   @UseGuards(AuthGuard)
-  async getAvailableDrivers(): Promise<Omit<DriverModule, 'password'>[]> {
+  async getAvailableDrivers(): Promise<Omit<Driver, 'password'>[]> {
     const drivers = await this.driverService.getDriversAvailable();
     return drivers.map((driver) => {
       const { password, ...driverWithoutPassword } = driver;
@@ -57,7 +71,7 @@ export class DriverController {
 
   @Get('/working')
   @UseGuards(AuthGuard)
-  async getWorkingDrivers(): Promise<Omit<DriverModule, 'password'>[]> {
+  async getWorkingDrivers(): Promise<Omit<Driver, 'password'>[]> {
     const drivers = await this.driverService.getDriversOnRoute();
     return drivers.map((driver) => {
       const { password, ...driverWithoutPassword } = driver;
@@ -94,8 +108,8 @@ export class DriverController {
   async assignBusToDriver(
     @Param('id') id: string,
     @Body('busNia') busNia: string,
-  ): Promise<DriverModule> {
-    const driver = await this.driverService.assignBus(Number(id), busNia);
+  ): Promise<Driver> {
+    const driver = await this.driverService.assignBus(parseInt(id, 10), busNia);
     return driver;
   }
 
@@ -107,7 +121,7 @@ export class DriverController {
     @Body() updateDriverData: Prisma.DriverUpdateInput,
   ): Promise<ResponseBody> {
     const driver = await this.driverService.updateDriver({
-      where: { id: Number(id) },
+      where: { id: parseInt(id, 10) },
       data: updateDriverData,
     });
     const { password, ...driverWithoutPassword } = driver;
@@ -125,7 +139,7 @@ export class DriverController {
     @Body() updatePasswordData: { password: string },
   ): Promise<ResponseBody> {
     const driver = await this.driverService.updatePassword({
-      where: { id: Number(id) },
+      where: { id: parseInt(id, 10) },
       data: { password: updatePasswordData.password },
     });
     const { password, ...driverWithoutPassword } = driver;
@@ -139,7 +153,7 @@ export class DriverController {
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   async deleteDriver(@Param('id') id: string): Promise<ResponseBody> {
-    await this.driverService.deleteDriver({ id: Number(id) });
+    await this.driverService.deleteDriver({ id: parseInt(id, 10) });
     return {
       message: 'Motorista deletado com sucesso',
       code: HttpStatus.OK,
@@ -154,7 +168,7 @@ export class DriverController {
     @Body() updateStatusData: { status: 'AVAILABLE' | 'ON_ROUTE' | 'OFFLINE' },
   ): Promise<ResponseBody> {
     const driver = await this.driverService.updateStatus(
-      Number(id),
+      parseInt(id, 10),
       updateStatusData.status,
     );
     if (!driver) {
@@ -171,7 +185,9 @@ export class DriverController {
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   async verifyDriver(@Param('id') id: string): Promise<ResponseBody> {
-    const driver = await this.driverService.verifyDriver({ id: Number(id) });
+    const driver = await this.driverService.verifyDriver({
+      id: parseInt(id, 10),
+    });
     const { password, ...driverWithoutPassword } = driver;
     return {
       message: `Motorista ${driver.isVerified ? 'verificado' : 'desverificado'} com sucesso`,
@@ -183,7 +199,7 @@ export class DriverController {
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   async unassignBus(@Param('id') id: string): Promise<ResponseBody> {
-    const driver = await this.driverService.unassignBus(Number(id));
+    const driver = await this.driverService.unassignBus(parseInt(id, 10));
     const { password, ...driverWithoutPassword } = driver;
     return {
       message: 'Atribuição de autocarro removida com sucesso',
@@ -200,7 +216,7 @@ export class DriverController {
     @Body() updateLocationData: { latitude: number; longitude: number },
   ): Promise<ResponseBody> {
     const driver = await this.driverService.updateLocation(
-      Number(id),
+      parseInt(id, 10),
       updateLocationData.latitude,
       updateLocationData.longitude,
     );
