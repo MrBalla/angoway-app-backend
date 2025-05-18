@@ -18,6 +18,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { busDetails } from 'src/types/bus.details';
 import { updateBusDetails } from 'src/types/update-bus-details';
 import { ResponseBody } from 'src/types/response.body';
+import { identity } from 'rxjs';
 
 @Controller('bus')
 export class BusController {
@@ -41,6 +42,9 @@ export class BusController {
   @UseGuards(AuthGuard)
   async getBusDetails(@Param('driverId') driverId: string): Promise<busDetails | null> {
     const bus = await this.busService.provideBusDetails(Number(driverId));
+    if(!bus || !bus.route) {
+      return null;
+    }
     const busDetails: busDetails = {
       status: bus?.status,
       currentLoad: bus?.currentLoad,
@@ -48,7 +52,11 @@ export class BusController {
       route: {
         destination: bus?.route.destination,
         origin: bus?.route.origin,
-        stops: bus?.route.stops
+        stops: bus?.route.routeStops.map((rs) =>({
+          id: rs.stop.id,
+          name: rs.stop.name,
+          order: rs.order
+        }))
       },
     };
 
