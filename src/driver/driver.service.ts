@@ -2,6 +2,9 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { Prisma, Driver } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import * as bcrypt from 'bcrypt';
+import {
+  AssignedBusDriverResponse,
+} from '../types/drivers-with-assigned-buses.response';
 @Injectable()
 export class DriverService {
   @Inject()
@@ -16,20 +19,35 @@ export class DriverService {
       },
     });
 
-    return drivers.map(driver => ({
+    return drivers.map((driver) => ({
       ...driver,
       busNia: driver.assignedBus?.nia ?? 'N/A',
     }));
   }
 
-  async assignedBusDriver(): Promise<Driver[]> {
-    return this.prisma.driver.findMany({
+  async assignedBusDriver(): Promise<AssignedBusDriverResponse[]> {
+    const drivers = await this.prisma.driver.findMany({
       where: {
         assignedBus: {
-          NOT: { id: undefined },
+          isNot: null,
+        },
+      },
+      include: {
+        assignedBus: {
+          select: {
+            nia: true,
+            route: true,
+          },
         },
       },
     });
+
+    return drivers.map((driver) => ({
+      id: driver.id,
+      name: driver.name,
+      route: driver.assignedBus?.route ?? {},
+      NIA: driver.assignedBus?.nia ?? 'N/A',
+    }));
   }
 
   async createDriver(data: Prisma.DriverCreateInput) {
@@ -79,11 +97,11 @@ export class DriverService {
     const count = await this.prisma.driver.count({
       where: {
         status: {
-          in: ['AVAILABLE', 'ON_ROUTE','IN_TRANSIT'],
+          in: ['AVAILABLE', 'ON_ROUTE', 'IN_TRANSIT'],
         },
         assignedBus: {
           isNot: null,
-        }
+        },
       },
     });
     return { count };

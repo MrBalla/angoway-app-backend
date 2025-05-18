@@ -68,6 +68,16 @@ export class DriverController {
     return await this.driverService.countPendingDrivers();
   }
 
+  @Get('bus-assigned')
+  @UseGuards(AuthGuard)
+  async getAssignedBusDrivers() {
+    const drivers = await this.driverService.assignedBusDriver();
+    return drivers.map((driver) => {
+      const {  ...driverWithoutPassword } = driver;
+      return driverWithoutPassword;
+    });
+  }
+
   @Get('/:id')
   @UseGuards(AuthGuard)
   async getDriverById(
