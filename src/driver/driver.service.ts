@@ -65,9 +65,16 @@ export class DriverService {
   }
 
   async countActiveDrivers(): Promise<{ count: number }> {
-    const driversOnRoute = await this.getDriversOnRoute();
-    const driversAvailables = await this.getDriversAvailable();
-    const count = driversOnRoute.length + driversAvailables.length;
+    const count = await this.prisma.driver.count({
+      where: {
+        status: {
+          in: ['AVAILABLE', 'ON_ROUTE','IN_TRANSIT'],
+        },
+        assignedBus: {
+          isNot: null,
+        }
+      },
+    });
     return { count };
   }
 
@@ -83,9 +90,7 @@ export class DriverService {
   async countPendingDrivers(): Promise<{ count: number }> {
     const count = await this.prisma.driver.count({
       where: {
-            assignedBus: {
-                id: undefined,
-            },
+        assignedBus: null,
       },
     });
     return { count };
