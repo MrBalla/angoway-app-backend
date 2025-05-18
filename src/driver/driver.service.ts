@@ -7,8 +7,19 @@ export class DriverService {
   @Inject()
   private readonly prisma: PrismaService;
 
-  async allDrivers(): Promise<Driver[]> {
-    return this.prisma.driver.findMany();
+  async allDrivers(): Promise<(Driver & { busNia: string })[]> {
+    const drivers = await this.prisma.driver.findMany({
+      include: {
+        assignedBus: {
+          select: { nia: true },
+        },
+      },
+    });
+
+    return drivers.map(driver => ({
+      ...driver,
+      busNia: driver.assignedBus?.nia ?? 'N/A',
+    }));
   }
 
   async assignedBusDriver(): Promise<Driver[]> {
