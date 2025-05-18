@@ -49,8 +49,13 @@ export class DriverController {
   async getDriverById(
     @Param('id') id: string,
   ): Promise<Omit<Driver, 'password'>> {
+    const numericId = parseInt(id, 10);
+    if (isNaN(numericId)) {
+      throw new NotFoundException(`ID inválido: ${id}`);
+    }
+    console.log('numericId', numericId);
     const driver = await this.driverService.driver({
-      id: parseInt(id, 10),
+      id: numericId,
     });
     if (!driver) {
       throw new NotFoundException(`Motorista com ID ${id} não encontrado`);
