@@ -8,10 +8,11 @@ import { StopesModule } from './stopes/stopes.module';
 import { DriverModule } from './driver/driver.module';
 import { TravelService } from './travel/travel.service';
 import { TravelModule } from './travel/travel.module';
+import { RouteStopsModule } from './route-stops/route-stops.module';
 
 
 @Module({
-  imports: [AuthModule, UserModule,DatabaseModule, RoutesModule, StopesModule, DriverModule, TravelModule],
+  imports: [AuthModule, UserModule,DatabaseModule, RoutesModule, StopesModule, DriverModule, TravelModule, RouteStopsModule],
   providers: [TravelService]
 })
 export class AppModule {}

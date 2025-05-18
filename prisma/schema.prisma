@@ -59,8 +59,10 @@ model Bus {
   currentLoad Int
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
+
   driver      Driver?    @relation("DriverBus", fields: [driverId], references: [id])
   route       Route      @relation(fields: [routeId], references: [id])
+
   travels     Travel[]
   feedbacks   Feedback[]
 }
@@ -73,6 +75,7 @@ model Travel{
     profit         Decimal
     arrivalTime    DateTime?
     departureTime  DateTime?
+
     route          Route      @relation(fields: [routeId], references: [id])
     driver         Driver     @relation(fields: [driverId], references: [id])
     bus            Bus        @relation(fields: [busId], references: [id])
@@ -85,10 +88,12 @@ model Route {
   origin      String
   destination String
   status      String          @default("active")
+
   buses       Bus[]
-  stops       Stop[]          @relation("RouteStops")
-  schedules   RouteSchedule[] @relation("RouteSchedule")
+  routeStops  RouteStop[]
   travels     Travel[]
+
+  schedules   RouteSchedule[] @relation("RouteSchedule") 
 }
 
 model RouteSchedule {
@@ -107,10 +112,22 @@ model RouteSchedule {
 }
 
 model Stop {
-  id      Int    @id @default(autoincrement())
-  name    String
+  id          Int    @id @default(autoincrement())
+  name        String
+  latitude    Float?
+  longitude   Float?
+  routeStops  RouteStop[]
+}
+model RouteStop{
+  id      Int   @id @default(autoincrement())
   routeId Int
-  route   Route  @relation("RouteStops", fields: [routeId], references: [id])
+  stopId  Int
+  order   Int?
+
+  route   Route  @relation(fields: [routeId], references: [id])
+  stop    Stop   @relation(fields: [stopId], references: [id])
+
+  @@unique([routeId, stopId])
 }
 
 model Feedback {
@@ -121,6 +138,7 @@ model Feedback {
   rating    Int
   comment   String
   createdAt DateTime @default(now())
+
   bus       Bus      @relation(fields: [busId], references: [id])
   user      User     @relation(fields: [userId], references: [id])
   driver    Driver   @relation(fields: [driverId], references: [id])
@@ -134,6 +152,7 @@ model Notification {
   message   String
   read      Boolean  @default(false)
   createdAt DateTime @default(now())
+  
   user      User     @relation(fields: [userId], references: [id])
   driver    Driver   @relation(fields: [driverId], references: [id])
 }
