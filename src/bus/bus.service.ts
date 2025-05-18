@@ -95,9 +95,14 @@ export class BusService {
             where: {
                 driver: {
                     status: {
-                        in: ['AVAILABLE', 'ON_ROUTE']    
+                        in: ['AVAILABLE', 'IN_TRANSIT']    
                     }
-                }
+            },
+            AND: {
+              status: {
+                in: ['IN_TRANSIT']
+              }
+            }
             }
         });
         return {
