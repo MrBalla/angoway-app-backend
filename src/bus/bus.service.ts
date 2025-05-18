@@ -177,23 +177,22 @@ export class BusService {
   }
 
   async provideBusDetails(driverId: number) {
-    return this.prisma.bus.findFirst({
-      where: { driverId },
-      include: {
-        route: {
-          select: {
-            origin: true,
-            destination: true,
-            stops: {
-              select: {
-                name: true,
-              },
+  return await this.prisma.bus.findFirst({
+    where: { driverId },
+    include: {
+      route: {
+        include: {
+          routeStops: {
+            include: {
+              stop: true,
             },
-          },
-        },
-      },
-    });
-  }
+            orderBy: { order: 'asc' }
+          }
+        }
+      }
+    }
+  });
+}
 
   // driver app (manage screen)
   async updateBusDetails(id: number, data: updateBusDetails) {

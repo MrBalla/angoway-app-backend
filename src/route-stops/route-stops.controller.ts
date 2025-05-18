@@ -32,7 +32,7 @@ export class RouteStopsController {
         }
     }
 
-    @Patch('ordenar/:id')
-    @HttpCode(HttpStatus.OK)
+    //@Patch('ordenar/:id')
+    //@HttpCode(HttpStatus.OK)
     
 }
