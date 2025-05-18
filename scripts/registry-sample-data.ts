@@ -117,18 +117,53 @@ async function createSampleData() {
 
     const stops = await prisma.stop.createMany({
       data: [
-        { name: 'Mutamba', routeId: 1 },
-        { name: 'Rocha Pinto', routeId: 1 },
-        { name: 'Vila de Viana', routeId: 1 },
-        { name: 'Calemba', routeId: 2 },
-        { name: 'Kikolo', routeId: 2 },
-        { name: 'Cacuaco Centro', routeId: 2 },
-        { name: 'Talatona Centro', routeId: 3 },
-        { name: 'Kilamba Central', routeId: 4 },
-        { name: 'Benfica Praia', routeId: 5 },
-        { name: 'Cidade do Kilamba', routeId: 4 },
+        { name: 'Mutamba'},
+        { name: 'Rocha Pinto'},
+        { name: 'Vila de Viana'},
+        { name: 'Calemba'},
+        { name: 'Kikolo'},
+        { name: 'Cacuaco Centro'},
+        { name: 'Talatona Centro'},
+        { name: 'Kilamba Central'},
+        { name: 'Benfica Praia'},
+        { name: 'Cidade do Kilamba'},
       ],
     });
+    const createdStops = await prisma.stop.findMany({
+      where: {
+        name:{
+          in:[
+            'Mutamba',
+            'Vila de Viana',
+            'Calemba',
+            'Kikolo',
+            'Cacuaco Centro',
+            'Talatona Centro',
+            'Kilamba Central',
+            'Benfica Praia',
+            'Cidade do Kilamba',
+            'Rocha-Pinto',
+          ]
+        }
+      }
+    });
+    const stopMap = Object.fromEntries(createdStops.map(stop => [stop.name, stop.id]))
+
+    await prisma.routeStop.createMany({
+      data:[
+        { routeId: 1, stopId: stopMap['Rocha Pinto'], order: 2 },
+        { routeId: 1, stopId: stopMap['Vila de Viana'], order: 3 },
+        { routeId: 2, stopId: stopMap['Calemba'], order: 1 },
+        { routeId: 2, stopId: stopMap['Kikolo'], order: 2 },
+        { routeId: 2, stopId: stopMap['Cacuaco Centro'], order: 3 },
+        { routeId: 3, stopId: stopMap['Talatona Centro'], order: 1 },
+        { routeId: 4, stopId: stopMap['Kilamba Central'], order: 1 },
+        { routeId: 4, stopId: stopMap['Cidade do Kilamba'], order: 2 },
+        { routeId: 5, stopId: stopMap['Benfica Praia'], order: 1 },
+        { routeId: 1, stopId: stopMap['Mutamba'], order: 1 },
+      ]
+    })
+
     console.log('Stops created:', stops.count);
     const buses = await prisma.bus.createMany({
       data: [
