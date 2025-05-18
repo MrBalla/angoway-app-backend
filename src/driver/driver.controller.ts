@@ -44,6 +44,30 @@ export class DriverController {
     });
   }
 
+  @Get('count-active')
+  @UseGuards(AuthGuard)
+  async countActiveDrivers(): Promise<{ count: number }> {
+    return await this.driverService.countActiveDrivers();
+  }
+
+  @Get('count')
+  @UseGuards(AuthGuard)
+  async countDrivers(): Promise<{ count: number }> {
+    return await this.driverService.countDrivers();
+  }
+
+  @Get('count-inactive')
+  @UseGuards(AuthGuard)
+  async countInactiveDrivers(): Promise<{ count: number }> {
+    return await this.driverService.countInactiveDrivers();
+  }
+
+  @Get('count-pending')
+  @UseGuards(AuthGuard)
+  async countPendingDrivers(): Promise<{ count: number }> {
+    return await this.driverService.countPendingDrivers();
+  }
+
   @Get('/:id')
   @UseGuards(AuthGuard)
   async getDriverById(
@@ -82,29 +106,6 @@ export class DriverController {
       const { password, ...driverWithoutPassword } = driver;
       return driverWithoutPassword;
     });
-  }
-  @Get('count-active')
-  @UseGuards(AuthGuard)
-  async countActiveDrivers(): Promise<{ count: number }> {
-    return await this.driverService.countActiveDrivers();
-  }
-
-  @Get('count')
-  @UseGuards(AuthGuard)
-  async countDrivers(): Promise<{ count: number }> {
-    return await this.driverService.countDrivers();
-  }
-
-  @Get('count-inactive')
-  @UseGuards(AuthGuard)
-  async countInactiveDrivers(): Promise<{ count: number }> {
-    return await this.driverService.countInactiveDrivers();
-  }
-
-  @Get('count-pending')
-  @UseGuards(AuthGuard)
-  async countPendingDrivers(): Promise<{ count: number }> {
-    return await this.driverService.countPendingDrivers();
   }
 
   @Post('atribuir-autocarro/:id')
