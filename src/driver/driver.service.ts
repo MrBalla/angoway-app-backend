@@ -2,23 +2,52 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { Prisma, Driver } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import * as bcrypt from 'bcrypt';
+import {
+  AssignedBusDriverResponse,
+} from '../types/drivers-with-assigned-buses.response';
 @Injectable()
 export class DriverService {
   @Inject()
   private readonly prisma: PrismaService;
 
-  async allDrivers(): Promise<Driver[]> {
-    return this.prisma.driver.findMany();
-  }
-
-  async assignedBusDriver(): Promise<Driver[]> {
-    return this.prisma.driver.findMany({
-      where: {
+  async allDrivers(): Promise<(Driver & { busNia: string })[]> {
+    const drivers = await this.prisma.driver.findMany({
+      include: {
         assignedBus: {
-          NOT: { id: undefined },
+          select: { nia: true },
         },
       },
     });
+
+    return drivers.map((driver) => ({
+      ...driver,
+      busNia: driver.assignedBus?.nia ?? 'N/A',
+    }));
+  }
+
+  async assignedBusDriver(): Promise<AssignedBusDriverResponse[]> {
+    const drivers = await this.prisma.driver.findMany({
+      where: {
+        assignedBus: {
+          isNot: null,
+        },
+      },
+      include: {
+        assignedBus: {
+          select: {
+            nia: true,
+            route: true,
+          },
+        },
+      },
+    });
+
+    return drivers.map((driver) => ({
+      id: driver.id,
+      name: driver.name,
+      route: driver.assignedBus?.route ?? {},
+      NIA: driver.assignedBus?.nia ?? 'N/A',
+    }));
   }
 
   async createDriver(data: Prisma.DriverCreateInput) {
@@ -65,9 +94,16 @@ export class DriverService {
   }
 
   async countActiveDrivers(): Promise<{ count: number }> {
-    const driversOnRoute = await this.getDriversOnRoute();
-    const driversAvailables = await this.getDriversAvailable();
-    const count = driversOnRoute.length + driversAvailables.length;
+    const count = await this.prisma.driver.count({
+      where: {
+        status: {
+          in: ['AVAILABLE', 'ON_ROUTE', 'IN_TRANSIT'],
+        },
+        assignedBus: {
+          isNot: null,
+        },
+      },
+    });
     return { count };
   }
 
@@ -83,9 +119,7 @@ export class DriverService {
   async countPendingDrivers(): Promise<{ count: number }> {
     const count = await this.prisma.driver.count({
       where: {
-            assignedBus: {
-                id: undefined,
-            },
+        assignedBus: null,
       },
     });
     return { count };
