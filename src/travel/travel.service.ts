@@ -12,8 +12,9 @@ export class TravelService {
         return 'This action adds a new travel';
     }
 
-    async monthlyCount(year?: number): Promise<countMonthly> {
+    async monthlyCount(year?: number): Promise<countMonthly[]> {
         let months: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+        const monthsNames: string[] = ["janeiro", "fevereiro", "marco", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"]
         const currentYear = year || new Date().getFullYear();
 
   // Use Promise.all para aguardar todas as promessas de contagem de viagens
@@ -22,29 +23,16 @@ export class TravelService {
                 const travelCount = await this.prisma.travel.count({
                     where: {
                         createdAt: {
-                            gte: new Date(currentYear, month - 1, 1), // Primeira data do mês
-                            lt: new Date(currentYear, month, 0),      // Última data do mês
+                            gte: new Date(currentYear, month - 1, 1), // primeira data do mes
+                            lt: new Date(currentYear, month, 0),      // ultima data do mes
                         },
                     },
                 });
-                return travelCount; // Retorna a contagem do mês
+                return { month: monthsNames[month - 1], travels: travelCount };
             })
         );
-
-        return {
-            jan: monthlyCount[0],
-            feb: monthlyCount[1],
-            mar: monthlyCount[2],
-            apr: monthlyCount[3],
-            may: monthlyCount[4],
-            jun: monthlyCount[5],
-            jul: monthlyCount[6],
-            aug: monthlyCount[7],
-            sep: monthlyCount[8],
-            oct: monthlyCount[9],
-            nov: monthlyCount[10],
-            dec: monthlyCount[11],
-        };
+        
+        return monthlyCount;
     }
     
   findAll() {
