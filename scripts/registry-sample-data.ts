@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import * as bcrypt from 'bcrypt';
+import * as luandaStopsJson from '../data/luanda-stops.json';
 
 const prisma = new PrismaClient();
 
@@ -114,22 +115,40 @@ async function createSampleData() {
         ]  
     });
     console.log('Routes created:', routes.count);
-
-    const stops = await prisma.stop.createMany({
-      data: [
-        { name: 'Mutamba', routeId: 1 },
-        { name: 'Rocha Pinto', routeId: 1 },
-        { name: 'Vila de Viana', routeId: 1 },
-        { name: 'Calemba', routeId: 2 },
-        { name: 'Kikolo', routeId: 2 },
-        { name: 'Cacuaco Centro', routeId: 2 },
-        { name: 'Talatona Centro', routeId: 3 },
-        { name: 'Kilamba Central', routeId: 4 },
-        { name: 'Benfica Praia', routeId: 5 },
-        { name: 'Cidade do Kilamba', routeId: 4 },
-      ],
+    const luandaStops = luandaStopsJson.elements;
+    luandaStops.forEach(async (luandaStop) => {
+        const name = luandaStop.tags.name || 'N/A';
+        const stop = await prisma.stop.create({
+            data: {
+                name,
+                latitude: luandaStop.lat,
+                longitude: luandaStop.lon
+            },
+        });
     });
-    console.log('Stops created:', stops.count);
+    
+    const stops = await prisma.stop.findMany({});
+
+    //const stopMap = Object.fromEntries(createdStops.map(stop => [stop.name, stop.id]))
+    const validStopIds = await prisma.stop.findMany({ select: { id: true } });
+    const validRouteIds = await prisma.route.findMany({ select: { id: true } });
+
+    await prisma.routeStop.createMany({
+      data:[
+        { routeId: 1, stopId: Math.floor(Math.random() * (179)), order: 2 },
+        { routeId: 1, stopId: Math.floor(Math.random() * (179)), order: 3 },
+        { routeId: 2, stopId: Math.floor(Math.random() * (179)), order: 1 },
+        { routeId: 2, stopId: Math.floor(Math.random() * (179)), order: 2 },
+        { routeId: 2, stopId: Math.floor(Math.random() * (179)), order: 3 },
+        { routeId: 3, stopId: Math.floor(Math.random() * (179)), order: 1 },
+        { routeId: 4, stopId: Math.floor(Math.random() * (179)), order: 1 },
+        { routeId: 4, stopId: Math.floor(Math.random() * (179)), order: 2 },
+        { routeId: 5, stopId: Math.floor(Math.random() * (179)), order: 1 },
+        { routeId: 1, stopId: Math.floor(Math.random() * (179)), order: 1 },
+      ]
+    })
+
+    console.log('Stops created:', stops.length);
     const buses = await prisma.bus.createMany({
       data: [
         {
@@ -186,7 +205,7 @@ async function createSampleData() {
         });
     }
 
-    console.log('Travel created:', this.prisma.travel.count());
+    console.log('Travel created:', 20);
     console.log('✅ Sample data created successfully.');
   } catch (error) {
     console.error('❌ Error creating sample data:', error);
