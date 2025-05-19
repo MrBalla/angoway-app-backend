@@ -1,10 +1,11 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { BadRequestException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { Prisma, Driver } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import * as bcrypt from 'bcrypt';
 import {
   AssignedBusDriverResponse,
 } from '../types/drivers-with-assigned-buses.response';
+import { ResponseBody } from 'src/types/response.body';
 @Injectable()
 export class DriverService {
   @Inject()
@@ -232,17 +233,23 @@ export class DriverService {
     });
   }
   //atribuir o autocarro ao motorista
-  async assignBus(driverId: number, busNia: string): Promise<Driver> {
+  async assignBus(driverId: number, busNia: string): Promise<ResponseBody | Driver> {
     const driver = await this.driver({ id: driverId });
     if (!driver) {
-      throw new BadRequestException('Motorista não encontrado');
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: 'Motorista não encontrado'
+      }
     }
 
     const bus = await this.prisma.bus.findUnique({
       where: { nia: busNia },
     });
     if (!bus) {
-      throw new BadRequestException('Autocarro não encontrado');
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: 'Autocarro não encontrado',
+      };
     }
 
     const driverUsingThisBus = await this.prisma.driver.findFirst({
@@ -254,9 +261,10 @@ export class DriverService {
       },
     });
     if (driverUsingThisBus) {
-      throw new BadRequestException(
-        'Este autocarro já está atribuído a outro motorista',
-      );
+      return {
+        code: HttpStatus.BAD_REQUEST,
+        message: 'Este autocarro já está atribuído a outro motorista',
+      };
     }
 
     return this.prisma.driver.update({
@@ -264,7 +272,7 @@ export class DriverService {
       data: {
         assignedBusNia: busNia,
         status: 'ON_ROUTE',
-      },
+      }
     });
   }
   //remover a atribuição do autocarro ao motorista
