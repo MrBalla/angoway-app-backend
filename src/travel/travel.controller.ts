@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Res,
 } from '@nestjs/common';
 import { TravelService } from './travel.service';
 import { countMonthly } from '../types/count-monthly.details';
@@ -20,8 +21,23 @@ export class TravelController {
   //  }
 
   @Get('monthly-count')
-  async monthlyCount(): Promise<countMonthly| []> {
+  async monthlyCount(): Promise<countMonthly | []> {
     return await this.travelService.monthlyCount();
+  }
+
+  @Get('monthly-count/export')
+  async monthlyCountExport(@Res() res, @Body('year') year?: number) {
+    const monthlyData = await this.travelService.monthlyCount(year);
+    const buffer =
+      await this.travelService.exportMonthlyTravelsExcel(monthlyData);
+
+    res.set({
+      'Content-Type':
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      'Content-Disposition': 'attachment; filename="monthly-travels.xlsx"',
+    });
+
+    res.send(buffer);
   }
 
   @Get()

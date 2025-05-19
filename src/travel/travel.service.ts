@@ -1,5 +1,6 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { Prisma, Travel } from '@prisma/client';
+import { Workbook } from 'exceljs';
 import { PrismaService } from 'src/database/prisma.service';
 import { countMonthly } from 'src/types/count-monthly.details';
 
@@ -47,6 +48,36 @@ export class TravelService {
       { month: 'nov', travels: monthlyCount[10] },
       { month: 'dec', travels: monthlyCount[11] },
     ];
+  }
+
+  async exportMonthlyTravelsExcel(
+    data: { month: string; travels: number }[],
+  ): Promise<Buffer> {
+    const workbook = new Workbook();
+    const worksheet = workbook.addWorksheet('Monthly Travels');
+
+    const months = data.map((item) => item.month.toUpperCase());
+    worksheet.addRow(months);
+
+    worksheet.addRow(data.map((item) => item.travels));
+
+    const headerRow = worksheet.getRow(1);
+    headerRow.height = 25;
+    headerRow.eachCell((cell) => {
+      cell.font = { bold: true, color: { argb: 'FFFFFFFF' } };
+      cell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF0C6BFF' }, // using our main color
+      };
+      cell.alignment = { vertical: 'middle', horizontal: 'center' };
+    });
+
+    worksheet.columns = data.map(() => ({ width: 15 }));
+
+    const arrayBuffer = await workbook.xlsx.writeBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    return buffer;
   }
 
   findAll() {
