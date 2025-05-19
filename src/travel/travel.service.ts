@@ -2,16 +2,15 @@ import { Injectable, Inject } from '@nestjs/common';
 import { Prisma, Travel } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import { countMonthly } from 'src/types/count-monthly.details'
-import { CreateTravelDto } from './dto/create-travel.dto';
-import { UpdateTravelDto } from './dto/update-travel.dto';
 
 @Injectable()
 export class TravelService {
     @Inject()
     private readonly prisma: PrismaService;
-  create(createTravelDto: CreateTravelDto) {
-    return 'This action adds a new travel';
-  }
+  
+    create(): string {
+        return 'This action adds a new travel';
+    }
 
     async monthlyCount(year?: number): Promise<countMonthly> {
         let months: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
@@ -56,11 +55,7 @@ export class TravelService {
     return `This action returns a #${id} travel`;
   }
 
-  update(id: number, updateTravelDto: UpdateTravelDto) {
-    return `This action updates a #${id} travel`;
-  }
-
-  remove(id: number) {
+remove(id: number) {
     return `This action removes a #${id} travel`;
   }
 }
