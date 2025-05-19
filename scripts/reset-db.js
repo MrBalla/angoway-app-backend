@@ -48,7 +48,7 @@ function resetDatabase() {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 11, 12, 14]);
+                    _a.trys.push([0, 12, 13, 15]);
                     return [4 /*yield*/, prisma.notification.deleteMany({})];
                 case 1:
                     _a.sent();
@@ -58,38 +58,41 @@ function resetDatabase() {
                     return [4 /*yield*/, prisma.travel.deleteMany({})];
                 case 3:
                     _a.sent();
-                    return [4 /*yield*/, prisma.stop.deleteMany({})];
+                    return [4 /*yield*/, prisma.routeStop.deleteMany({})];
                 case 4:
                     _a.sent();
-                    return [4 /*yield*/, prisma.routeSchedule.deleteMany({})];
+                    return [4 /*yield*/, prisma.stop.deleteMany({})];
                 case 5:
                     _a.sent();
-                    return [4 /*yield*/, prisma.bus.deleteMany({})];
+                    return [4 /*yield*/, prisma.routeSchedule.deleteMany({})];
                 case 6:
                     _a.sent();
-                    return [4 /*yield*/, prisma.driver.deleteMany({})];
+                    return [4 /*yield*/, prisma.bus.deleteMany({})];
                 case 7:
                     _a.sent();
-                    return [4 /*yield*/, prisma.route.deleteMany({})];
+                    return [4 /*yield*/, prisma.driver.deleteMany({})];
                 case 8:
                     _a.sent();
-                    return [4 /*yield*/, prisma.user.deleteMany({})];
+                    return [4 /*yield*/, prisma.route.deleteMany({})];
                 case 9:
                     _a.sent();
-                    return [4 /*yield*/, prisma.$executeRaw(templateObject_1 || (templateObject_1 = __makeTemplateObject(["DELETE FROM sqlite_sequence;"], ["DELETE FROM sqlite_sequence;"])))];
+                    return [4 /*yield*/, prisma.user.deleteMany({})];
                 case 10:
                     _a.sent();
-                    console.log('Database reset successfully.');
-                    return [3 /*break*/, 14];
+                    return [4 /*yield*/, prisma.$executeRaw(templateObject_1 || (templateObject_1 = __makeTemplateObject(["DELETE FROM sqlite_sequence;"], ["DELETE FROM sqlite_sequence;"])))];
                 case 11:
+                    _a.sent();
+                    console.log('Database reset successfully.');
+                    return [3 /*break*/, 15];
+                case 12:
                     error_1 = _a.sent();
                     console.error('Error resetting database:', error_1);
                     throw error_1;
-                case 12: return [4 /*yield*/, prisma.$disconnect()];
-                case 13:
+                case 13: return [4 /*yield*/, prisma.$disconnect()];
+                case 14:
                     _a.sent();
                     return [7 /*endfinally*/];
-                case 14: return [2 /*return*/];
+                case 15: return [2 /*return*/];
             }
         });
     });
