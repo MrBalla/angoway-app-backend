@@ -141,13 +141,16 @@ export class DriverService {
     return { count };
   }
 
-  async countPendingDrivers(): Promise<{ count: number }> {
-    const count = await this.prisma.driver.count({
+  async countPendingDrivers(): Promise<{ count:number, drivers: Driver[] }> {
+    const pendingDrivers = await this.prisma.driver.findMany({
       where: {
         assignedBus: null,
       },
     });
-    return { count };
+
+    const pendingDriversCount = pendingDrivers.length;
+
+    return { count: pendingDriversCount, drivers: pendingDrivers };
   }
 
   async countDrivers(): Promise<{ count: number }> {

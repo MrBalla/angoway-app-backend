@@ -74,7 +74,7 @@ export class DriverController {
 
   @Get('count-pending')
   @UseGuards(AuthGuard)
-  async countPendingDrivers(): Promise<{ count: number }> {
+  async countPendingDrivers(): Promise<{ count: number, drivers: Driver[] }> {
     return await this.driverService.countPendingDrivers();
   }
 
