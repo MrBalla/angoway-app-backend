@@ -115,36 +115,38 @@ async function createSampleData() {
         ]  
     });
     console.log('Routes created:', routes.count);
+    
     const luandaStops = luandaStopsJson.elements;
-    luandaStops.forEach(async (luandaStop) => {
-        const name = luandaStop.tags.name || 'N/A';
-        const stop = await prisma.stop.create({
-            data: {
-                name,
-                latitude: luandaStop.lat,
-                longitude: luandaStop.lon
-            },
-        });
-    });
+    for (const luandaStop of luandaStops) {
+      const name = luandaStop.tags.name || 'N/A';
+      await prisma.stop.create({
+        data: {
+          name,
+          latitude: luandaStop.lat,
+          longitude: luandaStop.lon
+        },
+      });
+    }
     
     const stops = await prisma.stop.findMany({});
-
+    const stopCout = stops.length;
     //const stopMap = Object.fromEntries(createdStops.map(stop => [stop.name, stop.id]))
     const validStopIds = await prisma.stop.findMany({ select: { id: true } });
     const validRouteIds = await prisma.route.findMany({ select: { id: true } });
+    const stopIds = validStopIds.map((stop) => stop.id);
 
     await prisma.routeStop.createMany({
       data:[
-        { routeId: 1, stopId: Math.floor(Math.random() * (179)), order: 2 },
-        { routeId: 1, stopId: Math.floor(Math.random() * (179)), order: 3 },
-        { routeId: 2, stopId: Math.floor(Math.random() * (179)), order: 1 },
-        { routeId: 2, stopId: Math.floor(Math.random() * (179)), order: 2 },
-        { routeId: 2, stopId: Math.floor(Math.random() * (179)), order: 3 },
-        { routeId: 3, stopId: Math.floor(Math.random() * (179)), order: 1 },
-        { routeId: 4, stopId: Math.floor(Math.random() * (179)), order: 1 },
-        { routeId: 4, stopId: Math.floor(Math.random() * (179)), order: 2 },
-        { routeId: 5, stopId: Math.floor(Math.random() * (179)), order: 1 },
-        { routeId: 1, stopId: Math.floor(Math.random() * (179)), order: 1 },
+        { routeId: 1, stopId: stopIds[Math.floor(Math.random() * stopIds.length)] },
+        { routeId: 1, stopId: stopIds[Math.floor(Math.random() * stopIds.length)] },
+        { routeId: 2, stopId: stopIds[Math.floor(Math.random() * stopIds.length)] },
+        { routeId: 2, stopId: stopIds[Math.floor(Math.random() * stopIds.length)] },
+        { routeId: 2, stopId: stopIds[Math.floor(Math.random() * stopIds.length)] },
+        { routeId: 3, stopId: stopIds[Math.floor(Math.random() * stopIds.length)] },
+        { routeId: 4, stopId: stopIds[Math.floor(Math.random() * stopIds.length)] },
+        { routeId: 4, stopId: stopIds[Math.floor(Math.random() * stopIds.length)] },
+        { routeId: 5, stopId: stopIds[Math.floor(Math.random() * stopIds.length)] },
+        { routeId: 1, stopId: stopIds[Math.floor(Math.random() * stopIds.length)] },
       ]
     })
 

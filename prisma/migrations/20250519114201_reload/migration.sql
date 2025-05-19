@@ -22,6 +22,7 @@ CREATE TABLE "Driver" (
     "licenseNumber" TEXT NOT NULL,
     "url_foto_de_perfil" TEXT,
     "experienceTime" INTEGER NOT NULL,
+    "effectiveDate" DATETIME,
     "status" TEXT NOT NULL DEFAULT 'AVAILABLE',
     "currentLatitude" REAL,
     "currentLongitude" REAL,
@@ -44,10 +45,25 @@ CREATE TABLE "Bus" (
     "status" TEXT NOT NULL DEFAULT 'IN_TRANSIT',
     "capacity" INTEGER NOT NULL,
     "currentLoad" INTEGER NOT NULL,
-    "location" TEXT NOT NULL,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
     CONSTRAINT "Bus_driverId_fkey" FOREIGN KEY ("driverId") REFERENCES "Driver" ("id") ON DELETE SET NULL ON UPDATE CASCADE,
     CONSTRAINT "Bus_routeId_fkey" FOREIGN KEY ("routeId") REFERENCES "Route" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+-- CreateTable
+CREATE TABLE "Travel" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "routeId" INTEGER NOT NULL,
+    "driverId" INTEGER NOT NULL,
+    "busId" INTEGER NOT NULL,
+    "profit" DECIMAL NOT NULL,
+    "arrivalTime" DATETIME,
+    "departureTime" DATETIME,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "Travel_routeId_fkey" FOREIGN KEY ("routeId") REFERENCES "Route" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "Travel_driverId_fkey" FOREIGN KEY ("driverId") REFERENCES "Driver" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "Travel_busId_fkey" FOREIGN KEY ("busId") REFERENCES "Bus" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -79,8 +95,18 @@ CREATE TABLE "RouteSchedule" (
 CREATE TABLE "Stop" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "name" TEXT NOT NULL,
+    "latitude" REAL,
+    "longitude" REAL
+);
+
+-- CreateTable
+CREATE TABLE "RouteStop" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "routeId" INTEGER NOT NULL,
-    CONSTRAINT "Stop_routeId_fkey" FOREIGN KEY ("routeId") REFERENCES "Route" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    "stopId" INTEGER NOT NULL,
+    "order" INTEGER,
+    CONSTRAINT "RouteStop_routeId_fkey" FOREIGN KEY ("routeId") REFERENCES "Route" ("id") ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT "RouteStop_stopId_fkey" FOREIGN KEY ("stopId") REFERENCES "Stop" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -133,3 +159,6 @@ CREATE UNIQUE INDEX "Bus_nia_key" ON "Bus"("nia");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Bus_driverId_key" ON "Bus"("driverId");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "RouteStop_routeId_stopId_key" ON "RouteStop"("routeId", "stopId");
