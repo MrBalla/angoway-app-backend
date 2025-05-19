@@ -1,10 +1,13 @@
-import { BadRequestException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpStatus,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { Prisma, Driver } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import * as bcrypt from 'bcrypt';
-import {
-  AssignedBusDriverResponse,
-} from '../types/drivers-with-assigned-buses.response';
+import { AssignedBusDriverResponse } from '../types/drivers-with-assigned-buses.response';
 import { ResponseBody } from 'src/types/response.body';
 @Injectable()
 export class DriverService {
@@ -27,15 +30,16 @@ export class DriverService {
   }
 
   async allRecentDrivers(): Promise<(Driver & { busNia: string })[]> {
-    
-    //fix this
-    const monthAgo = new Date().getMonth() - 1
-    const timestamp = new Date().setMonth(monthAgo)
-    const date = new Date(timestamp) 
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
 
     const drivers = await this.prisma.driver.findMany({
       where: {
-        createdAt: date
+        createdAt: {
+          gte: startOfMonth,
+          lt: startOfNextMonth,
+        },
       },
       include: {
         assignedBus: {
@@ -141,7 +145,7 @@ export class DriverService {
     return { count };
   }
 
-  async countPendingDrivers(): Promise<{ count:number, drivers: Driver[] }> {
+  async countPendingDrivers(): Promise<{ count: number; drivers: Driver[] }> {
     const pendingDrivers = await this.prisma.driver.findMany({
       where: {
         assignedBus: null,
@@ -236,13 +240,16 @@ export class DriverService {
     });
   }
   //atribuir o autocarro ao motorista
-  async assignBus(driverId: number, busNia: string): Promise<ResponseBody | Driver> {
+  async assignBus(
+    driverId: number,
+    busNia: string,
+  ): Promise<ResponseBody | Driver> {
     const driver = await this.driver({ id: driverId });
     if (!driver) {
       return {
         code: HttpStatus.NOT_FOUND,
-        message: 'Motorista não encontrado'
-      }
+        message: 'Motorista não encontrado',
+      };
     }
 
     const bus = await this.prisma.bus.findUnique({
@@ -275,7 +282,7 @@ export class DriverService {
       data: {
         assignedBusNia: busNia,
         status: 'ON_ROUTE',
-      }
+      },
     });
   }
   //remover a atribuição do autocarro ao motorista
