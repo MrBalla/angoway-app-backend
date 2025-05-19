@@ -12,7 +12,7 @@ export class TravelController {
 //  }
 
     @Get('monthly-count')
-    async monthlyCount(): Promise<countMonthly>{
+    async monthlyCount(): Promise<mountMonthly[]>{
         return await this.travelService.monthlyCount();
     }
     
