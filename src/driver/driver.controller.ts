@@ -44,6 +44,16 @@ export class DriverController {
     });
   }
 
+  @Get('/recent')
+  @UseGuards(AuthGuard)
+  async getAllRecentDrivers(): Promise<Omit<Driver, 'password'>[]> {
+    const drivers = await this.driverService.allRecentDrivers();
+    return drivers.map((driver) => {
+      const { password, ...driverWithoutPassword } = driver;
+      return driverWithoutPassword;
+    });
+  }
+
   @Get('count-active')
   @UseGuards(AuthGuard)
   async countActiveDrivers(): Promise<{ count: number }> {
@@ -73,7 +83,7 @@ export class DriverController {
   async getAssignedBusDrivers() {
     const drivers = await this.driverService.assignedBusDriver();
     return drivers.map((driver) => {
-      const {  ...driverWithoutPassword } = driver;
+      const { ...driverWithoutPassword } = driver;
       return driverWithoutPassword;
     });
   }
@@ -118,15 +128,29 @@ export class DriverController {
     });
   }
 
-  @Post('atribuir-autocarro/:id')
+  @Post('assign-bus/:id')
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   async assignBusToDriver(
     @Param('id') id: string,
     @Body('busNia') busNia: string,
-  ): Promise<Driver> {
-    const driver = await this.driverService.assignBus(parseInt(id, 10), busNia);
-    return driver;
+  ): Promise<ResponseBody> {
+    const response = await this.driverService.assignBus(
+      parseInt(id, 10),
+      busNia,
+    );
+
+    if (response) {
+      return {
+        code: HttpStatus.OK,
+        message: 'Autocarro Atribuido com Sucesso !',
+      };
+    }
+
+    return {
+      code: 500,
+      message: 'Não foi possível atribuir o autocarro',
+    };
   }
 
   @Patch('/update/:id')
