@@ -6,15 +6,15 @@ import { countMonthly } from '../types/count-monthly.details'
 export class TravelController {
   constructor(private readonly travelService: TravelService) {}
 
-  @Post()
+  //@Post()
 //  create(@Body() createTravelDto: ) {
 //    return this.travelService.create(createTravelDto);
 //  }
 
-    @Get('monthly-count')
-    async monthlyCount(): Promise<mountMonthly[]>{
-        return await this.travelService.monthlyCount();
-    }
+ @Get('monthly-count')
+ async monthlyCount(): Promise<countMonthly[]>{
+    return await this.travelService.monthlyCount();
+ }
     
 
   @Get()
