@@ -1,21 +1,28 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { TravelService } from './travel.service';
-import { countMonthly } from '../types/count-monthly.details'
+import { countMonthly } from '../types/count-monthly.details';
 
 @Controller('travel')
 export class TravelController {
   constructor(private readonly travelService: TravelService) {}
 
-  @Post()
-//  create(@Body() createTravelDto: ) {
-//    return this.travelService.create(createTravelDto);
-//  }
+  // @Post()
+  //  create(@Body() createTravelDto: ) {
+  //    return this.travelService.create(createTravelDto);
+  //  }
 
-    @Get('monthly-count')
-    async monthlyCount(): Promise<countMonthly>{
-        return await this.travelService.monthlyCount();
-    }
-    
+  @Get('monthly-count')
+  async monthlyCount(): Promise<countMonthly| []> {
+    return await this.travelService.monthlyCount();
+  }
 
   @Get()
   findAll() {
