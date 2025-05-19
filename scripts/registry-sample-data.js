@@ -49,12 +49,12 @@ function generateRandomDate(monthOffset) {
 }
 function createSampleData() {
     return __awaiter(this, void 0, void 0, function () {
-        var password, hashedPassword, users, drivers, orlando, laurentino, routes, routeSchedules, luandaStops, stops, buses, driversIDs, busesIDs, routesIDs, profits, i, monthOffset, createdAt, routeId, driverId, busId, profit, departureTime, arrivalTime, error_1;
+        var password, hashedPassword, users, drivers, orlando, laurentino, routes, routeSchedules, luandaStops, stops, validStopIds, validRouteIds, buses, driversIDs, busesIDs, routesIDs, profits, i, monthOffset, createdAt, routeId, driverId, busId, profit, departureTime, arrivalTime, error_1;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 15, 16, 18]);
+                    _a.trys.push([0, 17, 18, 20]);
                     password = '108449123Dss';
                     return [4 /*yield*/, bcrypt.hash(password, 10)];
                 case 1:
@@ -189,23 +189,27 @@ function createSampleData() {
                     return [4 /*yield*/, prisma.stop.findMany({})];
                 case 8:
                     stops = _a.sent();
-                    //const stopMap = Object.fromEntries(createdStops.map(stop => [stop.name, stop.id]))
+                    return [4 /*yield*/, prisma.stop.findMany({ select: { id: true } })];
+                case 9:
+                    validStopIds = _a.sent();
+                    return [4 /*yield*/, prisma.route.findMany({ select: { id: true } })];
+                case 10:
+                    validRouteIds = _a.sent();
                     return [4 /*yield*/, prisma.routeStop.createMany({
                             data: [
-                                { routeId: 1, stopId: Math.floor(Math.random() * (150)) + 150, order: 2 },
-                                { routeId: 1, stopId: Math.floor(Math.random() * (150)) + 150, order: 3 },
-                                { routeId: 2, stopId: Math.floor(Math.random() * (150)) + 150, order: 1 },
-                                { routeId: 2, stopId: Math.floor(Math.random() * (150)) + 150, order: 2 },
-                                { routeId: 2, stopId: Math.floor(Math.random() * (150)) + 150, order: 3 },
-                                { routeId: 3, stopId: Math.floor(Math.random() * (150)) + 150, order: 1 },
-                                { routeId: 4, stopId: Math.floor(Math.random() * (150)) + 150, order: 1 },
-                                { routeId: 4, stopId: Math.floor(Math.random() * (150)) + 150, order: 2 },
-                                { routeId: 5, stopId: Math.floor(Math.random() * (150)) + 150, order: 1 },
-                                { routeId: 1, stopId: Math.floor(Math.random() * (150)) + 150, order: 1 },
+                                { routeId: 1, stopId: Math.floor(Math.random() * (179)), order: 2 },
+                                { routeId: 1, stopId: Math.floor(Math.random() * (179)), order: 3 },
+                                { routeId: 2, stopId: Math.floor(Math.random() * (179)), order: 1 },
+                                { routeId: 2, stopId: Math.floor(Math.random() * (179)), order: 2 },
+                                { routeId: 2, stopId: Math.floor(Math.random() * (179)), order: 3 },
+                                { routeId: 3, stopId: Math.floor(Math.random() * (179)), order: 1 },
+                                { routeId: 4, stopId: Math.floor(Math.random() * (179)), order: 1 },
+                                { routeId: 4, stopId: Math.floor(Math.random() * (179)), order: 2 },
+                                { routeId: 5, stopId: Math.floor(Math.random() * (179)), order: 1 },
+                                { routeId: 1, stopId: Math.floor(Math.random() * (179)), order: 1 },
                             ]
                         })];
-                case 9:
-                    //const stopMap = Object.fromEntries(createdStops.map(stop => [stop.name, stop.id]))
+                case 11:
                     _a.sent();
                     console.log('Stops created:', stops.length);
                     return [4 /*yield*/, prisma.bus.createMany({
@@ -230,7 +234,7 @@ function createSampleData() {
                                 },
                             ],
                         })];
-                case 10:
+                case 12:
                     buses = _a.sent();
                     console.log('Buses created:', buses.count);
                     driversIDs = [1, 2];
@@ -238,9 +242,9 @@ function createSampleData() {
                     routesIDs = [1, 2, 3, 4, 5];
                     profits = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
                     i = 0;
-                    _a.label = 11;
-                case 11:
-                    if (!(i < 20)) return [3 /*break*/, 14];
+                    _a.label = 13;
+                case 13:
+                    if (!(i < 20)) return [3 /*break*/, 16];
                     monthOffset = Math.floor(i / 5);
                     createdAt = generateRandomDate(monthOffset);
                     routeId = routesIDs[Math.floor(Math.random() * routesIDs.length)];
@@ -262,25 +266,25 @@ function createSampleData() {
                                 createdAt: createdAt
                             },
                         })];
-                case 12:
-                    _a.sent();
-                    _a.label = 13;
-                case 13:
-                    i++;
-                    return [3 /*break*/, 11];
                 case 14:
-                    console.log('Travel created:', this.prisma.travel.count());
-                    console.log('✅ Sample data created successfully.');
-                    return [3 /*break*/, 18];
+                    _a.sent();
+                    _a.label = 15;
                 case 15:
+                    i++;
+                    return [3 /*break*/, 13];
+                case 16:
+                    console.log('Travel created:', 20);
+                    console.log('✅ Sample data created successfully.');
+                    return [3 /*break*/, 20];
+                case 17:
                     error_1 = _a.sent();
                     console.error('❌ Error creating sample data:', error_1);
                     throw error_1;
-                case 16: return [4 /*yield*/, prisma.$disconnect()];
-                case 17:
+                case 18: return [4 /*yield*/, prisma.$disconnect()];
+                case 19:
                     _a.sent();
                     return [7 /*endfinally*/];
-                case 18: return [2 /*return*/];
+                case 20: return [2 /*return*/];
             }
         });
     });

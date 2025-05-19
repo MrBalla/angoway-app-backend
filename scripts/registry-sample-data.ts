@@ -130,19 +130,21 @@ async function createSampleData() {
     const stops = await prisma.stop.findMany({});
 
     //const stopMap = Object.fromEntries(createdStops.map(stop => [stop.name, stop.id]))
+    const validStopIds = await prisma.stop.findMany({ select: { id: true } });
+    const validRouteIds = await prisma.route.findMany({ select: { id: true } });
 
     await prisma.routeStop.createMany({
       data:[
-        { routeId: 1, stopId: Math.floor(Math.random() * (150)) + 150, order: 2 },
-        { routeId: 1, stopId: Math.floor(Math.random() * (150)) + 150, order: 3 },
-        { routeId: 2, stopId: Math.floor(Math.random() * (150)) + 150, order: 1 },
-        { routeId: 2, stopId: Math.floor(Math.random() * (150)) + 150, order: 2 },
-        { routeId: 2, stopId: Math.floor(Math.random() * (150)) + 150, order: 3 },
-        { routeId: 3, stopId: Math.floor(Math.random() * (150)) + 150, order: 1 },
-        { routeId: 4, stopId: Math.floor(Math.random() * (150)) + 150, order: 1 },
-        { routeId: 4, stopId: Math.floor(Math.random() * (150)) + 150, order: 2 },
-        { routeId: 5, stopId: Math.floor(Math.random() * (150)) + 150, order: 1 },
-        { routeId: 1, stopId: Math.floor(Math.random() * (150)) + 150, order: 1 },
+        { routeId: 1, stopId: Math.floor(Math.random() * (179)), order: 2 },
+        { routeId: 1, stopId: Math.floor(Math.random() * (179)), order: 3 },
+        { routeId: 2, stopId: Math.floor(Math.random() * (179)), order: 1 },
+        { routeId: 2, stopId: Math.floor(Math.random() * (179)), order: 2 },
+        { routeId: 2, stopId: Math.floor(Math.random() * (179)), order: 3 },
+        { routeId: 3, stopId: Math.floor(Math.random() * (179)), order: 1 },
+        { routeId: 4, stopId: Math.floor(Math.random() * (179)), order: 1 },
+        { routeId: 4, stopId: Math.floor(Math.random() * (179)), order: 2 },
+        { routeId: 5, stopId: Math.floor(Math.random() * (179)), order: 1 },
+        { routeId: 1, stopId: Math.floor(Math.random() * (179)), order: 1 },
       ]
     })
 
@@ -203,7 +205,7 @@ async function createSampleData() {
         });
     }
 
-    console.log('Travel created:', this.prisma.travel.count());
+    console.log('Travel created:', 20);
     console.log('✅ Sample data created successfully.');
   } catch (error) {
     console.error('❌ Error creating sample data:', error);
