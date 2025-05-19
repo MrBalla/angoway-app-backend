@@ -25,6 +25,30 @@ export class DriverService {
     }));
   }
 
+  async allRecentDrivers(): Promise<(Driver & { busNia: string })[]> {
+    
+    //fix this
+    const monthAgo = new Date().getMonth() - 1
+    const timestamp = new Date().setMonth(monthAgo)
+    const date = new Date(timestamp) 
+
+    const drivers = await this.prisma.driver.findMany({
+      where: {
+        createdAt: date
+      },
+      include: {
+        assignedBus: {
+          select: { nia: true },
+        },
+      },
+    });
+
+    return drivers.map((driver) => ({
+      ...driver,
+      busNia: driver.assignedBus?.nia ?? 'N/A',
+    }));
+  }
+
   async assignedBusDriver(): Promise<AssignedBusDriverResponse[]> {
     const drivers = await this.prisma.driver.findMany({
       where: {

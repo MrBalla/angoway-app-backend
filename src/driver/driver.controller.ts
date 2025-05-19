@@ -44,6 +44,16 @@ export class DriverController {
     });
   }
 
+  @Get('/recent')
+  @UseGuards(AuthGuard)
+  async getAllRecentDrivers(): Promise<Omit<Driver, 'password'>[]> {
+    const drivers = await this.driverService.allRecentDrivers();
+    return drivers.map((driver) => {
+      const { password, ...driverWithoutPassword } = driver;
+      return driverWithoutPassword;
+    });
+  }
+
   @Get('count-active')
   @UseGuards(AuthGuard)
   async countActiveDrivers(): Promise<{ count: number }> {
@@ -73,7 +83,7 @@ export class DriverController {
   async getAssignedBusDrivers() {
     const drivers = await this.driverService.assignedBusDriver();
     return drivers.map((driver) => {
-      const {  ...driverWithoutPassword } = driver;
+      const { ...driverWithoutPassword } = driver;
       return driverWithoutPassword;
     });
   }
