@@ -261,27 +261,33 @@ export class DriverService {
         message: 'Autocarro não encontrado',
       };
     }
-
-    const driverUsingThisBus = await this.prisma.driver.findFirst({
-      where: {
-        assignedBusNia: busNia,
-        id: {
-          not: driverId,
-        },
-      },
-    });
-    if (driverUsingThisBus) {
+    
+    if(bus.driverId && bus.driverId !== driver.id){
       return {
         code: HttpStatus.BAD_REQUEST,
-        message: 'Este autocarro já está atribuído a outro motorista',
+        message: 'Autocarro já atribuído a outro motorista',
       };
     }
 
+    await this.prisma.bus.update({
+      where: { 
+        nia: busNia 
+      },
+      data: { 
+        driverId: driver.id 
+      },
+    });    
+
+  
     return this.prisma.driver.update({
-      where: { id: driverId },
+      where: { 
+        id: driverId 
+      },
       data: {
-        assignedBusNia: busNia,
         status: 'ON_ROUTE',
+      },
+      include: {
+        assignedBus: true,
       },
     });
   }
