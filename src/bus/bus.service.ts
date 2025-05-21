@@ -68,8 +68,15 @@ export class BusService {
     async busesWithRoute() :Promise<Bus[]>{
         return await this.prisma.bus.findMany({
             where: {
-                routeId: { not: undefined },
+            routeId: { not: undefined },
+          },
+          include: {
+            route: {
+              select: {
+                name:true
+              }
             }
+          }
         });
     }
 
