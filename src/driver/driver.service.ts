@@ -278,7 +278,6 @@ export class DriverService {
       },
     });    
 
-  
     return this.prisma.driver.update({
       where: { 
         id: driverId 
@@ -299,16 +298,31 @@ export class DriverService {
       throw new BadRequestException('Motorista não encontrado');
     }
     //Verificar se o motorista está atribuído a um autocarro
-    if (!driver.assignedBusNia) {
+    const bus = await this.prisma.bus.findUnique({
+      where: { 
+        driverId: driverId 
+      },
+    });
+    if (!bus) {
       throw new BadRequestException(
         'Motorista não está atribuído a um autocarro',
       );
     }
     //Remover a atribuição do autocarro e deixar o status como disponível
-    return this.prisma.driver.update({
-      where: { id: driverId },
+    await this.prisma.bus.update({
+      where: {
+        driverId: driverId
+      },
       data: {
-        assignedBusNia: null,
+        driverId: null
+      },
+    });
+    
+    return this.prisma.driver.update({
+      where: { 
+        id: driverId 
+      },
+      data: {
         status: 'AVAILABLE',
       },
     });
