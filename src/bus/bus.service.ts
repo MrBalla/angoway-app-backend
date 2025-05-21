@@ -3,10 +3,12 @@ import {
   Inject,
   NotFoundException,
   BadRequestException,
+  HttpStatus,
 } from '@nestjs/common';
 import { Prisma, Bus } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import { RoutesService } from 'src/routes/routes.service';
+import { ResponseBody } from 'src/types/response.body';
 import { updateBusDetails } from 'src/types/update-bus-details';
 
 @Injectable()
@@ -243,4 +245,42 @@ export class BusService {
       data: { status: currentStatus },
     });
   }
+
+  async assignDriver(
+      busId: number,
+      driverEmail: string,
+  ): Promise<ResponseBody | Bus> {
+    
+    const driver = await this.prisma.driver.findUnique({
+      where: {
+          email: driverEmail
+        }
+    });
+    
+      if (!driver) {
+        return {
+          code: HttpStatus.NOT_FOUND,
+          message: 'Motorista não encontrado',
+        };
+      }
+  
+      const bus = await this.prisma.bus.findUnique({
+        where: { id: busId },
+      });
+    
+      if (!bus) {
+        return {
+          code: HttpStatus.NOT_FOUND,
+          message: 'Autocarro não encontrado',
+        };
+      }
+  
+      return this.prisma.bus.update({
+        where: { id: busId },
+        data: {
+          driverId: driver.id,
+          status: 'IN_TRANSIT',
+        },
+      });
+    }
 }
