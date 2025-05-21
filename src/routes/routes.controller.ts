@@ -1,19 +1,4 @@
-import { Controller, 
-    HttpCode, 
-    Inject, 
-    Post, 
-    HttpStatus, 
-    Body, 
-    Get, 
-    Param, 
-    Put, 
-    NotFoundException,
-    Delete,
-    Patch,
-    UseGuards,
-    Query,
-    BadRequestException
-   } from '@nestjs/common';
+import { Controller, HttpCode, Inject, Post, HttpStatus, Body, Get, Param,  Put,  NotFoundException, Delete, Patch, UseGuards, Query, BadRequestException} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { RoutesService } from './routes.service';
 import { AuthGuard } from 'src/auth/auth.guard';
