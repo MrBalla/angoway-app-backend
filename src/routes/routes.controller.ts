@@ -10,7 +10,9 @@ import { Controller,
     NotFoundException,
     Delete,
     Patch,
-    UseGuards
+    UseGuards,
+    Query,
+    BadRequestException
    } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { RoutesService } from './routes.service';
@@ -123,5 +125,16 @@ async updateStatus(@Param('id') id: string): Promise<ResponseBody> {
       code: HttpStatus.OK
    })
 }
+
+   @Get('suggestions')
+   async suggestRoutes(@Query('lat') lat: string, @Query('lng') lng: string){
+      const userLat = parseFloat(lat);
+      const userLng = parseFloat(lng);
+
+      if(isNaN(userLat) || isNaN(userLng)){
+         throw new BadRequestException('Latitude e longitude Inválidas');
+      }
+      return this.routesService.suggestRoutes(userLat, userLng);
+   }
 
 }
