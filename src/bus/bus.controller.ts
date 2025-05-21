@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Inject,
+  NotFoundException,
   Param,
   Patch,
   Post,
@@ -34,15 +35,17 @@ export class BusController {
     return this.busService.buses();
   }
   @Get('with-route')
-    async busesWithRoute(): Promise<Bus[]>{
-        return this.busService.busesWithRoute();
-    }
+  async busesWithRoute(): Promise<Bus[]> {
+    return this.busService.busesWithRoute();
+  }
 
   @Get('dashboard-details/:driverId')
   @UseGuards(AuthGuard)
-  async getBusDetails(@Param('driverId') driverId: string): Promise<busDetails | null> {
+  async getBusDetails(
+    @Param('driverId') driverId: string,
+  ): Promise<busDetails | null> {
     const bus = await this.busService.provideBusDetails(Number(driverId));
-    if(!bus || !bus.route) {
+    if (!bus || !bus.route) {
       return null;
     }
     const busDetails: busDetails = {
@@ -52,11 +55,11 @@ export class BusController {
       route: {
         destination: bus?.route.destination,
         origin: bus?.route.origin,
-        stops: bus?.route.routeStops.map((rs) =>({
+        stops: bus?.route.routeStops.map((rs) => ({
           id: rs.stop.id,
           name: rs.stop.name,
-          order: rs.order
-        }))
+          order: rs.order,
+        })),
       },
     };
 
@@ -79,6 +82,34 @@ export class BusController {
     );
   }
 
+  @Put('assign-driver/:busId')
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async assignDriverToBus(
+    @Param('busId') busId: string,
+    @Body('driverEmail') driverEmail: string,
+  ): Promise<ResponseBody> {
+
+    const numericId = parseInt(busId, 10);
+    if (isNaN(numericId)) {
+      return { code: HttpStatus.BAD_REQUEST, message: `ID inválido: ${busId}` };
+    }
+
+    const response = await this.busService.assignDriver(numericId, driverEmail);
+
+    if (response) {
+      return {
+        code: HttpStatus.OK,
+        message: 'Motorista Atribuido com Sucesso !',
+      };
+    }
+
+    return {
+      code: 500,
+      message: 'Não foi possível atribuir o Motorista',
+    };
+  }
+
   @Patch('status/:driverId')
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -93,32 +124,35 @@ export class BusController {
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   async changeBusRoute(
-    @Param("driverId") driverId: string,
-    @Param("routeId") newRouteId: string ,
+    @Param('driverId') driverId: string,
+    @Param('routeId') newRouteId: string,
   ): Promise<Bus> {
-    return await this.busService.changeRoute(Number(driverId), Number(newRouteId));
+    return await this.busService.changeRoute(
+      Number(driverId),
+      Number(newRouteId),
+    );
   }
 
-    @Get('count')
-    @UseGuards(AuthGuard)
-    async countBuses(): Promise<{ count: number }>{
-        return await this.busService.countBuses();
-    }
+  @Get('count')
+  @UseGuards(AuthGuard)
+  async countBuses(): Promise<{ count: number }> {
+    return await this.busService.countBuses();
+  }
 
-    @Get('pending')
-    @UseGuards(AuthGuard)
-    async pendingBuses(): Promise<{ count:number, buses: Bus[] }>{
-        return await this.busService.pendingBuses();
-    }
+  @Get('pending')
+  @UseGuards(AuthGuard)
+  async pendingBuses(): Promise<{ count: number; buses: Bus[] }> {
+    return await this.busService.pendingBuses();
+  }
 
-    @Get('count-inactive')
-    @UseGuards(AuthGuard)
-    async countInactiveBuses(): Promise<{ count:number, buses:Bus[] }>{
-        return await this.busService.countInactiveBuses();
-    }
-    @Get('count-active')
-    @UseGuards(AuthGuard)
-    async countAvailableBuses(): Promise<{ count:number, buses: Bus[] }>{
-        return await this.busService.countAvailableBuses();
-    }
+  @Get('count-inactive')
+  @UseGuards(AuthGuard)
+  async countInactiveBuses(): Promise<{ count: number; buses: Bus[] }> {
+    return await this.busService.countInactiveBuses();
+  }
+  @Get('count-active')
+  @UseGuards(AuthGuard)
+  async countAvailableBuses(): Promise<{ count: number; buses: Bus[] }> {
+    return await this.busService.countAvailableBuses();
+  }
 }
