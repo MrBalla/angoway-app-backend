@@ -234,18 +234,24 @@ export class BusService {
   async changeStatus(
     driverId: number,
     data: Prisma.BusUpdateInput,
-  ): Promise<Bus> {
+  ): Promise<ResponseBody | Bus> {
     const bus = await this.prisma.bus.findFirst({ where: { driverId } });
 
     if (!bus) {
-      throw new NotFoundException('Este autocarro não existe');
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: 'Autocarro não encontrado',
+      };
     }
 
-    if (!data.status) throw new BadRequestException('Informe o novo status');
+    if (!data.status) {
+      return {
+        code: HttpStatus.BAD_REQUEST,
+        message: 'Informe o novo status',
+      };
+    }
 
     const currentStatus = bus.status === data.status ? bus.status : data.status;
-
-    // if(!currentStatus) throw new BadRequestException("isso")
 
     return this.prisma.bus.update({
       where: { id: bus.id },
