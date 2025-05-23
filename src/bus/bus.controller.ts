@@ -116,8 +116,20 @@ export class BusController {
   async changeBusStatus(
     @Param('driverId') driverId: string,
     @Body() body: Prisma.BusUpdateInput,
-  ): Promise<Bus> {
-    return await this.busService.changeStatus(Number(driverId), body);
+  ): Promise<ResponseBody> {
+    const response = await this.busService.changeStatus(Number(driverId), body);
+
+    if (response) {
+      return {
+        code: HttpStatus.OK,
+        message: 'Status do autocarro alterado',
+      };
+    }
+
+    return {
+      code: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Não foi possível alterar o status do autocarro',
+    };
   }
 
   @Patch('route/:driverId/:routeId')
