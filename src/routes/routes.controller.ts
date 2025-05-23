@@ -1,17 +1,4 @@
-import { Controller, 
-    HttpCode, 
-    Inject, 
-    Post, 
-    HttpStatus, 
-    Body, 
-    Get, 
-    Param, 
-    Put, 
-    NotFoundException,
-    Delete,
-    Patch,
-    UseGuards
-   } from '@nestjs/common';
+import { Controller, HttpCode, Inject, Post, HttpStatus, Body, Get, Param,  Put,  NotFoundException, Delete, Patch, UseGuards, Query, BadRequestException} from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { RoutesService } from './routes.service';
 import { AuthGuard } from 'src/auth/auth.guard';
@@ -145,17 +132,29 @@ export class RoutesController {
     return await this.routesService.findByStops(stopName);
   }
 
-  //Só para Admnistrador, entt têm que se por auth para Admin
-  @Patch('updateStatus/:id')
-  @HttpCode(HttpStatus.OK)
-  async updateStatus(@Param('id') id: string): Promise<ResponseBody> {
-    const update = await this.routesService.toggleStatus(Number(id));
-    if (!update) {
-      throw new NotFoundException(`Rota com ID ${id} não encontrada`);
-    }
-    return {
-      message: 'Status da Rota atualizado com Sucesso!',
-      code: HttpStatus.OK,
-    };
-  }
+//Só para Admnistrador, entt têm que se por auth para Admin
+@Patch('updateStatus/:id')
+@HttpCode(HttpStatus.OK)
+async updateStatus(@Param('id') id: string): Promise<ResponseBody> {
+   const update = await this.routesService.toggleStatus(Number(id));
+   if (!update) {
+       throw new NotFoundException(`Rota com ID ${id} não encontrada`);
+   }
+   return({
+      message: "Status da Rota atualizado com Sucesso!",
+      code: HttpStatus.OK
+   })
+}
+
+   @Get('suggestions')
+   async suggestRoutes(@Query('lat') lat: string, @Query('lng') lng: string){
+      const userLat = parseFloat(lat);
+      const userLng = parseFloat(lng);
+
+      if(isNaN(userLat) || isNaN(userLng)){
+         throw new BadRequestException('Latitude e longitude Inválidas');
+      }
+      return this.routesService.suggestRoutes(userLat, userLng);
+   }
+
 }

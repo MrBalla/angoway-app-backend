@@ -40,7 +40,6 @@ model Driver {
   isVerified         Boolean        @default(false)
   rating             Float          @default(0)
   assignedBus        Bus?           @relation("DriverBus")
-  assignedBusNia     String?
   travels            Travel[]
   feedbacks          Feedback[]
   notifications      Notification[]
