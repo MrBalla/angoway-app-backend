@@ -19,7 +19,6 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { busDetails } from 'src/types/bus.details';
 import { updateBusDetails } from 'src/types/update-bus-details';
 import { ResponseBody } from 'src/types/response.body';
-import { identity } from 'rxjs';
 
 @Controller('bus')
 export class BusController {
@@ -27,8 +26,12 @@ export class BusController {
   private readonly busService: BusService;
 
   @Post('')
-  async createBus(@Body() busData: Prisma.BusCreateInput): Promise<void> {
+  async createBus(@Body() busData: Prisma.BusCreateInput): Promise<ResponseBody> {
     await this.busService.createBus(busData);
+    return {
+      message: 'Autocarro criado com Sucesso !',
+      code: HttpStatus.CREATED,
+    };
   }
   @Get('')
   async buses(): Promise<Bus[]> {
