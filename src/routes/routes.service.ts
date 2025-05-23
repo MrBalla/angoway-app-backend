@@ -88,7 +88,7 @@ async suggestRoutes(userLat: number, userLng: number, currentTime: Date = new Da
     const { name, origin, destination, stopIdsInOrder } = data;
 
     const route = await this.prisma.route.create({
-      data: { name, origin,destination },
+      data: { name, origin, destination },
     });
 
     await this.prisma.routeStop.createMany({
@@ -97,7 +97,7 @@ async suggestRoutes(userLat: number, userLng: number, currentTime: Date = new Da
         stopId,
         order: index + 1,
       })),
-    })
+    });
     return route;
   }
 
@@ -110,17 +110,17 @@ async suggestRoutes(userLat: number, userLng: number, currentTime: Date = new Da
         },
       },
       include: {
-        routeStops:{
-          select:{
+        routeStops: {
+          select: {
             stop: {
               select: {
                 id: true,
                 name: true,
               },
             },
-          }
-        },  
-        buses: true,   
+          },
+        },
+        buses: true,
       },
     });
   }
@@ -150,10 +150,10 @@ async suggestRoutes(userLat: number, userLng: number, currentTime: Date = new Da
     return await this.prisma.route.findUnique({
       where: { id },
       include: {
-        routeStops:{
-          select:{
-            stop:{
-              select:{
+        routeStops: {
+          select: {
+            stop: {
+              select: {
                 id: true,
                 name: true,
               },
@@ -249,5 +249,50 @@ async suggestRoutes(userLat: number, userLng: number, currentTime: Date = new Da
     return await this.prisma.route.delete({
       where: { id },
     });
+  }
+
+  async countRoutes(): Promise<{ count: number }> {
+    const count = await this.prisma.route.count();
+    return { count };
+  }
+
+  async countActiveRoutes(): Promise<{ count: number }> {
+    const count = await this.prisma.route.count({
+      where: {
+        status: "active"
+      },
+    });
+    return { count };
+  }
+
+  async countInactiveRoutes(): Promise<{ count: number }> {
+    const count = await this.prisma.route.count({
+      where: {
+        status: 'inactive',
+      },
+    });
+    return { count };
+  }
+
+  async getDetailedRoutes() {
+    return await this.prisma.route.findMany({
+      include: {
+        schedules: {
+          select: {
+            departureTime: true,
+            arrivalTime:true,
+          }
+        },
+        routeStops: {
+          select: {
+            stop: {
+              select: {
+                name:true
+              }
+            }
+          }
+        }
+      }
+    })
   }
 }
