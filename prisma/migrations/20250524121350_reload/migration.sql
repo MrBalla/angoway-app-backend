@@ -30,7 +30,6 @@ CREATE TABLE "Driver" (
     "deviceToken" TEXT,
     "isVerified" BOOLEAN NOT NULL DEFAULT false,
     "rating" REAL NOT NULL DEFAULT 0,
-    "assignedBusNia" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL
 );
