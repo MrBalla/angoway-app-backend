@@ -1,5 +1,5 @@
 import { Controller, HttpCode, Inject, Post, HttpStatus, Body, Get, Param,  Put,  NotFoundException, Delete, Patch, UseGuards, Query, BadRequestException} from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, RouteSchedule } from '@prisma/client';
 import { RoutesService } from './routes.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { RouteResponse } from 'src/types/routes.response';
@@ -66,7 +66,9 @@ export class RoutesController {
 
   @UseGuards(AuthGuard)
   @Get('/search/:query')
-  async findByName(@Param('query') query: string): Promise<RouteResponse[] | ResponseBody> {
+  async findByName(
+    @Param('query') query: string,
+  ): Promise<RouteResponse[] | ResponseBody> {
     const routes = await this.routesService.findByName(query);
     if (!routes || routes.length === 0) {
       return {
@@ -83,6 +85,25 @@ export class RoutesController {
         name: rs.stop.name,
       })),
     }));
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/schedules/search/:query')
+  async findScheduleByRouteName(
+    @Param('query') query: string,
+  ) {
+    
+    const schedules = await this.routesService.findScheduleByRoute(query);
+    
+    if (!schedules || schedules.length === 0) {
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: `Nenhum Resultado `,
+      };
+    }
+
+    return schedules
+    
   }
 
   //Só para Admnistrador, entt têm que se por auth para Admin

@@ -25,6 +25,21 @@ export class RoutesService {
     return R * c;
   }
 
+  async findScheduleByRoute(name:string) {
+    return await this.prisma.route.findMany({
+      where: {
+        name:{ contains: name}
+      },
+      include: {
+        schedules: {
+          omit: {
+            routeId:true
+          }
+        }
+      }
+    })
+  }
+
 async suggestRoutes(userLat: number, userLng: number, currentTime: Date = new Date()) {
   const allStops = await this.prisma.stop.findMany();
   const nearbyStops = allStops.filter(stop => {
