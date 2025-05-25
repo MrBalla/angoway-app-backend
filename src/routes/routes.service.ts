@@ -171,6 +171,7 @@ async suggestRoutes(userLat: number, userLng: number, currentTime: Date = new Da
         OR: [
           { origin: { contains: query /*mode: 'insensitive'*/ } },
           { destination: { contains: query /*mode: 'insensitive' */ } },
+          { name: { contains: query } }
           // por estar a usar o SQLITE nessa fase não posso usar o mode,
           // mas quando migrar para o postregress ou sei lá resolvo isso
         ],
