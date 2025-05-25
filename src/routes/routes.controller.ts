@@ -66,10 +66,13 @@ export class RoutesController {
 
   @UseGuards(AuthGuard)
   @Get('/search/:query')
-  async findByName(@Param('query') query: string): Promise<RouteResponse[]> {
+  async findByName(@Param('query') query: string): Promise<RouteResponse[] | ResponseBody> {
     const routes = await this.routesService.findByName(query);
     if (!routes || routes.length === 0) {
-      throw new NotFoundException(`Rota ${query} não encontrada `);
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: `Nenhum Resultado `,
+      };
     }
     return routes.map((route) => ({
       id: route.id,
