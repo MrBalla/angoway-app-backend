@@ -53,6 +53,17 @@ export class RoutesController {
     return await this.routesService.getDetailedRoutes();
   }
 
+  @Get('suggestions')
+  async suggestRoutes(@Query('lat') lat: string, @Query('lng') lng: string) {
+    const userLat = parseFloat(lat);
+    const userLng = parseFloat(lng);
+
+    if (isNaN(userLat) || isNaN(userLng)) {
+      throw new BadRequestException('Latitude e longitude Inválidas');
+    }
+    return this.routesService.suggestRoutes(userLat, userLng);
+  }
+
   @UseGuards(AuthGuard)
   @Get('/search/:query')
   async findByName(@Param('query') query: string): Promise<RouteResponse[]> {
@@ -132,29 +143,17 @@ export class RoutesController {
     return await this.routesService.findByStops(stopName);
   }
 
-//Só para Admnistrador, entt têm que se por auth para Admin
-@Patch('updateStatus/:id')
-@HttpCode(HttpStatus.OK)
-async updateStatus(@Param('id') id: string): Promise<ResponseBody> {
-   const update = await this.routesService.toggleStatus(Number(id));
-   if (!update) {
-       throw new NotFoundException(`Rota com ID ${id} não encontrada`);
-   }
-   return({
-      message: "Status da Rota atualizado com Sucesso!",
-      code: HttpStatus.OK
-   })
-}
-
-   @Get('suggestions')
-   async suggestRoutes(@Query('lat') lat: string, @Query('lng') lng: string){
-      const userLat = parseFloat(lat);
-      const userLng = parseFloat(lng);
-
-      if(isNaN(userLat) || isNaN(userLng)){
-         throw new BadRequestException('Latitude e longitude Inválidas');
-      }
-      return this.routesService.suggestRoutes(userLat, userLng);
-   }
-
+  //Só para Admnistrador, entt têm que se por auth para Admin
+  @Patch('updateStatus/:id')
+  @HttpCode(HttpStatus.OK)
+  async updateStatus(@Param('id') id: string): Promise<ResponseBody> {
+    const update = await this.routesService.toggleStatus(Number(id));
+    if (!update) {
+      throw new NotFoundException(`Rota com ID ${id} não encontrada`);
+    }
+    return {
+      message: 'Status da Rota atualizado com Sucesso!',
+      code: HttpStatus.OK,
+    };
+  }
 }
