@@ -1,5 +1,5 @@
 import { Controller, HttpCode, Inject, Post, HttpStatus, Body, Get, Param,  Put,  NotFoundException, Delete, Patch, UseGuards, Query, BadRequestException} from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, RouteSchedule } from '@prisma/client';
 import { RoutesService } from './routes.service';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { RouteResponse } from 'src/types/routes.response';
@@ -53,12 +53,28 @@ export class RoutesController {
     return await this.routesService.getDetailedRoutes();
   }
 
+  @Get('suggestions')
+  async suggestRoutes(@Query('lat') lat: string, @Query('lng') lng: string) {
+    const userLat = parseFloat(lat);
+    const userLng = parseFloat(lng);
+
+    if (isNaN(userLat) || isNaN(userLng)) {
+      throw new BadRequestException('Latitude e longitude Inválidas');
+    }
+    return this.routesService.suggestRoutes(userLat, userLng);
+  }
+
   @UseGuards(AuthGuard)
   @Get('/search/:query')
-  async findByName(@Param('query') query: string): Promise<RouteResponse[]> {
+  async findByName(
+    @Param('query') query: string,
+  ): Promise<RouteResponse[] | ResponseBody> {
     const routes = await this.routesService.findByName(query);
     if (!routes || routes.length === 0) {
-      throw new NotFoundException(`Rota ${query} não encontrada `);
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: `Nenhum Resultado `,
+      };
     }
     return routes.map((route) => ({
       id: route.id,
@@ -69,6 +85,25 @@ export class RoutesController {
         name: rs.stop.name,
       })),
     }));
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/schedules/search/:query')
+  async findScheduleByRouteName(
+    @Param('query') query: string,
+  ) {
+    
+    const schedules = await this.routesService.findScheduleByRoute(query);
+    
+    if (!schedules || schedules.length === 0) {
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: `Nenhum Resultado `,
+      };
+    }
+
+    return schedules
+    
   }
 
   //Só para Admnistrador, entt têm que se por auth para Admin
@@ -132,29 +167,17 @@ export class RoutesController {
     return await this.routesService.findByStops(stopName);
   }
 
-//Só para Admnistrador, entt têm que se por auth para Admin
-@Patch('updateStatus/:id')
-@HttpCode(HttpStatus.OK)
-async updateStatus(@Param('id') id: string): Promise<ResponseBody> {
-   const update = await this.routesService.toggleStatus(Number(id));
-   if (!update) {
-       throw new NotFoundException(`Rota com ID ${id} não encontrada`);
-   }
-   return({
-      message: "Status da Rota atualizado com Sucesso!",
-      code: HttpStatus.OK
-   })
-}
-
-   @Get('suggestions')
-   async suggestRoutes(@Query('lat') lat: string, @Query('lng') lng: string){
-      const userLat = parseFloat(lat);
-      const userLng = parseFloat(lng);
-
-      if(isNaN(userLat) || isNaN(userLng)){
-         throw new BadRequestException('Latitude e longitude Inválidas');
-      }
-      return this.routesService.suggestRoutes(userLat, userLng);
-   }
-
+  //Só para Admnistrador, entt têm que se por auth para Admin
+  @Patch('updateStatus/:id')
+  @HttpCode(HttpStatus.OK)
+  async updateStatus(@Param('id') id: string): Promise<ResponseBody> {
+    const update = await this.routesService.toggleStatus(Number(id));
+    if (!update) {
+      throw new NotFoundException(`Rota com ID ${id} não encontrada`);
+    }
+    return {
+      message: 'Status da Rota atualizado com Sucesso!',
+      code: HttpStatus.OK,
+    };
+  }
 }
