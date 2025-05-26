@@ -18,132 +18,129 @@ export class BusService {
 
   constructor(private readonly routesService: RoutesService) {}
 
-  async generateNIA(): Promise<string>{
+  async generateNIA(): Promise<string> {
     const lastBus = await this.prisma.bus.findFirst({
       orderBy: { updatedAt: 'desc' },
-      select: { nia: true }
-    })
+      select: { nia: true },
+    });
     let number = 1;
-    if (lastBus?.nia){
+    if (lastBus?.nia) {
       const match = lastBus.nia.match(/BUS-(\d+)/);
-      if(match)
-        number = parseInt(match[1])+1;
+      if (match) number = parseInt(match[1]) + 1;
     }
-    return `BUS-${String(number).padStart(4, '0')}`
+    return `BUS-${String(number).padStart(4, '0')}`;
   }
   //Criando o Bus
   async createBus(data: Prisma.BusCreateInput) {
     const nia = await this.generateNIA();
 
-    return this.prisma.bus.create({ 
-      data:{
-        ... data,
+    return this.prisma.bus.create({
+      data: {
+        ...data,
         nia,
-      } 
+      },
     });
   }
 
   //Mostrar os Buses
-    async buses(): Promise<Bus[]> {
-        const buses = await this.prisma.bus.findMany({
-            include: {
-                driver: {
-                    select: { name: true,}
-                },
-                route: {
-                    select: { name: true,}
-                }
-            }
-        });
-        return buses.map((bus) => {
-            const { route, driver, ...simplifiedBus } = bus;
-            return {
-                ...simplifiedBus,
-                driverName: driver?.name || 'N/A',
-                route: route?.name || 'N/A'    
-            }
-        });
-    }
+  async buses(): Promise<Bus[]> {
+    const buses = await this.prisma.bus.findMany({
+      include: {
+        driver: {
+          select: { name: true },
+        },
+        route: {
+          select: { name: true },
+        },
+      },
+    });
+    return buses.map((bus) => {
+      const { route, driver, ...simplifiedBus } = bus;
+      return {
+        ...simplifiedBus,
+        driverName: driver?.name || 'N/A',
+        route: route?.name || 'N/A',
+      };
+    });
+  }
 
-    async busesWithRoute() :Promise<Bus[]>{
-        return await this.prisma.bus.findMany({
-            where: {
-            routeId: { not: undefined },
+  async busesWithRoute(): Promise<Bus[]> {
+    return await this.prisma.bus.findMany({
+      where: {
+        routeId: { not: undefined },
+      },
+      include: {
+        route: {
+          select: {
+            name: true,
           },
-          include: {
-            route: {
-              select: {
-                name:true
-              }
-            }
-          }
-        });
-    }
+        },
+      },
+    });
+  }
 
-    async countBuses(): Promise<{ count:number }> {
-        const count = await this.prisma.bus.count();
-        return { count };
-    }
+  async countBuses(): Promise<{ count: number }> {
+    const count = await this.prisma.bus.count();
+    return { count };
+  }
 
+  async pendingBuses(): Promise<{ count: number; buses: Bus[] }> {
+    const pendingBuses = await this.prisma.bus.findMany({
+      where: {
+        driverId: null,
+      },
+    });
+    const countPending = pendingBuses.length;
+    return {
+      count: countPending,
+      buses: pendingBuses,
+    };
+  }
 
-    async pendingBuses(): Promise<{ count:number, buses: Bus[] }>{
-        const pendingBuses = await this.prisma.bus.findMany({
-            where: {
-                driverId: null,
-            }
-        });
-        const countPending = pendingBuses.length;
-        return {
-            count: countPending,
-            buses: pendingBuses,
-        };
-    }
+  async countAvailableBuses(): Promise<{ count: number; buses: Bus[] }> {
+    const availableBuses = await this.prisma.bus.findMany({
+      where: {
+        driver: {
+          status: {
+            in: ['AVAILABLE', 'IN_TRANSIT'],
+          },
+        },
+        AND: {
+          status: {
+            in: ['IN_TRANSIT'],
+          },
+        },
+      },
+    });
+    return {
+      count: availableBuses.length,
+      buses: availableBuses,
+    };
+  }
 
-    async countAvailableBuses(): Promise<{ count: number, buses: Bus[] }>{
-        const availableBuses = await this.prisma.bus.findMany({
-            where: {
-                driver: {
-                    status: {
-                        in: ['AVAILABLE', 'IN_TRANSIT']    
-                    }
+  async countInactiveBuses(): Promise<{ count: number; buses: Bus[] }> {
+    const inactiveBuses = await this.prisma.bus.findMany({
+      where: {
+        OR: [
+          {
+            driver: {
+              status: 'OFFLINE',
             },
-            AND: {
-              status: {
-                in: ['IN_TRANSIT']
-              }
-            }
-            }
-        });
-        return {
-            count: availableBuses.length,
-            buses: availableBuses
-        }
-    }
+          },
+          {
+            status: {
+              in: ['ACCIDENT', 'BREAKDOWN'],
+            },
+          },
+        ],
+      },
+    });
 
-    async countInactiveBuses(): Promise<{ count: number, buses: Bus[] }>{
-        const inactiveBuses = await this.prisma.bus.findMany({
-            where: {
-                OR: [
-                    {
-                        driver: {
-                            status: 'OFFLINE'
-                        }
-                    },
-                    {
-                        status: {
-                            in: ['ACCIDENT', 'BREAKDOWN']
-                        }
-                    }
-                ]
-            }
-        });
-        
-        return {
-            count: inactiveBuses.length,
-            buses: inactiveBuses
-        }
-
-    }
+    return {
+      count: inactiveBuses.length,
+      buses: inactiveBuses,
+    };
+  }
 
   async findBusById(id: number): Promise<Bus | null> {
     return this.prisma.bus.findUnique({
@@ -167,11 +164,21 @@ export class BusService {
           select: {
             name: true,
             url_foto_de_perfil: true,
+            experienceTime: true,
           },
         },
         route: {
           select: {
             name: true,
+            routeStops: {
+              select: {
+                stop: {
+                  select: {
+                    name: true,
+                  },
+                },
+              },
+            },
           },
         },
       },
@@ -186,22 +193,22 @@ export class BusService {
   }
 
   async provideBusDetails(driverId: number) {
-  return await this.prisma.bus.findFirst({
-    where: { driverId },
-    include: {
-      route: {
-        include: {
-          routeStops: {
-            include: {
-              stop: true,
+    return await this.prisma.bus.findFirst({
+      where: { driverId },
+      include: {
+        route: {
+          include: {
+            routeStops: {
+              include: {
+                stop: true,
+              },
+              orderBy: { order: 'asc' },
             },
-            orderBy: { order: 'asc' }
-          }
-        }
-      }
-    }
-  });
-}
+          },
+        },
+      },
+    });
+  }
 
   // driver app (manage screen)
   async updateBusDetails(id: number, data: updateBusDetails) {
@@ -219,7 +226,7 @@ export class BusService {
       throw new BadRequestException('Informe a nova rota');
     }
 
-    const newRoute = await this.routesService.findOne(newRouteId)
+    const newRoute = await this.routesService.findOne(newRouteId);
 
     if (!newRoute) {
       throw new NotFoundException('Esta rota não existe !');
@@ -260,40 +267,39 @@ export class BusService {
   }
 
   async assignDriver(
-      busId: number,
-      driverEmail: string,
+    busId: number,
+    driverEmail: string,
   ): Promise<ResponseBody | Bus> {
-    
     const driver = await this.prisma.driver.findUnique({
       where: {
-          email: driverEmail
-        }
+        email: driverEmail,
+      },
     });
-    
-      if (!driver) {
-        return {
-          code: HttpStatus.NOT_FOUND,
-          message: 'Motorista não encontrado',
-        };
-      }
-  
-      const bus = await this.prisma.bus.findUnique({
-        where: { id: busId },
-      });
-    
-      if (!bus) {
-        return {
-          code: HttpStatus.NOT_FOUND,
-          message: 'Autocarro não encontrado',
-        };
-      }
-  
-      return this.prisma.bus.update({
-        where: { id: busId },
-        data: {
-          driverId: driver.id,
-          status: 'IN_TRANSIT',
-        },
-      });
+
+    if (!driver) {
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: 'Motorista não encontrado',
+      };
     }
+
+    const bus = await this.prisma.bus.findUnique({
+      where: { id: busId },
+    });
+
+    if (!bus) {
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: 'Autocarro não encontrado',
+      };
+    }
+
+    return this.prisma.bus.update({
+      where: { id: busId },
+      data: {
+        driverId: driver.id,
+        status: 'IN_TRANSIT',
+      },
+    });
+  }
 }
