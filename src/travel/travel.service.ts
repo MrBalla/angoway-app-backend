@@ -3,6 +3,7 @@ import { Prisma, Travel } from '@prisma/client';
 import { Workbook } from 'exceljs';
 import { PrismaService } from 'src/database/prisma.service';
 import { countMonthly } from 'src/types/count-monthly.details';
+import { weeklyEarnings } from '../types/weekly-earnings.response';
 
 @Injectable()
 export class TravelService {
@@ -19,18 +20,17 @@ export class TravelService {
     let months: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
     const currentYear = year || new Date().getFullYear();
 
-    // Use Promise.all para aguardar todas as promessas de contagem de viagens
     const monthlyCount = await Promise.all(
       months.map(async (month) => {
         const travelCount = await this.prisma.travel.count({
           where: {
             createdAt: {
-              gte: new Date(currentYear, month - 1, 1), // Primeira data do mês
-              lt: new Date(currentYear, month, 0), // Última data do mês
+              gte: new Date(currentYear, month - 1, 1), 
+              lt: new Date(currentYear, month, 0),
             },
           },
         });
-        return travelCount; // Retorna a contagem do mês
+        return travelCount;
       }),
     );
 
@@ -80,6 +80,43 @@ export class TravelService {
     return buffer;
   }
 
+  async weeklyEarnings(startDate?: Date,): Promise<weeklyEarnings> {
+			const today = new Date();
+            const sevenDaysAgo = new Date(today.getDate() - 7);
+            sevenDaysAgo.setHours(0, 0, 0, 0);
+            const yesterday = new Date(today.getDate() - 1);
+            yesterday.setHours(23, 59, 59, 999);
+			
+			let firstDate: Date;
+            let lastDate: Date;
+			
+			if (startDate){
+				
+			}
+			
+            if (query.startDay) {
+                const queryStartDate = new Date(query.startDate);
+                queryStartDay.setHours(0, 0, 0, 0);
+                const queryEndDate = new Date(queryStartDate);
+                queryEndDate.setDate(queryEndDate.getDate() + 6)
+                queryEndDate.setHours(23, 59, 59, 999);
+                useDefault = queryStartDay >= sevenDaysAgo;
+                firstDate = (useDefault) ? sevenDaysAgo : queryStartDate;
+                lastDate = (useDefault) ? yesterdat : queryEndDate;
+            } else if (query.week) {
+                const [year, weekNum] = query.week.split('-').map(Number);
+                weekDate = this.getStartOfWeek(year, weekNum);
+                if (weekDate < sevenDaysAgo){
+                    firstDate = weekDate;
+                    lastDate = 
+                }
+                
+                endDate = new Date(startDate.getTime() + 6 * 24 * 60 * 60 * 1000);  
+            } else {
+                endDate = new Date();
+                startDate = new Date(endDate.getTime() - 6 * 24 * 60 * 60 * 1000);
+            }
+  }
   findAll() {
     return `This action returns all travel`;
   }

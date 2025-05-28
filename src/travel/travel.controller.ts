@@ -8,6 +8,7 @@ import {
   Delete,
   Res,
   Query,
+  BadRequestException,
 } from '@nestjs/common';
 import { TravelService } from './travel.service';
 import { countMonthly } from '../types/count-monthly.details';
@@ -43,40 +44,23 @@ export class TravelController {
     res.send(buffer);
   }
     @Get('weekly-earnings')
-    async weeklyEarnings(@Query(new ZodValidationPipe(OpcionalWeeklyEarningsSchema)) query: OpcionalWeeklyEarningsQuery)
+    async weeklyEarnings(@Query() query: OpcionalWeeklyEarningsQuery)
         : Promise<weeklyEarnings> {
-            const sevenDaysAgo = new Date(new Date() - 6);
-            const yesterday = new Date(new Date() - 1);
-            yesterday.setHours(23, 59, 59, 999);
-            
-            let firstDate: Date;
-            let lastDate: Date;
-            let useDefault = false;
-
-            if (query.startDay) {
-                const queryStartDay = new Date(query.startDate);
-                queryStartDay.setHours(0, 0, 0, 0);
-                useDefault = queryStartDay >= sevenDaysAgo;
-                firstDate = (useDefault) ? sevenDaysAgp : queryStartDate;
-                lastDate = (userDefault)
-                if (queryStartDay >= sevenDaysAgo) {
-                    useDefault = true;
-                    startDate = sevenDaysAgo;
-                    endDate = yesterDay(); 
-                } else {
-                    startDate
-                }
-            } else if (query.week) {
-      // Semana específica (YYYY-WW)
-      const [year, weekNum] = query.week.split('-').map(Number);
-      startDate = this.getStartOfWeek(year, weekNum);
-      endDate = new Date(startDate.getTime() + 6 * 24 * 60 * 60 * 1000);
-      
-    } else {
-      // Padrão: últimos 7 dias a partir de hoje
-      endDate = new Date();
-      startDate = new Date(endDate.getTime() - 6 * 24 * 60 * 60 * 1000);
-    }
+			const safeQuery = OpcionalWeekEarningsSchema.safeParse(query);
+			
+			
+			if (!safeQuery.success) throw new BadRequestException(data.error);
+			const { startDay, week } = safeQuery.data;
+			
+			if (startDay)
+				await this.travelService.weeklyEarnings(new Date(startDay));
+			else if (week) {
+				const [year, weekNum] = query.week.split('-').map(Number);
+                weekDate = this.getStartDateOfWeek(year, weekNum);
+				await this.travelService.weeklyEarnings(weekDate);
+			}
+			else
+				await this.travelService.weeklyEarnings();
     }
 
     @Get('weekly-earnings/driver')
