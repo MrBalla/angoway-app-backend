@@ -80,10 +80,10 @@ export class TravelService {
     return buffer;
   }
 
-  async weeklyEarnings(startDate?: Date,): Promise<weeklyEarnings> {
+  async weeklyEarnings(startDate?: Date,): Promise</*weeklyEarnings*/any> {
 		const today = new Date();
         const sevenDaysAgo = new Date(today.getDate() - 7);
-        evenDaysAgo.setHours(0, 0, 0, 0);
+        sevenDaysAgo.setHours(0, 0, 0, 0);
 		const yesterday = new Date(today.getDate() - 1);
 		yesterday.setHours(23, 59, 59, 999);
 			
@@ -98,6 +98,7 @@ export class TravelService {
 				lastDate = endDate;
 			}
 		}
+		return { firstDate, lastDate };
   }
   
   asy

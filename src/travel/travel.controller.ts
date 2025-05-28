@@ -10,6 +10,7 @@ import {
   Query,
   BadRequestException,
 } from '@nestjs/common';
+import { setISOWeek, setYear, startOfISOWeek } from 'date-fns';
 import { TravelService } from './travel.service';
 import { countMonthly } from '../types/count-monthly.details';
 import { weeklyEarnings } from '../types/weekly-earnings.response';
@@ -45,20 +46,22 @@ export class TravelController {
   }
     @Get('weekly-earnings')
     async weeklyEarnings(@Query() query: OpcionalWeeklyEarningsQuery)
-        : Promise<weeklyEarnings> {
-			const safeQuery = OpcionalWeekEarningsSchema.safeParse(query);
+        : Promise<any/*weeklyEarnings*/> {
+			const safeQuery = OpcionalWeeklyEarningsSchema.safeParse(query);
 			
-			if (!safeQuery.success) throw new BadRequestException(data.error);
+			if (!safeQuery.success) throw new BadRequestException(safeQuery.error);
 			const { startDay, week } = safeQuery.data;
 			
 			if (startDay)
-				await this.travelService.weeklyEarnings(new Date(startDay));
+				return await this.travelService.weeklyEarnings(new Date(startDay));
 			else if (week) {
-                const weekDate = getStartDateOfWeek(week);
-				await this.travelService.weeklyEarnings(weekDate);
+				const [year, weekNum] = week.split('-').map(Number);
+				const yearDate = setYear(new Date(year, 6, 1), year);
+                const weekDate = setISOWeek(yearDate, weekNum);
+				return await this.travelService.weeklyEarnings(startOfISOWeek(weekDate));
 			}
 			else
-				await this.travelService.weeklyEarnings();
+				return await this.travelService.weeklyEarnings();
     }
 
     @Get('weekly-earnings/driver')

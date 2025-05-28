@@ -5,8 +5,8 @@ export const OpcionalWeeklyEarningsSchema = z.object({
   week: z.string().regex(/^\d{4}-\d{2}$/, 'A semana especifica deve estar indicada neste formto: yyyy-ww').optional(),
 })
 //nao pode receber as duas querys opcionais ao mesmo tempo, ou um ou outro
-.refine((data) => !(data.startDate && data.week), {
+.refine((data) => !(data.startDay && data.week), {
   message: 'Nao pode especificar dia do incio da semana (startDay) e a semana (week) ao mesmo tempo',
 });
 
-export type OpcionalWeeklyEarningsQuery = z.infer<typeof WeeklyEarningsSchema>;
+export type OpcionalWeeklyEarningsQuery = z.infer<typeof OpcionalWeeklyEarningsSchema>;
