@@ -44,8 +44,11 @@ export class TravelController {
 
     res.send(buffer);
   }
-    @Get('weekly-earnings')
-    async weeklyEarnings(@Query() query: OpcionalWeeklyEarningsQuery)
+    @Get(['weekly-earnings' ,'weekly-earnings/:filter'])
+    async weeklyEarnings(
+        @Query() query: OpcionalWeeklyEarningsQuery,
+        @Param('filter') filter?: 'driver' | 'route',
+    )
         : Promise<any/*weeklyEarnings*/> {
 			const safeQuery = OpcionalWeeklyEarningsSchema.safeParse(query);
 			
@@ -63,18 +66,6 @@ export class TravelController {
 			else
 				return await this.travelService.weeklyEarnings();
     }
-
-    @Get('weekly-earnings/driver')
-    async weeklyEarningsByDriver() {
-
-    }
-
-    @Get('weekly-earnings/route')
-    async weeklyEarningsByRoute() {
-
-    }
-
-    @Get('weekly-')
 
 
   @Get()

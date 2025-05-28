@@ -104,7 +104,6 @@ export class TravelService {
 		return { firstDate, lastDate };
   }
   
-  asy
   findAll() {
     return `This action returns all travel`;
   }
