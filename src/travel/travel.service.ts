@@ -82,9 +82,11 @@ export class TravelService {
 
   async weeklyEarnings(startDate?: Date,): Promise</*weeklyEarnings*/any> {
 		const today = new Date();
-        const sevenDaysAgo = new Date(today.getDate() - 7);
+        const sevenDaysAgo = new Date(today);
+        sevenDaysAgo.setDate(today.getDate() - 7);
         sevenDaysAgo.setHours(0, 0, 0, 0);
-		const yesterday = new Date(today.getDate() - 1);
+		const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
 		yesterday.setHours(23, 59, 59, 999);
 			
 		let firstDate = sevenDaysAgo;
