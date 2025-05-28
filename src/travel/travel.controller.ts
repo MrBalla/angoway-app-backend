@@ -11,7 +11,7 @@ import {
 } from '@nestjs/common';
 import { TravelService } from './travel.service';
 import { countMonthly } from '../types/count-monthly.details';
-import { weeklyEarnings } from '../type/weekly-earning.response'
+import { weeklyEarnings } from '../types/weekly-earnings.response';
 
 @Controller('travel')
 export class TravelController {
@@ -46,6 +46,9 @@ export class TravelController {
         @Query('date') date?: string, // YYYY-MM-DD
         @Query('week') week?: string, // YYYY-WW
     ): Promise<weeklyEarnings> {
+        if (date) {
+            
+        }
         const dayWeek: string;
     }
 
