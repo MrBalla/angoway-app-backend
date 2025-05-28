@@ -93,7 +93,8 @@ export class TravelService {
 		let lastDate = yesterday;
 			
 		if (startDate){
-			const endDate = new Date(startDate.getDate() + 6);
+			const endDate = new Date(startDate);
+            endDate.setDate(startDate.getDate() + 6);``
 			endDate.setHours(23, 59, 59, 999);
 			if (startDate < sevenDaysAgo){
 				firstDate = startDate;
