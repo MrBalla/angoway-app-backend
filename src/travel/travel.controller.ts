@@ -51,10 +51,7 @@ export class TravelController {
     )
         : Promise<any/*weeklyEarnings*/> {
 			const safeQuery = OpcionalWeeklyEarningsSchema.safeParse(query);
-            if (filter)
-    			console.log(filter);
-            else
-                console.log(filter);
+            
 			if (!safeQuery.success) throw new BadRequestException(safeQuery.error);
 			const { startDay, week } = safeQuery.data;
 			
