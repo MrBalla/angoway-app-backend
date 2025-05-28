@@ -81,42 +81,26 @@ export class TravelService {
   }
 
   async weeklyEarnings(startDate?: Date,): Promise<weeklyEarnings> {
-			const today = new Date();
-            const sevenDaysAgo = new Date(today.getDate() - 7);
-            sevenDaysAgo.setHours(0, 0, 0, 0);
-            const yesterday = new Date(today.getDate() - 1);
-            yesterday.setHours(23, 59, 59, 999);
+		const today = new Date();
+        const sevenDaysAgo = new Date(today.getDate() - 7);
+        evenDaysAgo.setHours(0, 0, 0, 0);
+		const yesterday = new Date(today.getDate() - 1);
+		yesterday.setHours(23, 59, 59, 999);
 			
-			let firstDate: Date;
-            let lastDate: Date;
+		let firstDate = sevenDaysAgo;
+		let lastDate = yesterday;
 			
-			if (startDate){
-				
+		if (startDate){
+			const endDate = new Date(startDate.getDate() + 6);
+			endDate.setHours(23, 59, 59, 999);
+			if (startDate < sevenDaysAgo){
+				firstDate = startDate;
+				lastDate = endDate;
 			}
-			
-            if (query.startDay) {
-                const queryStartDate = new Date(query.startDate);
-                queryStartDay.setHours(0, 0, 0, 0);
-                const queryEndDate = new Date(queryStartDate);
-                queryEndDate.setDate(queryEndDate.getDate() + 6)
-                queryEndDate.setHours(23, 59, 59, 999);
-                useDefault = queryStartDay >= sevenDaysAgo;
-                firstDate = (useDefault) ? sevenDaysAgo : queryStartDate;
-                lastDate = (useDefault) ? yesterdat : queryEndDate;
-            } else if (query.week) {
-                const [year, weekNum] = query.week.split('-').map(Number);
-                weekDate = this.getStartOfWeek(year, weekNum);
-                if (weekDate < sevenDaysAgo){
-                    firstDate = weekDate;
-                    lastDate = 
-                }
-                
-                endDate = new Date(startDate.getTime() + 6 * 24 * 60 * 60 * 1000);  
-            } else {
-                endDate = new Date();
-                startDate = new Date(endDate.getTime() - 6 * 24 * 60 * 60 * 1000);
-            }
+		}
   }
+  
+  asy
   findAll() {
     return `This action returns all travel`;
   }

@@ -48,15 +48,13 @@ export class TravelController {
         : Promise<weeklyEarnings> {
 			const safeQuery = OpcionalWeekEarningsSchema.safeParse(query);
 			
-			
 			if (!safeQuery.success) throw new BadRequestException(data.error);
 			const { startDay, week } = safeQuery.data;
 			
 			if (startDay)
 				await this.travelService.weeklyEarnings(new Date(startDay));
 			else if (week) {
-				const [year, weekNum] = query.week.split('-').map(Number);
-                weekDate = this.getStartDateOfWeek(year, weekNum);
+                const weekDate = getStartDateOfWeek(week);
 				await this.travelService.weeklyEarnings(weekDate);
 			}
 			else
