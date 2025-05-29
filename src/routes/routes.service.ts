@@ -1,7 +1,8 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { Prisma, Route } from '@prisma/client';
+import { Injectable, Inject, HttpStatus } from '@nestjs/common';
+import { Prisma, Route, RouteSchedule } from '@prisma/client';
 import { addMinutes } from 'date-fns';
 import { PrismaService } from 'src/database/prisma.service';
+import { ResponseBody } from 'src/types/response.body';
 
 @Injectable()
 export class RoutesService {
@@ -309,7 +310,7 @@ export class RoutesService {
         include: {
           schedules: {
             select: {
-              id:true,
+              id: true,
               departureTime: true,
               arrivalTime: true,
             },
@@ -338,5 +339,51 @@ export class RoutesService {
           },
         })),
       );
+  }
+
+  async assignSchedule(
+    scheduleId: number,
+    routeId: number,
+  ) {
+
+
+    const route = await this.prisma.route.findUnique({
+      where: {
+        id: routeId,
+      },
+    });
+
+    if (!route) {
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: 'Rota não encontrada',
+      };
+    }
+
+    const schedule = await this.prisma.routeSchedule.findUnique({
+      where: { id: scheduleId },
+    });
+
+    if (!schedule) {
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: 'Horário não encontrado',
+      };
+    }
+
+    // Update the schedule to connect it to the route without removing it from others
+    await this.prisma.routeSchedule.update({
+      where: { id: scheduleId },
+      data: {
+        routeId: routeId,
+      },
+    });
+
+    return this.prisma.route.findUnique({
+      where: { id: routeId },
+      include: {
+        schedules: true,
+      },
+    });
   }
 }
