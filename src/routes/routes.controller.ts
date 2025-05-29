@@ -1,4 +1,20 @@
-import { Controller, HttpCode, Inject, Post, HttpStatus, Body, Get, Param,  Put,  NotFoundException, Delete, Patch, UseGuards, Query, BadRequestException} from '@nestjs/common';
+import {
+  Controller,
+  HttpCode,
+  Inject,
+  Post,
+  HttpStatus,
+  Body,
+  Get,
+  Param,
+  Put,
+  NotFoundException,
+  Delete,
+  Patch,
+  UseGuards,
+  Query,
+  BadRequestException,
+} from '@nestjs/common';
 import { Prisma, RouteSchedule } from '@prisma/client';
 import { RoutesService } from './routes.service';
 import { AuthGuard } from 'src/auth/auth.guard';
@@ -26,6 +42,49 @@ export class RoutesController {
     return {
       message: 'Rota criada com Sucesso!',
       code: HttpStatus.CREATED,
+    };
+  }
+
+  @Put('assign-schedule/:scheduleId')
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async assignDriverToBus(
+    @Param('scheduleId') scheduleId: string,
+    @Body('routeId') routeId: string,
+  ): Promise<ResponseBody> {
+
+    
+    const scheduleNumericId = parseInt(scheduleId, 10);
+    if (isNaN(scheduleNumericId)) {
+      return {
+        code: HttpStatus.BAD_REQUEST,
+        message: `ID inválido: ${scheduleId}`,
+      };
+    }
+
+    const routeNumericId = parseInt(routeId, 10);
+    if (isNaN(routeNumericId)) {
+      return {
+        code: HttpStatus.BAD_REQUEST,
+        message: `ID inválido: ${routeId}`,
+      };
+    }
+
+    const response = await this.routesService.assignSchedule(
+      scheduleNumericId,
+      routeNumericId,
+    );
+
+    if (response) {
+      return {
+        code: HttpStatus.OK,
+        message: 'Horário Atribuido com Sucesso !',
+      };
+    }
+
+    return {
+      code: 500,
+      message: 'Não foi possível atribuir o Horário',
     };
   }
 
@@ -89,12 +148,9 @@ export class RoutesController {
 
   @UseGuards(AuthGuard)
   @Get('/schedules/search/:query')
-  async findScheduleByRouteName(
-    @Param('query') query: string,
-  ) {
-    
+  async findScheduleByRouteName(@Param('query') query: string) {
     const schedules = await this.routesService.findScheduleByRoute(query);
-    
+
     if (!schedules || schedules.length === 0) {
       return {
         code: HttpStatus.NOT_FOUND,
@@ -102,8 +158,7 @@ export class RoutesController {
       };
     }
 
-    return schedules
-    
+    return schedules;
   }
 
   //Só para Admnistrador, entt têm que se por auth para Admin
