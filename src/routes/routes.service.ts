@@ -309,6 +309,7 @@ export class RoutesService {
         include: {
           schedules: {
             select: {
+              id:true,
               departureTime: true,
               arrivalTime: true,
             },
