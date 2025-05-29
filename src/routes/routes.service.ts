@@ -101,7 +101,11 @@ export class RoutesService {
             },
           },
         },
-        buses: true,
+        buses: {
+          where: {
+            status: "IN_TRANSIT"
+          }
+        },
       },
     });
 
