@@ -84,8 +84,12 @@ model Travel{
 model Route {
   id          Int             @id @default(autoincrement())
   name        String
-  origin      String
-  destination String
+  origin             String
+  originLatitude     Float?
+  originLongitude    Float?
+  destination        String
+  destinationLatitude Float?
+  destinationLongitude Float?
   status      String          @default("active")
 
   buses       Bus[]
