@@ -101,19 +101,50 @@ async function createSampleData() {
       ],
     });
     const routeSchedules = await prisma.routeSchedule.createMany({
-        data: [
-            {
-                routeId: 1,
-                departureLocation: 'Luanda Central',
-                arrivalLocation: 'Cacuaco Park',
-                departureTime: '2025-12-05T14:30:00Z',
-                arrivalTime: '2025-12-05T15:25:00Z',
-                estimatedDurationMinutes: 55,
-                status: 'active',
-                distanceKM: 56.00
-            }
-        ]  
+      data: [
+        {
+          routeId: 1,
+          departureLocation: 'Luanda Central',
+          arrivalLocation: 'Cacuaco Park',
+          departureTime: '2025-12-05T14:30:00Z',
+          arrivalTime: '2025-12-05T15:25:00Z',
+          estimatedDurationMinutes: 55,
+          status: 'active',
+          distanceKM: 56.0,
+        },
+        {
+          routeId: 2,
+          departureLocation: 'Luanda Sul',
+          arrivalLocation: 'Cacuaco',
+          departureTime: '2025-12-05T14:30:00Z',
+          arrivalTime: '2025-12-05T15:25:00Z',
+          estimatedDurationMinutes: 55,
+          status: 'active',
+          distanceKM: 56.0,
+        },
+        {
+          routeId: 3,
+          departureLocation: 'Luanda Central',
+          arrivalLocation: 'Talatona',
+          departureTime: '2025-12-05T07:30:00Z',
+          arrivalTime: '2025-12-05T07:55:00Z',
+          estimatedDurationMinutes: 25,
+          status: 'active',
+          distanceKM: 54.0,
+        },
+        {
+          routeId: 4,
+          departureLocation: 'Luanda Central',
+          arrivalLocation: 'Kilamba',
+          departureTime: '2025-12-05T14:30:00Z',
+          arrivalTime: '2025-12-05T15:25:00Z',
+          estimatedDurationMinutes: 55,
+          status: 'active',
+          distanceKM: 56.0,
+        },
+      ],
     });
+    console.log("Schedules Created", routeSchedules.count)
     console.log('Routes created:', routes.count);
     
     const luandaStops = luandaStopsJson.elements;
