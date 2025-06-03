@@ -101,6 +101,12 @@ export class TravelService {
 				lastDate = endDate;
 			}
 		}
+
+  weekTravels = await prisma.findMany({
+     where: { 
+       creat_at 
+     },
+  });
 		return { firstDate, lastDate };
   }
   
