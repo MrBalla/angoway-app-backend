@@ -7,9 +7,17 @@ import {
   Param,
   Delete,
   Res,
+  Query,
+  BadRequestException,
 } from '@nestjs/common';
+import { setISOWeek, setYear, startOfISOWeek } from 'date-fns';
 import { TravelService } from './travel.service';
 import { countMonthly } from '../types/count-monthly.details';
+import { weeklyEarnings } from '../types/weekly-earnings.response';
+import {
+  OpcionalWeeklyEarningsSchema,
+  OpcionalWeeklyEarningsQuery,
+} from '../common/schemas/opcional-query-weekly-earnings.schema';
 
 @Controller('travel')
 export class TravelController {
@@ -38,6 +46,30 @@ export class TravelController {
     });
 
     res.send(buffer);
+  }
+  @Get(['weekly-earnings', 'weekly-earnings/:filter'])
+  async weeklyEarnings(
+    @Query() query: OpcionalWeeklyEarningsQuery,
+    @Param('filter') filter?: 'driver' | 'route',
+  ): Promise<any> {
+    const safeQuery = OpcionalWeeklyEarningsSchema.safeParse(query);
+
+    if (filter) console.log(filter);
+    else console.log(filter);
+
+    if (!safeQuery.success) throw new BadRequestException(safeQuery.error);
+
+    const { startDay, week } = safeQuery.data;
+
+    if (startDay) {
+      return await this.travelService.weeklyEarnings(new Date(startDay));
+    } else if (week) {
+      const [year, weekNum] = week.split('-').map(Number);
+      const yearDate = setYear(new Date(year, 6, 1), year);
+      const weekDate = setISOWeek(yearDate, weekNum);
+      return await this.travelService.weeklyEarnings(startOfISOWeek(weekDate));
+    }
+    return await this.travelService.weeklyEarnings();
   }
 
   @Get()

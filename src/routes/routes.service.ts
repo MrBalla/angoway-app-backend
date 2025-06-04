@@ -1,7 +1,8 @@
-import { Injectable, Inject } from '@nestjs/common';
-import { Prisma, Route } from '@prisma/client';
+import { Injectable, Inject, HttpStatus } from '@nestjs/common';
+import { Prisma, Route, RouteSchedule } from '@prisma/client';
 import { addMinutes } from 'date-fns';
 import { PrismaService } from 'src/database/prisma.service';
+import { ResponseBody } from 'src/types/response.body';
 
 @Injectable()
 export class RoutesService {
@@ -10,89 +11,106 @@ export class RoutesService {
 
   private readonly DISTANCE_THRESHOLD_KM = 1.5;
 
-  private calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  private calculateDistance(
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number,
+  ): number {
     const R = 6371; // Raio da Terra em quilômetros
     const dLat = (lat2 - lat1) * (Math.PI / 180);
     const dLon = (lon2 - lon1) * (Math.PI / 180);
-    const a = 
+    const a =
       Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(lat1 * Math.PI / 180) *
-      Math.cos(lat2 * Math.PI / 180) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
-    
+      Math.cos((lat1 * Math.PI) / 180) *
+        Math.cos((lat2 * Math.PI) / 180) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     return R * c;
   }
 
-  async findScheduleByRoute(name:string) {
+  async findScheduleByRoute(name: string) {
     return await this.prisma.route.findMany({
       where: {
-        name:{ contains: name}
+        name: { contains: name },
       },
       include: {
         schedules: {
           omit: {
-            routeId:true
-          }
-        }
-      }
-    })
-  }
-
-async suggestRoutes(userLat: number, userLng: number, currentTime: Date = new Date()) {
-  const allStops = await this.prisma.stop.findMany();
-  const nearbyStops = allStops.filter(stop => {
-    if(stop.latitude === null || stop.longitude === null) return false;
-
-    
-    const distance = this.calculateDistance(userLat, userLng, stop.latitude, stop.longitude);
-    return distance <= this.DISTANCE_THRESHOLD_KM;
-  });
-
-  if (nearbyStops.length === 0) return [];
-
-  const stopIds = nearbyStops.map(stop => stop.id);
-
-  const upcomingRoutes = await this.prisma.route.findMany({
-    where: {
-      status: 'active',
-      schedules: {
-        some: {
-          departureTime: {
-            gte: currentTime,
-            lte: addMinutes(currentTime, 30),
-          }
-        }
-      },
-      routeStops: {
-        some: {
-          stopId: {
-            in: stopIds,
+            routeId: true,
           },
         },
       },
-    },
-    include: {
-      routeStops: {
-        select: {
-          order: true,
-          stop: {
-            select: {
-              id: true,
-              name: true,
-              latitude: true,
-              longitude: true,
+    });
+  }
+
+  async suggestRoutes(
+    userLat: number,
+    userLng: number,
+    currentTime: Date = new Date(),
+  ) {
+    const allStops = await this.prisma.stop.findMany();
+    const nearbyStops = allStops.filter((stop) => {
+      if (stop.latitude === null || stop.longitude === null) return false;
+
+      const distance = this.calculateDistance(
+        userLat,
+        userLng,
+        stop.latitude,
+        stop.longitude,
+      );
+      return distance <= this.DISTANCE_THRESHOLD_KM;
+    });
+
+    if (nearbyStops.length === 0) return [];
+
+    const stopIds = nearbyStops.map((stop) => stop.id);
+
+    const upcomingRoutes = await this.prisma.route.findMany({
+      where: {
+        status: 'active',
+        schedules: {
+          some: {
+            departureTime: {
+              gte: currentTime,
+              lte: addMinutes(currentTime, 30),
+            },
+          },
+        },
+        routeStops: {
+          some: {
+            stopId: {
+              in: stopIds,
             },
           },
         },
       },
-      buses: true,
-    }
-  });
+      include: {
+        routeStops: {
+          select: {
+            order: true,
+            stop: {
+              select: {
+                id: true,
+                name: true,
+                latitude: true,
+                longitude: true,
+              },
+            },
+          },
+        },
+        buses: {
+          where: {
+            status: "IN_TRANSIT"
+          }
+        },
+      },
+    });
 
-  return upcomingRoutes;
-}
+    return upcomingRoutes;
+  }
 
   async createRouteWithStops(data: {
     name: string;
@@ -186,7 +204,7 @@ async suggestRoutes(userLat: number, userLng: number, currentTime: Date = new Da
         OR: [
           { origin: { contains: query /*mode: 'insensitive'*/ } },
           { destination: { contains: query /*mode: 'insensitive' */ } },
-          { name: { contains: query } }
+          { name: { contains: query } },
           // por estar a usar o SQLITE nessa fase não posso usar o mode,
           // mas quando migrar para o postregress ou sei lá resolvo isso
         ],
@@ -275,7 +293,7 @@ async suggestRoutes(userLat: number, userLng: number, currentTime: Date = new Da
   async countActiveRoutes(): Promise<{ count: number }> {
     const count = await this.prisma.route.count({
       where: {
-        status: "active"
+        status: 'active',
       },
     });
     return { count };
@@ -291,24 +309,85 @@ async suggestRoutes(userLat: number, userLng: number, currentTime: Date = new Da
   }
 
   async getDetailedRoutes() {
-    return await this.prisma.route.findMany({
-      include: {
-        schedules: {
-          select: {
-            departureTime: true,
-            arrivalTime:true,
-          }
+    return await this.prisma.route
+      .findMany({
+        include: {
+          schedules: {
+            select: {
+              id: true,
+              departureTime: true,
+              arrivalTime: true,
+            },
+          },
+          routeStops: {
+            select: {
+              stop: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
         },
-        routeStops: {
-          select: {
-            stop: {
-              select: {
-                name:true
-              }
-            }
-          }
-        }
-      }
-    })
+      })
+      .then((routes) =>
+        routes.map((route) => ({
+          ...route,
+          origin: {
+            lat: route.originLatitude,
+            lng: route.originLongitude,
+          },
+          destination: {
+            lat: route.destinationLatitude,
+            lng: route.destinationLongitude,
+          },
+        })),
+      );
+  }
+
+  async assignSchedule(
+    scheduleId: number,
+    routeId: number,
+  ) {
+
+
+    const route = await this.prisma.route.findUnique({
+      where: {
+        id: routeId,
+      },
+    });
+
+    if (!route) {
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: 'Rota não encontrada',
+      };
+    }
+
+    const schedule = await this.prisma.routeSchedule.findUnique({
+      where: { id: scheduleId },
+    });
+
+    if (!schedule) {
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: 'Horário não encontrado',
+      };
+    }
+
+    // Update the schedule to connect it to the route without removing it from others
+    await this.prisma.routeSchedule.update({
+      where: { id: scheduleId },
+      data: {
+        routeId: routeId,
+      },
+    });
+
+    return this.prisma.route.findUnique({
+      where: { id: routeId },
+      include: {
+        schedules: true,
+      },
+    });
   }
 }

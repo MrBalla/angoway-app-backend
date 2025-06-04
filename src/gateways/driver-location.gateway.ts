@@ -75,6 +75,9 @@ export class DriverLocationGateway
       lng: location.lng,
       status: busDetails.status,
       driverPhoto: busDetails.driver?.url_foto_de_perfil,
+      driverExperience: busDetails.driver?.experienceTime,
+      seats: busDetails.currentLoad,
+      stops: busDetails.route.routeStops
     };
 
     client.broadcast.emit('driverLocationUpdate', busData);
