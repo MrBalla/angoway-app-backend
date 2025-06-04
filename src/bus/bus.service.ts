@@ -174,6 +174,7 @@ export class BusService {
               select: {
                 stop: {
                   select: {
+                    id: true,
                     name: true,
                   },
                 },
