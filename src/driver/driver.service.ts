@@ -284,6 +284,7 @@ export class DriverService {
       },
       data: {
         status: 'ON_ROUTE',
+        effectiveDate: new Date()
       },
       include: {
         assignedBus: true,

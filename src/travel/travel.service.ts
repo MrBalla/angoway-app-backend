@@ -35,18 +35,18 @@ export class TravelService {
     );
 
     return [
-      { month: 'jan', travels: monthlyCount[0] },
-      { month: 'feb', travels: monthlyCount[1] },
-      { month: 'mar', travels: monthlyCount[2] },
-      { month: 'apr', travels: monthlyCount[3] },
-      { month: 'may', travels: monthlyCount[4] },
-      { month: 'jun', travels: monthlyCount[5] },
-      { month: 'jul', travels: monthlyCount[6] },
-      { month: 'aug', travels: monthlyCount[7] },
-      { month: 'sept', travels: monthlyCount[8] },
-      { month: 'oct', travels: monthlyCount[9] },
-      { month: 'nov', travels: monthlyCount[10] },
-      { month: 'dec', travels: monthlyCount[11] },
+      { month: 'janeiro', travels: monthlyCount[0] },
+      { month: 'fevereiro', travels: monthlyCount[1] },
+      { month: 'março', travels: monthlyCount[2] },
+      { month: 'abril', travels: monthlyCount[3] },
+      { month: 'maio', travels: monthlyCount[4] },
+      { month: 'junho', travels: monthlyCount[5] },
+      { month: 'julho', travels: monthlyCount[6] },
+      { month: 'agosto', travels: monthlyCount[7] },
+      { month: 'setembro', travels: monthlyCount[8] },
+      { month: 'outubro', travels: monthlyCount[9] },
+      { month: 'novembro', travels: monthlyCount[10] },
+      { month: 'dezembro', travels: monthlyCount[11] },
     ];
   }
 
