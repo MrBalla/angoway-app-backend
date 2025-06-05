@@ -58,6 +58,10 @@ export class BusController {
       route: {
         destination: bus?.route.destination,
         origin: bus?.route.origin,
+        originLat: bus.route.originLatitude,
+        originLng: bus.route.originLongitude,
+        destinationLat: bus.route.destinationLatitude,
+        destinationLng: bus.route.destinationLongitude,
         stops: bus?.route.routeStops.map((rs) => ({
           id: rs.stop.id,
           name: rs.stop.name,
