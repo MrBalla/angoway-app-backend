@@ -85,28 +85,11 @@ export class TravelService {
     return buffer;
   }
 
-  async weeklyEarnings(startDate?: Date,): Promise<weeklyEarnings[]> 
+  async weeklyEarnings(startDate?: Date): Promise<weeklyEarnings[]> 
   {
-		const today = new Date();
-        const sevenDaysAgo = new Date(today);
-        sevenDaysAgo.setDate(today.getDate() - 7);
-        sevenDaysAgo.setHours(0, 0, 0, 0);
-		const yesterday = new Date(today);
-        yesterday.setDate(today.getDate() - 1);
-		yesterday.setHours(23, 59, 59, 999);
-			
-		let firstDate = sevenDaysAgo;
-		let lastDate = yesterday;
-			
-		if (startDate){
-			const endDate = new Date(startDate);
-            endDate.setDate(startDate.getDate() + 6);
-			endDate.setHours(23, 59, 59, 999);
-			if (startDate < sevenDaysAgo){
-				firstDate = startDate;
-				lastDate = endDate;
-			}
-		}
+		const firstDayOfTheWeek = startDate || null;
+		const { firstDate, lastDate } = this.getRangeDate(firstDayOfTheWeek);
+		
         const weekProfit = await this.prisma.travel.findMany({
             where: {
                 createdAt: {
@@ -151,6 +134,32 @@ export class TravelService {
             return dataA.getTime() - dataB.getTime();
         });
   }
+  
+  
+  getRangeDate(startDate: Date | null): { firstDate: Date, lastDate: Date}
+  {
+	const today = new Date();
+	const sevenDaysAgo = new Date(today);
+	sevenDaysAgo.setDate(today.getDate() - 7);
+	sevenDaysAgo.setHours(0, 0, 0, 0);
+	const yesterday = new Date(today);
+	yesterday.setDate(today.getDate() - 1);
+	yesterday.setHours(23, 59, 59, 999);
+		
+	let firstDate = sevenDaysAgo;
+	let lastDate = yesterday;
+		
+	if (startDate !== null){
+		const endDate = new Date(startDate);
+		endDate.setDate(startDate.getDate() + 6);
+		endDate.setHours(23, 59, 59, 999);
+		if (startDate < sevenDaysAgo){
+			firstDate = startDate;
+			lastDate = endDate;
+		}
+	}
+	return {firstDate, lastDate};
+}
   
   findAll() {
     return `This action returns all travel`;
