@@ -80,7 +80,7 @@ export class TravelService {
     return buffer;
   }
 
-  async weeklyEarnings(startDate?: Date,): Promise</*weeklyEarnings*/any> {
+  async weeklyEarnings(startDate?: Date,): Promise<weeklyEarnings> {
 		const today = new Date();
         const sevenDaysAgo = new Date(today);
         sevenDaysAgo.setDate(today.getDate() - 7);
@@ -101,12 +101,25 @@ export class TravelService {
 				lastDate = endDate;
 			}
 		}
-
-  weekTravels = await prisma.findMany({
-     where: { 
-       creat_at 
-     },
-  });
+        const weekProfit = await prisma.user.agrgegate({
+            where: {
+                createdAt: {
+                    gte: firstDate,
+                    lte: lastDate,
+                }
+            },
+            select: {
+                profit: true,
+                createdAt: true
+            }
+        });
+        const result = {};
+        weekProfit.forEach(week =< {
+            const day = week.createdAt.getDate();
+            if (!result[day])
+                result[day] = 0
+            result += week.profit
+        });
 		return { firstDate, lastDate };
   }
   
