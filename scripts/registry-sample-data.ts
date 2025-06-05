@@ -181,8 +181,8 @@ async function createSampleData() {
     const profits = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
 
     for (let i = 0; i < 20; i++) {
-        const monthOffset = Math.floor(i / 5); // Definindo qual mês será para o Travel (5 registros por mês)
-        const createdAt = generateRandomDate(monthOffset); // Gerando a data para o 'createdAt'
+        const monthOffset = Math.floor(i / 10);
+        const createdAt = generateRandomDate(monthOffset); 
 
         const routeId = routesIDs[Math.floor(Math.random() * routesIDs.length)];
         const driverId = driversIDs[Math.floor(Math.random() * driversIDs.length)];
