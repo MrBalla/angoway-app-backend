@@ -1,9 +1,14 @@
-import { Injectable, Inject } from '@nestjs/common';
+vimport { Injectable, Inject } from '@nestjs/common';
 import { Prisma, Travel } from '@prisma/client';
 import { Workbook } from 'exceljs';
 import { PrismaService } from 'src/database/prisma.service';
 import { countMonthly } from 'src/types/count-monthly.details';
 import { weeklyEarnings } from '../types/weekly-earnings.response';
+
+interface ProfitRecord {
+  profit: number;
+  createdAt: Date;
+}
 
 @Injectable()
 export class TravelService {
@@ -35,18 +40,18 @@ export class TravelService {
     );
 
     return [
-      { month: 'janeiro', travels: monthlyCount[0] },
-      { month: 'fevereiro', travels: monthlyCount[1] },
-      { month: 'março', travels: monthlyCount[2] },
-      { month: 'abril', travels: monthlyCount[3] },
-      { month: 'maio', travels: monthlyCount[4] },
-      { month: 'junho', travels: monthlyCount[5] },
-      { month: 'julho', travels: monthlyCount[6] },
-      { month: 'agosto', travels: monthlyCount[7] },
-      { month: 'setembro', travels: monthlyCount[8] },
-      { month: 'outubro', travels: monthlyCount[9] },
-      { month: 'novembro', travels: monthlyCount[10] },
-      { month: 'dezembro', travels: monthlyCount[11] },
+      { month: 'jan', travels: monthlyCount[0] },
+      { month: 'feb', travels: monthlyCount[1] },
+      { month: 'mar', travels: monthlyCount[2] },
+      { month: 'apr', travels: monthlyCount[3] },
+      { month: 'may', travels: monthlyCount[4] },
+      { month: 'jun', travels: monthlyCount[5] },
+      { month: 'jul', travels: monthlyCount[6] },
+      { month: 'aug', travels: monthlyCount[7] },
+      { month: 'sept', travels: monthlyCount[8] },
+      { month: 'oct', travels: monthlyCount[9] },
+      { month: 'nov', travels: monthlyCount[10] },
+      { month: 'dec', travels: monthlyCount[11] },
     ];
   }
 
@@ -80,7 +85,8 @@ export class TravelService {
     return buffer;
   }
 
-  async weeklyEarnings(startDate?: Date,): Promise</*weeklyEarnings*/any> {
+  async weeklyEarnings(startDate?: Date,): Promise<weeklyEarnings> 
+  {
 		const today = new Date();
         const sevenDaysAgo = new Date(today);
         sevenDaysAgo.setDate(today.getDate() - 7);
@@ -101,7 +107,49 @@ export class TravelService {
 				lastDate = endDate;
 			}
 		}
-		return { firstDate, lastDate };
+        const weekProfit = await prisma.user.agrgegate({
+            where: {
+                createdAt: {
+                    gte: firstDate,
+                    lte: lastDate,
+                }
+            },
+            select: {
+                profit: true,
+                createdAt: true
+            }
+        });
+        const profitGroup : Record<number, ProfitRecord> = {};
+        weekProfit.forEach((week: ProfitRecord) => {
+            const day = week.createdAt.getDate();
+            if (!result[day])
+            {
+                profitGroup[day] = {
+                    profit: 0
+                    createdAt = week.createdAt
+                };
+            };
+            profitGroup[day].profit += week.profit;
+        });
+
+        const result :weeklyEarnings[] = [];
+        for (let i = 0; i < 7; i++)
+        {
+            const actualDay = new Date(firstDate);
+            actualDay.setDate((new Date(firstDate)).getDate() + i);
+
+            const bill = profitGroup[actualDay.getDate()]?.profit || 0;
+            result.push({
+                day: actualDay.getDate(),
+                bill
+            });
+        }
+
+		return result.sort((aDate, bDate) => ({
+            const dataA = profitGroup[aDate.day]?.createdAt || new Date(firstDate);
+            const dataB = profitGroup[bDate.day]?.createdAt || new Date(firstDate);
+            return dataA.getTime() - dataB.getTime();
+        });
   }
   
   findAll() {
