@@ -15,6 +15,7 @@ import { Prisma } from '@prisma/client';
 import { ResponseBody } from 'src/types/response.body';
 import { RouteSchedule } from 'src/types/RouteSchedule';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { ScheduleResponse } from 'src/types/schedule.response';
 
 @Controller('schedules')
 export class RouteScheduleController {
@@ -30,7 +31,7 @@ export class RouteScheduleController {
   @Get()
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
-  async findAll() {
+  async findAll():Promise<ScheduleResponse[] | []> {
     return this.routeScheduleService.findAll();
   }
 
