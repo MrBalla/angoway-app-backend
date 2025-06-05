@@ -1,4 +1,4 @@
-vimport { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
 import { Prisma, Travel } from '@prisma/client';
 import { Workbook } from 'exceljs';
 import { PrismaService } from 'src/database/prisma.service';
@@ -85,7 +85,7 @@ export class TravelService {
     return buffer;
   }
 
-  async weeklyEarnings(startDate?: Date,): Promise<weeklyEarnings> 
+  async weeklyEarnings(startDate?: Date,): Promise<weeklyEarnings[]> 
   {
 		const today = new Date();
         const sevenDaysAgo = new Date(today);
@@ -100,14 +100,14 @@ export class TravelService {
 			
 		if (startDate){
 			const endDate = new Date(startDate);
-            endDate.setDate(startDate.getDate() + 6);``
+            endDate.setDate(startDate.getDate() + 6);
 			endDate.setHours(23, 59, 59, 999);
 			if (startDate < sevenDaysAgo){
 				firstDate = startDate;
 				lastDate = endDate;
 			}
 		}
-        const weekProfit = await prisma.user.agrgegate({
+        const weekProfit = await this.prisma.travel.findMany({
             where: {
                 createdAt: {
                     gte: firstDate,
@@ -122,11 +122,11 @@ export class TravelService {
         const profitGroup : Record<number, ProfitRecord> = {};
         weekProfit.forEach((week: ProfitRecord) => {
             const day = week.createdAt.getDate();
-            if (!result[day])
+            if (!profitGroup[day])
             {
                 profitGroup[day] = {
-                    profit: 0
-                    createdAt = week.createdAt
+                    profit: 0,
+                    createdAt: week.createdAt,
                 };
             };
             profitGroup[day].profit += week.profit;
@@ -145,7 +145,7 @@ export class TravelService {
             });
         }
 
-		return result.sort((aDate, bDate) => ({
+		return result.sort((aDate, bDate) => {
             const dataA = profitGroup[aDate.day]?.createdAt || new Date(firstDate);
             const dataB = profitGroup[bDate.day]?.createdAt || new Date(firstDate);
             return dataA.getTime() - dataB.getTime();
