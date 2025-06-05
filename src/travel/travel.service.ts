@@ -5,6 +5,11 @@ import { PrismaService } from 'src/database/prisma.service';
 import { countMonthly } from 'src/types/count-monthly.details';
 import { weeklyEarnings } from '../types/weekly-earnings.response';
 
+interface ProfitRecord {
+  profit: number;
+  createdAt: Date;
+}
+
 @Injectable()
 export class TravelService {
   @Inject()
@@ -113,14 +118,37 @@ export class TravelService {
                 createdAt: true
             }
         });
-        const result = {};
-        weekProfit.forEach(week =< {
+        const profitGroup : Record<number, ProfitRecord> = {};
+        weekProfit.forEach((week: ProfitRecord) => {
             const day = week.createdAt.getDate();
             if (!result[day])
-                result[day] = 0
-            result += week.profit
+            {
+                profitGroup[day] = {
+                    profit: 0
+                    createdAt = week.createdAt
+                };
+            };
+            profitGroup[day].profit += week.profit;
         });
-		return { firstDate, lastDate };
+
+        const result :weeklyEarnings[] = [];
+        for (let i = 0; i < 7; i++)
+        {
+            const actualDay = new Date(firstDate);
+            actualDay.setDate((new Date(firstDate)).getDate() + i);
+
+            const bill = profitGroup[actualDay.getDate()]?.profit || 0;
+            result.push({
+                day: actualDay.getDate(),
+                bill
+            });
+        }
+
+		return result.sort((aDate, bDate) => ({
+            const dataA = profitGroup[aDate.day]?.createdAt || new Date(firstDate);
+            const dataB = profitGroup[bDate.day]?.createdAt || new Date(firstDate);
+            return dataA.getTime() - dataB.getTime();
+        });
   }
   
   findAll() {
