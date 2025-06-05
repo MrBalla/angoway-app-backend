@@ -7,12 +7,15 @@ import {
   Param,
   Delete,
   HttpStatus,
+  UseGuards,
+  HttpCode,
 } from '@nestjs/common';
 import { RouteScheduleService } from './route-schedule.service';
 import { Prisma } from '@prisma/client';
 import { ApiNoContentResponse } from '@nestjs/swagger';
 import { ResponseBody } from 'src/types/response.body';
 import { RouteSchedule } from 'src/types/RouteSchedule';
+import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('schedules')
 export class RouteScheduleController {
@@ -20,20 +23,25 @@ export class RouteScheduleController {
 
   @ApiNoContentResponse()
   @Post('')
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
   async create(@Body() data: Prisma.RouteScheduleCreateInput) {
     return this.routeScheduleService.create(data);
   }
 
   @Get()
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
   async findAll() {
     return this.routeScheduleService.findAll();
   }
 
   @Get(':id')
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
   async findOne(
     @Param('id') id: string,
   ): Promise<ResponseBody | RouteSchedule> {
-    
     const numericId = parseInt(id, 10);
     if (isNaN(numericId)) {
       return {
@@ -46,15 +54,29 @@ export class RouteScheduleController {
   }
 
   @Patch(':id')
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
   async update(
     @Param('id') id: string,
     @Body() data: Prisma.RouteScheduleUpdateInput,
-  ):Promise<ResponseBody>{
+  ): Promise<ResponseBody> {
     return this.routeScheduleService.update(+id, data);
   }
 
+  @Patch('status/:id')
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async updateStatus(
+    @Param('id') id: string,
+    @Body() data: Prisma.RouteScheduleUpdateInput,
+  ): Promise<ResponseBody> {
+    return this.routeScheduleService.updateStatus(+id, data)
+  }
+
   @Delete(':id')
-  async remove(@Param('id') id: string):Promise<ResponseBody> {
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(AuthGuard)
+  async remove(@Param('id') id: string): Promise<ResponseBody> {
     return this.routeScheduleService.remove(+id);
   }
 }

@@ -79,6 +79,34 @@ export class RouteScheduleService {
     };
   }
 
+  async updateStatus(
+    id: number,
+    data: Prisma.RouteScheduleUpdateInput,
+  ): Promise<ResponseBody> {
+    const schedule = await this.prisma.routeSchedule.findUnique({
+      where: { id },
+    });
+
+    if (!schedule) {
+      return {
+        code: 404,
+        message: 'Horário não encontrado',
+      };
+    }
+
+    await this.prisma.routeSchedule.update({
+      where: { id },
+      data: {
+        status: data.status,
+      },
+    });
+
+    return {
+      code: 200,
+      message: 'Horário atualizado com sucesso !',
+    };
+  }
+
   async remove(id: number): Promise<ResponseBody> {
     const schedule = await this.prisma.routeSchedule.findUnique({
       where: { id },
