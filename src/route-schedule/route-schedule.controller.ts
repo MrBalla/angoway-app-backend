@@ -12,7 +12,6 @@ import {
 } from '@nestjs/common';
 import { RouteScheduleService } from './route-schedule.service';
 import { Prisma } from '@prisma/client';
-import { ApiNoContentResponse } from '@nestjs/swagger';
 import { ResponseBody } from 'src/types/response.body';
 import { RouteSchedule } from 'src/types/RouteSchedule';
 import { AuthGuard } from 'src/auth/auth.guard';
@@ -21,10 +20,9 @@ import { AuthGuard } from 'src/auth/auth.guard';
 export class RouteScheduleController {
   constructor(private readonly routeScheduleService: RouteScheduleService) {}
 
-  @ApiNoContentResponse()
   @Post('')
   @UseGuards(AuthGuard)
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.CREATED)
   async create(@Body() data: Prisma.RouteScheduleCreateInput) {
     return this.routeScheduleService.create(data);
   }
