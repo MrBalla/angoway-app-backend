@@ -9,22 +9,23 @@ export class RouteScheduleService {
   @Inject()
   private readonly prisma: PrismaService;
 
-  create(data: Prisma.RouteScheduleCreateInput) {
-    const response = this.prisma.routeSchedule.create({
-      data: data,
-    });
-
-    if (!response) {
+  async create(data: Prisma.RouteScheduleCreateInput) {
+    try {
+      this.prisma.routeSchedule.create({
+        data: {
+          ...data,
+        },
+      });
+      return {
+        code: 201,
+        message: 'Horário criado com succeso.',
+      };
+    } catch (error) {
       return {
         code: 500,
-        message: 'Horário não Criado. Tente novamente',
+        message: 'Horário não Criado. ' + error,
       };
     }
-
-    return {
-      code: 201,
-      message: 'Horário criado com succeso.',
-    };
   }
 
   async findAll(): Promise<RouteSchedule[] | []> {

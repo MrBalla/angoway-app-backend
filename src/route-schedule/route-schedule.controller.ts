@@ -31,7 +31,7 @@ export class RouteScheduleController {
   @Get()
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
-  async findAll():Promise<ScheduleResponse[] | []> {
+  async findAll(): Promise<ScheduleResponse[] | []> {
     return this.routeScheduleService.findAll();
   }
 
@@ -69,7 +69,7 @@ export class RouteScheduleController {
     @Param('id') id: string,
     @Body() data: Prisma.RouteScheduleUpdateInput,
   ): Promise<ResponseBody> {
-    return this.routeScheduleService.updateStatus(+id, data)
+    return this.routeScheduleService.updateStatus(+id, data);
   }
 
   @Delete(':id')
