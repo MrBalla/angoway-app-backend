@@ -71,7 +71,7 @@ model Travel{
     routeId        Int        
     driverId       Int   
     busId          Int
-    profit         Decimal
+    profit         Int
     arrivalTime    DateTime?
     departureTime  DateTime?
 
