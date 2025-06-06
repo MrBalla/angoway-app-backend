@@ -1,4 +1,9 @@
-import { Inject, Injectable, BadRequestException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  BadRequestException,
+  HttpStatus,
+} from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import * as bcrypt from 'bcrypt';
@@ -25,6 +30,29 @@ export class UserService {
     return this.prisma.user.create({
       data: { ...data, password: hashPassword },
     });
+  }
+
+  // Get User Profile Details
+  async userProfile(userId: number) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+      select: {
+        id: true,
+        name: true,
+        url_foto_de_perfil: true,
+      },
+    });
+
+    if (!user) {
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: 'Não encontramos este usuário !',
+      };
+    }
+
+    return user;
   }
 
   //Pegar Usuarios
@@ -63,7 +91,6 @@ export class UserService {
       where,
     });
   }
-
 
   async deleteUser(where: Prisma.UserWhereUniqueInput): Promise<User> {
     return this.prisma.user.delete({
