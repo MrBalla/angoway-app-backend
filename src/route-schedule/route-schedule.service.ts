@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable,HttpStatus } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
 import { ResponseBody } from 'src/types/response.body';
 import { RouteSchedule } from 'src/types/RouteSchedule';
@@ -9,20 +9,15 @@ export class RouteScheduleService {
   @Inject()
   private readonly prisma: PrismaService;
 
-  async create(data: Prisma.RouteScheduleCreateInput) {
+  async create(body: Prisma.RouteScheduleCreateInput) {
     try {
-      this.prisma.routeSchedule.create({
-        data: {
-          ...data,
-        },
+      return this.prisma.routeSchedule.create({
+        data: body,
       });
-      return {
-        code: 201,
-        message: 'Horário criado com succeso.',
-      };
+      
     } catch (error) {
       return {
-        code: 500,
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
         message: 'Horário não Criado. ' + error,
       };
     }
@@ -35,7 +30,7 @@ export class RouteScheduleService {
   async findOne(id: number): Promise<ResponseBody | RouteSchedule> {
     if (!id) {
       return {
-        code: 400,
+        code: HttpStatus.BAD_REQUEST,
         message: 'ID não fornecido',
       };
     }
@@ -46,7 +41,7 @@ export class RouteScheduleService {
 
     if (!response) {
       return {
-        code: 404,
+        code: HttpStatus.NOT_FOUND,
         message: 'Horário não encontrado',
       };
     }
@@ -64,7 +59,7 @@ export class RouteScheduleService {
 
     if (!schedule) {
       return {
-        code: 404,
+        code: HttpStatus.NOT_FOUND,
         message: 'Horário não encontrado',
       };
     }
@@ -75,7 +70,7 @@ export class RouteScheduleService {
     });
 
     return {
-      code: 200,
+      code: HttpStatus.OK,
       message: 'Horário atualizado com sucesso !',
     };
   }
@@ -90,7 +85,7 @@ export class RouteScheduleService {
 
     if (!schedule) {
       return {
-        code: 404,
+        code: HttpStatus.NOT_FOUND,
         message: 'Horário não encontrado',
       };
     }
@@ -103,7 +98,7 @@ export class RouteScheduleService {
     });
 
     return {
-      code: 200,
+      code: HttpStatus.OK,
       message: 'Horário atualizado com sucesso !',
     };
   }
@@ -115,7 +110,7 @@ export class RouteScheduleService {
 
     if (!schedule) {
       return {
-        code: 404,
+        code: HttpStatus.NOT_FOUND,
         message: 'Horário não encontrado',
       };
     }
@@ -125,7 +120,7 @@ export class RouteScheduleService {
     });
 
     return {
-      code: 201,
+      code: HttpStatus.NO_CONTENT,
       message: 'Horário removido com sucesso !',
     };
   }

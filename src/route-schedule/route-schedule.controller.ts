@@ -25,7 +25,11 @@ export class RouteScheduleController {
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() data: Prisma.RouteScheduleCreateInput) {
-    return this.routeScheduleService.create(data);
+    await this.routeScheduleService.create(data);
+    return {
+      message: 'Horário criado com Sucesso !',
+      code: HttpStatus.CREATED,
+    };
   }
 
   @Get()
