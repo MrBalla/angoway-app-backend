@@ -1,4 +1,4 @@
 export type weeklyEarnings = { 
-    day: string, 
+    day: number, 
     bill: number, 
-}[];
+};
