@@ -10,13 +10,3 @@ export type ScheduleResponse = {
   status: string;
   distanceKM: Decimal;
 };
-
-// routeId: number;
-//     departureLocation: string;
-//     arrivalLocation: string;
-//     departureTime: Date;
-//     arrivalTime: Date;
-//     estimatedDurationMinutes: number;
-//     status: string;
-//     distanceKM: Prisma.Decimal;
-// }
