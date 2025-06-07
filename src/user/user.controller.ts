@@ -53,7 +53,15 @@ export class UserController {
       data: userData,
     });
     if (!user) {
-      throw new NotFoundException(`Usuário com ID ${id} não encontrado`);
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: `Não encontramos este usuário`
+      }
+    }
+
+    return {
+      code:HttpStatus.OK,
+      message: "Dados Atualizados."
     }
   }
 
