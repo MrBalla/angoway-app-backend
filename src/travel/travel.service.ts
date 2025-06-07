@@ -1,9 +1,11 @@
-import { Injectable, Inject } from '@nestjs/common';
+import { Injectable, Inject, HttpStatus } from '@nestjs/common';
 import { Prisma, Travel } from '@prisma/client';
 import { Workbook } from 'exceljs';
 import { PrismaService } from 'src/database/prisma.service';
 import { countMonthly } from 'src/types/count-monthly.details';
 import { weeklyEarnings } from '../types/weekly-earnings.response';
+import { ResponseBody } from 'src/types/response.body';
+import { number } from 'zod';
 
 interface ProfitRecord {
   profit: number;
@@ -15,8 +17,22 @@ export class TravelService {
   @Inject()
   private readonly prisma: PrismaService;
 
-  create(): string {
-    return 'This action adds a new travel';
+  async create(data:Prisma.TravelCreateInput): Promise<ResponseBody> {
+    const travel = await this.prisma.travel.create({
+      data: data
+    });
+
+    if (travel) {
+      return {
+        code: HttpStatus.CREATED,
+        message:"Registro Criado !"
+      }
+    }
+
+    return {
+      code: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Erro ao criar registro de viagem !',
+    };
   }
 
   async monthlyCount(
@@ -30,7 +46,7 @@ export class TravelService {
         const travelCount = await this.prisma.travel.count({
           where: {
             createdAt: {
-              gte: new Date(currentYear, month - 1, 1), 
+              gte: new Date(currentYear, month - 1, 1),
               lt: new Date(currentYear, month, 0),
             },
           },
@@ -85,91 +101,90 @@ export class TravelService {
     return buffer;
   }
 
-  async weeklyEarnings(startDate?: Date): Promise<weeklyEarnings[]> 
-  {
-		const firstDayOfTheWeek = startDate || null;
-		const { firstDate, lastDate } = this.getRangeDate(firstDayOfTheWeek);
-		
-        const weekProfit = await this.prisma.travel.findMany({
-            where: {
-                createdAt: {
-                    gte: firstDate,
-                    lte: lastDate,
-                }
-            },
-            select: {
-                profit: true,
-                createdAt: true
-            }
-        });
-        const profitGroup : Record<number, ProfitRecord> = {};
-        weekProfit.forEach((week) => {
-            const day = week.createdAt.getDate();
-            if (!profitGroup[day])
-            {
-                profitGroup[day] = {
-                    profit: 0,
-                    createdAt: week.createdAt,
-                };
-            };
-            profitGroup[day].profit += Number(week.profit);
-        });
+  async weeklyEarnings(startDate?: Date): Promise<weeklyEarnings[]> {
+    const firstDayOfTheWeek = startDate || null;
+    const { firstDate, lastDate } = this.getRangeDate(firstDayOfTheWeek);
 
-        const result :weeklyEarnings[] = [];
-        for (let i = 0; i < 7; i++)
-        {
-            const actualDay = new Date(firstDate);
-            actualDay.setDate((new Date(firstDate)).getDate() + i);
+    const weekProfit = await this.prisma.travel.findMany({
+      where: {
+        createdAt: {
+          gte: firstDate,
+          lte: lastDate,
+        },
+      },
+      select: {
+        profit: true,
+        createdAt: true,
+      },
+    });
+    const profitGroup: Record<number, ProfitRecord> = {};
+    weekProfit.forEach((week) => {
+      const day = week.createdAt.getDate();
+      if (!profitGroup[day]) {
+        profitGroup[day] = {
+          profit: 0,
+          createdAt: week.createdAt,
+        };
+      }
+      profitGroup[day].profit += Number(week.profit);
+    });
 
-            const bill = profitGroup[actualDay.getDate()]?.profit || 0;
-            result.push({
-                day: actualDay.getDate(),
-                bill
-            });
-        }
+    const result: weeklyEarnings[] = [];
+    for (let i = 0; i < 7; i++) {
+      const actualDay = new Date(firstDate);
+      actualDay.setDate(new Date(firstDate).getDate() + i);
 
-		return result.sort((aDate, bDate) => {
-            const dataA = profitGroup[aDate.day]?.createdAt || new Date(firstDate);
-            const dataB = profitGroup[bDate.day]?.createdAt || new Date(firstDate);
-            return dataA.getTime() - dataB.getTime();
-        });
-  }
-  
-  
-  getRangeDate(startDate: Date | null): { firstDate: Date, lastDate: Date}
-  {
-	const today = new Date();
-	const sevenDaysAgo = new Date(today);
-	sevenDaysAgo.setDate(today.getDate() - 7);
-	sevenDaysAgo.setHours(0, 0, 0, 0);
-	const yesterday = new Date(today);
-	yesterday.setDate(today.getDate() - 1);
-	yesterday.setHours(23, 59, 59, 999);
-		
-	let firstDate = sevenDaysAgo;
-	let lastDate = yesterday;
-		
-	if (startDate !== null){
-		const endDate = new Date(startDate);
-		endDate.setDate(startDate.getDate() + 6);
-		endDate.setHours(23, 59, 59, 999);
-		if (startDate < sevenDaysAgo){
-			firstDate = startDate;
-			lastDate = endDate;
-		}
-	}
-	return {firstDate, lastDate};
-}
-  
-  findAll() {
-    return `This action returns all travel`;
+      const bill = profitGroup[actualDay.getDate()]?.profit || 0;
+      result.push({
+        day: actualDay.getDate(),
+        bill,
+      });
+    }
+
+    return result.sort((aDate, bDate) => {
+      const dataA = profitGroup[aDate.day]?.createdAt || new Date(firstDate);
+      const dataB = profitGroup[bDate.day]?.createdAt || new Date(firstDate);
+      return dataA.getTime() - dataB.getTime();
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} travel`;
+  getRangeDate(startDate: Date | null): { firstDate: Date; lastDate: Date } {
+    const today = new Date();
+    const sevenDaysAgo = new Date(today);
+    sevenDaysAgo.setDate(today.getDate() - 7);
+    sevenDaysAgo.setHours(0, 0, 0, 0);
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    yesterday.setHours(23, 59, 59, 999);
+
+    let firstDate = sevenDaysAgo;
+    let lastDate = yesterday;
+
+    if (startDate !== null) {
+      const endDate = new Date(startDate);
+      endDate.setDate(startDate.getDate() + 6);
+      endDate.setHours(23, 59, 59, 999);
+      if (startDate < sevenDaysAgo) {
+        firstDate = startDate;
+        lastDate = endDate;
+      }
+    }
+    return { firstDate, lastDate };
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} travel`;
+  async findAll():Promise<Travel[]> {
+    return await this.prisma.travel.findMany();
+  }
+
+  async findOne(id: number): Promise<Travel | null> {
+    return await this.prisma.travel.findUnique({
+      where: { id },
+    });
+  }
+
+  async remove(id: number) {
+    return await this.prisma.travel.delete({
+      where:{id}
+    });
   }
 }
