@@ -50,7 +50,7 @@ export class TravelController {
   @Get('weekly-earnings')
   async weeklyEarnings(
     @Query() query: OpcionalWeeklyEarningsQuery,
-  ): Promise<any> {
+  ): Promise<weeklyEarnings[]> {
     const safeQuery = OpcionalWeeklyEarningsSchema.safeParse(query);
 
     if (!safeQuery.success) throw new BadRequestException(safeQuery.error);

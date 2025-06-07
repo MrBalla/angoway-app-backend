@@ -103,7 +103,7 @@ export class TravelService {
             }
         });
         const profitGroup : Record<number, ProfitRecord> = {};
-        weekProfit.forEach((week: ProfitRecord) => {
+        weekProfit.forEach((week) => {
             const day = week.createdAt.getDate();
             if (!profitGroup[day])
             {
@@ -112,7 +112,7 @@ export class TravelService {
                     createdAt: week.createdAt,
                 };
             };
-            profitGroup[day].profit += week.profit;
+            profitGroup[day].profit += Number(week.profit);
         });
 
         const result :weeklyEarnings[] = [];
