@@ -52,8 +52,6 @@ export class RoutesController {
     @Param('scheduleId') scheduleId: string,
     @Body('routeId') routeId: string,
   ): Promise<ResponseBody> {
-
-    
     const scheduleNumericId = parseInt(scheduleId, 10);
     if (isNaN(scheduleNumericId)) {
       return {
@@ -113,14 +111,27 @@ export class RoutesController {
   }
 
   @Get('suggestions')
-  async suggestRoutes(@Query('lat') lat: string, @Query('lng') lng: string) {
+  async suggestRoutes(
+    @Query('lat') lat: string,
+    @Query('lng') lng: string,
+  ): Promise<ResponseBody | any> {
     const userLat = parseFloat(lat);
     const userLng = parseFloat(lng);
 
     if (isNaN(userLat) || isNaN(userLng)) {
-      throw new BadRequestException('Latitude e longitude Inválidas');
+      return {
+        code: HttpStatus.BAD_REQUEST,
+        message: `Houve um erro com a sua localização.`,
+      };
     }
-    return this.routesService.suggestRoutes(userLat, userLng);
+
+    const suggestions = await this.routesService.suggestRoutes(
+      userLat,
+      userLng,
+    );
+
+    if (suggestions.length === 0) return [];
+    return suggestions;
   }
 
   @UseGuards(AuthGuard)
