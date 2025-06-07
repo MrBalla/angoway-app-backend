@@ -2,21 +2,17 @@ import {
   Controller,
   Get,
   Param,
-  Post,
   Body,
-  Put,
+  Patch,
   Delete,
   HttpCode,
   HttpStatus,
   UseGuards,
   Req,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { Prisma, User as UserModel } from '@prisma/client';
 import { UserService } from './user.service';
-import { NotFoundException } from '@nestjs/common';
 import { ResponseBody } from 'src/types/response.body';
-import { NeedAuth } from '../../swagger/validate.decorator';
 import { AuthGuard } from 'src/auth/auth.guard';
 
 @Controller('user')
@@ -34,12 +30,12 @@ export class UserController {
   // }
 
   @HttpCode(HttpStatus.OK)
-  @NeedAuth()
-  @Put('/:id')
+  @UseGuards(AuthGuard)
+  @Patch('/:id')
   async updateUser(
     @Param('id') id: string,
     @Body() userData: Prisma.UserUpdateInput,
-  ): Promise<void | ResponseBody> {
+  ): Promise<ResponseBody> {
     const numericId = parseInt(id, 10);
     if (isNaN(numericId)) {
       return {
@@ -66,8 +62,8 @@ export class UserController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @NeedAuth()
-  @Put('profile/:id')
+  @UseGuards(AuthGuard)
+  @Patch('profile/:id')
   async updatePassword(
     @Param('id') id: string,
     @Body() password: Prisma.UserUpdateInput,
@@ -99,7 +95,7 @@ export class UserController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @NeedAuth()
+  @UseGuards(AuthGuard)
   @Delete('/:id')
   async deleteUser(@Param('id') id: string): Promise<ResponseBody> {
     const numericId = parseInt(id, 10);
