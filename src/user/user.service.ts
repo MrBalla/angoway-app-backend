@@ -46,6 +46,8 @@ export class UserService {
         id: true,
         name: true,
         url_foto_de_perfil: true,
+        number: true,
+        email:true
       },
     });
 
