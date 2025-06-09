@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Post,
   Param,
   Body,
   Patch,
@@ -19,15 +20,15 @@ import { AuthGuard } from 'src/auth/auth.guard';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  // @Post('')
-  // @HttpCode(HttpStatus.CREATED)
-  // async signupUser(userData: Prisma.UserCreateInput): Promise<ResponseBody> {
-  //   await this.userService.createUser(userData);
-  //   return {
-  //     message: 'Usuário criado com Sucesso !',
-  //     code: HttpStatus.CREATED,
-  //   };
-  // }
+  @Post('')
+  @HttpCode(HttpStatus.CREATED)
+  async signupUser(userData: Prisma.UserCreateInput): Promise<ResponseBody> {
+    await this.userService.createUser(userData);
+    return {
+      message: 'Usuário criado com Sucesso !',
+      code: HttpStatus.CREATED,
+    };
+  }
 
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
