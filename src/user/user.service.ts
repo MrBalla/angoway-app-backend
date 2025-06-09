@@ -1,30 +1,34 @@
 import {
   Inject,
   Injectable,
-  BadRequestException,
   HttpStatus,
 } from '@nestjs/common';
 import { Prisma, User } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import * as bcrypt from 'bcrypt';
+import { ResponseBody } from 'src/types/response.body';
 @Injectable()
 export class UserService {
   @Inject()
   private readonly prisma: PrismaService;
 
   //Criando o usuario
-  async createUser(data: Prisma.UserCreateInput) {
+  async createUser(data: Prisma.UserCreateInput): Promise<ResponseBody | User> {
     const isEmailUsed = await this.user({ email: data.email });
-    if (isEmailUsed)
-      throw new BadRequestException(
-        'Já encontramos uma conta com este e-mail !',
-      );
+    if (isEmailUsed) {
+      return {
+        code: HttpStatus.UNAUTHORIZED,
+        message: 'Já encontramos uma conta com este e-mail !',
+      };
+    }
 
     const isNumberUsed = await this.user({ number: data.number });
-    if (isNumberUsed)
-      throw new BadRequestException(
-        'Já encontramos uma conta com este número !',
-      );
+    if (isNumberUsed) {
+      return {
+        code: HttpStatus.UNAUTHORIZED,
+        message: 'Já encontramos uma conta com este número !',
+      };
+    }
 
     const hashPassword = await bcrypt.hash(data.password, 10);
     return this.prisma.user.create({
@@ -79,11 +83,14 @@ export class UserService {
   async updatePassword(params: {
     where: Prisma.UserWhereUniqueInput;
     data: { password: string };
-  }): Promise<User> {
+  }): Promise<User | ResponseBody> {
     const { where, data } = params;
 
     if (typeof data.password !== 'string') {
-      throw new BadRequestException('A senha deve ser uma string');
+      return {
+        code: HttpStatus.BAD_REQUEST,
+        message: 'A senha deve ser uma string',
+      };
     }
     const hashPassword = await bcrypt.hash(data.password, 10);
     return this.prisma.user.update({
