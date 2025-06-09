@@ -51,7 +51,6 @@ export class AuthService {
   async driverSignin(
     Params: Prisma.DriverCreateInput,
   ): Promise<ResponseBody | { access_token: string }> {
-
     const driver = await this.driverService.driver({ phone: Params.phone });
     if (!driver) {
       return {
@@ -78,6 +77,19 @@ export class AuthService {
         message: 'Verifique a senha e Tente novamente !',
       };
     }
+
+    // initializes driver and driver's bus
+    this.busService.updateBus(assignedBus.id, {
+      currentLoad: 0,
+      status: "IN_TRANSIT"
+    })
+    this.driverService.updateDriver({
+      where: { id: driver.id },
+      data: {
+        status: "ON_ROUTE",
+        lastLogin: new Date()
+      }
+    })
 
     const payload = {
       sub: driver.id,
