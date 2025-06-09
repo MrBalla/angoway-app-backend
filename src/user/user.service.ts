@@ -89,7 +89,7 @@ export class UserService {
     if (typeof data.password !== 'string') {
       return {
         code: HttpStatus.BAD_REQUEST,
-        message: 'A senha deve ser uma string',
+        message: 'Formato da senha errado.',
       };
     }
     const hashPassword = await bcrypt.hash(data.password, 10);
