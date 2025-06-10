@@ -3,6 +3,7 @@ import {
   Injectable,
   UnauthorizedException,
   NotFoundException,
+  HttpStatus,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 
@@ -11,6 +12,7 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { DriverService } from 'src/driver/driver.service';
 import { BusService } from 'src/bus/bus.service';
+import { ResponseBody } from 'src/types/response.body';
 
 @Injectable()
 export class AuthService {
@@ -25,21 +27,22 @@ export class AuthService {
 
   async signin(
     Params: Prisma.UserCreateInput,
-  ): Promise<{ access_token: string }> {
+  ): Promise<ResponseBody | { access_token: string }> {
     //verificar se o usuario existe
     const user = await this.userService.user({ number: Params.number });
     if (!user)
-      throw new NotFoundException(
-        'Não encontramos nenhum usuário com estes dados !',
-      );
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: 'Não encontramos nenhum usuário com estes dados !',
+      };
 
-    //verificar se a senha está correta
     const passwordMatch = await bcrypt.compare(Params.password, user.password);
     if (!passwordMatch)
-      throw new UnauthorizedException(
-        'Verifique a sua senha e Tente novamente !',
-      );
-    //retornar o usuario
+      return {
+        code: HttpStatus.UNAUTHORIZED,
+        message: 'Verifique a sua senha e Tente novamente !',
+      };
+
     const payload = { sub: user.id, number: user.number };
 
     return { access_token: await this.jwtService.signAsync(payload) };
@@ -47,30 +50,52 @@ export class AuthService {
 
   async driverSignin(
     Params: Prisma.DriverCreateInput,
-  ): Promise<{ access_token: string }> {
-    
+  ): Promise<ResponseBody | { access_token: string }> {
     const driver = await this.driverService.driver({ phone: Params.phone });
-    if (!driver)
-      throw new NotFoundException(
-        'Nenhum motorista com estes dados !',
-      );
-    
+    if (!driver) {
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: 'Nenhum motorista com estes dados !',
+      };
+    }
+
     const assignedBus = await this.busService.findBusByDriverId(driver.id);
-    if (!assignedBus)
-      throw new NotFoundException(
-        'Nenhum ônibus atribuído a este motorista !',
-      );
+    if (!assignedBus) {
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: 'Nenhum ônibus atribuído a este motorista !',
+      };
+    }
 
     const passwordMatch = await bcrypt.compare(
       Params.password,
       driver.password,
     );
-    if (!passwordMatch)
-      throw new UnauthorizedException(
-        'Verifique a senha e Tente novamente !',
-      );
-    //retornar o usuario
-    const payload = { sub: driver.id, phone: driver.phone, busId: assignedBus.id|| null };
+    if (!passwordMatch) {
+      return {
+        code: HttpStatus.UNAUTHORIZED,
+        message: 'Verifique a senha e Tente novamente !',
+      };
+    }
+
+    // initializes driver and driver's bus
+    this.busService.updateBus(assignedBus.id, {
+      currentLoad: 0,
+      status: "IN_TRANSIT"
+    })
+    this.driverService.updateDriver({
+      where: { id: driver.id },
+      data: {
+        status: "ON_ROUTE",
+        lastLogin: new Date()
+      }
+    })
+
+    const payload = {
+      sub: driver.id,
+      phone: driver.phone,
+      busId: assignedBus.id || null,
+    };
 
     return { access_token: await this.jwtService.signAsync(payload) };
   }
