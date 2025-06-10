@@ -8,6 +8,7 @@ import {
 import { Prisma, Bus } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import { RoutesService } from 'src/routes/routes.service';
+import { TravelService } from 'src/travel/travel.service';
 import { ResponseBody } from 'src/types/response.body';
 import { updateBusDetails } from 'src/types/update-bus-details';
 
@@ -15,8 +16,12 @@ import { updateBusDetails } from 'src/types/update-bus-details';
 export class BusService {
   @Inject()
   private readonly prisma: PrismaService;
+  private readonly BUS_RIDE_PRICE = 150;
 
-  constructor(private readonly routesService: RoutesService) {}
+  constructor(
+    private readonly routesService: RoutesService,
+    private readonly travelService: TravelService,
+  ) {}
 
   async generateNIA(): Promise<string> {
     const lastBus = await this.prisma.bus.findFirst({
@@ -213,6 +218,25 @@ export class BusService {
 
   // driver app (manage screen)
   async updateBusDetails(id: number, data: updateBusDetails) {
+    if (data.currentLoad !== null || data.currentLoad !== undefined) {
+      const travel = await this.travelService.findOne(id);
+      if (!travel) {
+        return {
+          code: HttpStatus.NOT_FOUND,
+          message: 'Registro da viagem não encontrado',
+        };
+      }
+
+      const currentProfit = Number(travel.profit)
+      const loadTimesPrice = Number(data.currentLoad) * this.BUS_RIDE_PRICE
+
+      return this.prisma.travel.update({
+        where: { id },
+        data: {
+          profit: currentProfit + loadTimesPrice,
+        },
+      });
+    }
     return this.prisma.bus.update({ where: { id }, data });
   }
 

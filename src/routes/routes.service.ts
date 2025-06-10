@@ -38,10 +38,23 @@ export class RoutesService {
       },
       include: {
         schedules: {
-          omit: {
-            routeId: true,
-          },
-        },
+          include: {
+            route: {
+              select: {
+                routeStops: {
+                  select: {
+                    stop: {
+                      select: {
+                        id: true,
+                        name: true,
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       },
     });
   }
@@ -103,8 +116,8 @@ export class RoutesService {
         },
         buses: {
           where: {
-            status: "IN_TRANSIT"
-          }
+            status: 'IN_TRANSIT',
+          },
         },
       },
     });
@@ -345,12 +358,7 @@ export class RoutesService {
       );
   }
 
-  async assignSchedule(
-    scheduleId: number,
-    routeId: number,
-  ) {
-
-
+  async assignSchedule(scheduleId: number, routeId: number) {
     const route = await this.prisma.route.findUnique({
       where: {
         id: routeId,

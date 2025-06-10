@@ -10,10 +10,11 @@ import { TravelService } from './travel/travel.service';
 import { TravelModule } from './travel/travel.module';
 import { RouteStopsModule } from './route-stops/route-stops.module';
 import { RouteScheduleModule } from './route-schedule/route-schedule.module';
+import { NotificationModule } from './notification/notification.module';
 
 
 @Module({
-  imports: [AuthModule, UserModule,DatabaseModule, RoutesModule, StopesModule, DriverModule, TravelModule, RouteStopsModule, RouteScheduleModule],
+  imports: [AuthModule, UserModule,DatabaseModule, RoutesModule, StopesModule, DriverModule, TravelModule, RouteStopsModule, RouteScheduleModule, NotificationModule],
   providers: [TravelService]
 })
 export class AppModule {}
