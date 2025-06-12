@@ -11,10 +11,11 @@ import {
   UseGuards,
   Req,
 } from '@nestjs/common';
-import { Prisma, User as UserModel } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { UserService } from './user.service';
 import { ResponseBody } from 'src/types/response.body';
 import { AuthGuard } from 'src/auth/auth.guard';
+import { User } from 'src/types/User';
 
 @Controller('user')
 export class UserController {
@@ -22,12 +23,17 @@ export class UserController {
 
   @Post('')
   @HttpCode(HttpStatus.CREATED)
-  async signupUser(userData: Prisma.UserCreateInput): Promise<ResponseBody> {
-    await this.userService.createUser(userData);
-    return {
-      message: 'Usuário criado com Sucesso !',
-      code: HttpStatus.CREATED,
-    };
+  async signupUser(@Body() userData: Omit<User,"id">): Promise<ResponseBody> {
+    const response = await this.userService.createUser(userData);
+
+    if (response) {
+      return {
+        message: 'Usuário criado com Sucesso !',
+        code: HttpStatus.CREATED,
+      }
+    }
+
+    return response
   }
 
   @HttpCode(HttpStatus.OK)
@@ -141,7 +147,7 @@ export class UserController {
   @Get('/:id')
   async getUserById(
     @Param('id') id: string,
-  ): Promise<Omit<UserModel, 'password'> | ResponseBody> {
+  ): Promise<Omit<User, 'password'> | ResponseBody> {
     const numericId = parseInt(id, 10);
     if (isNaN(numericId)) {
       return {
