@@ -162,6 +162,20 @@ export class DriverService {
     return { count };
   }
 
+  async countEffectivatedDrivers(): Promise<{ count: number }> {
+    const effectives = await this.prisma.driver.findMany({
+      where: {
+        effectiveDate: {
+          not:null
+        },
+      },
+    });
+
+    const effectivatedDrivers = effectives.length;
+
+    return { count: effectivatedDrivers};
+  }
+
   async updateDriver(params: {
     where: Prisma.DriverWhereUniqueInput;
     data: Prisma.DriverUpdateInput;
