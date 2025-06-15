@@ -26,7 +26,9 @@ export class BusController {
   private readonly busService: BusService;
 
   @Post('')
-  async createBus(@Body() busData: Prisma.BusCreateInput): Promise<ResponseBody> {
+  async createBus(
+    @Body() busData: Prisma.BusCreateInput,
+  ): Promise<ResponseBody> {
     await this.busService.createBus(busData);
     return {
       message: 'Autocarro criado com Sucesso !',
@@ -73,20 +75,33 @@ export class BusController {
     return busDetails;
   }
 
-  @Patch('dashboard-details/:id')
+  @Patch('dashboard-details/:busId')
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   async updateBusDetails(
-    @Param('id') id: string,
+    @Param('busId') busId: string,
     @Body() data: updateBusDetails,
   ): Promise<ResponseBody> {
-    return (
-      await this.busService.updateBusDetails(Number(id), data),
-      {
-        message: 'Dados Salvos',
-        code: HttpStatus.OK,
-      }
-    );
+
+    
+    const numericId = parseInt(busId, 10);
+    if (isNaN(numericId)) {
+      return { code: HttpStatus.BAD_REQUEST, message: `ID inválido: ${busId}` };
+    }
+
+    const response = await this.busService.updateBusDetails(numericId, data);
+
+    if (!response) {
+      return {
+        message: 'Erro ao atualizar dado. Tente novamente.',
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+      };
+    }
+
+    return {
+      message: 'Dados Salvos!.',
+      code: HttpStatus.OK,
+    };
   }
 
   @Put('assign-driver/:busId')
@@ -96,7 +111,6 @@ export class BusController {
     @Param('busId') busId: string,
     @Body('driverEmail') driverEmail: string,
   ): Promise<ResponseBody> {
-
     const numericId = parseInt(busId, 10);
     if (isNaN(numericId)) {
       return { code: HttpStatus.BAD_REQUEST, message: `ID inválido: ${busId}` };
@@ -145,11 +159,23 @@ export class BusController {
   async changeBusRoute(
     @Param('driverId') driverId: string,
     @Param('routeId') newRouteId: string,
-  ): Promise<Bus> {
-    return await this.busService.changeRoute(
+  ): Promise<ResponseBody> {
+    const response = await this.busService.changeRoute(
       Number(driverId),
       Number(newRouteId),
     );
+
+    if (response) {
+      return {
+        code: HttpStatus.OK,
+        message: 'Dados Salvos !',
+      };
+    }
+
+    return {
+      code: HttpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Erro ao atualizar rota. Tente novamente.',
+    };
   }
 
   @Get('count')

@@ -17,16 +17,16 @@ export class TravelService {
   @Inject()
   private readonly prisma: PrismaService;
 
-  async create(data:Prisma.TravelCreateInput): Promise<ResponseBody> {
+  async create(data: Prisma.TravelCreateInput): Promise<ResponseBody> {
     const travel = await this.prisma.travel.create({
-      data: data
+      data: data,
     });
 
     if (travel) {
       return {
         code: HttpStatus.CREATED,
-        message:"Registro Criado !"
-      }
+        message: 'Registro Criado !',
+      };
     }
 
     return {
@@ -172,7 +172,7 @@ export class TravelService {
     return { firstDate, lastDate };
   }
 
-  async findAll():Promise<Travel[]> {
+  async findAll(): Promise<Travel[]> {
     return await this.prisma.travel.findMany();
   }
 
@@ -182,9 +182,17 @@ export class TravelService {
     });
   }
 
+  async findOneByBusId(busId: number): Promise<Travel | null> {
+    return await this.prisma.travel.findUnique({
+      where: {
+        busId:busId
+      }
+    })
+  }
+
   async remove(id: number) {
     return await this.prisma.travel.delete({
-      where:{id}
+      where: { id },
     });
   }
 }
