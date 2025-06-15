@@ -219,7 +219,7 @@ export class BusService {
   // driver app (manage screen)
   async updateBusDetails(id: number, data: updateBusDetails) {
     if (data.currentLoad !== null || data.currentLoad !== undefined) {
-      const travel = await this.travelService.findOne(id);
+      const travel = await this.travelService.findOneByBusId(id);
       if (!travel) {
         return {
           code: HttpStatus.NOT_FOUND,
@@ -230,7 +230,7 @@ export class BusService {
       const currentProfit = Number(travel.profit)
       const loadTimesPrice = Number(data.currentLoad) * this.BUS_RIDE_PRICE
 
-      return this.prisma.travel.update({
+      this.prisma.travel.update({
         where: { id },
         data: {
           profit: currentProfit + loadTimesPrice,
