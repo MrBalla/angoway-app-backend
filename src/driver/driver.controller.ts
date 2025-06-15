@@ -78,6 +78,12 @@ export class DriverController {
     return await this.driverService.countPendingDrivers();
   }
 
+  @Get('count-recent')
+  @UseGuards(AuthGuard)
+  async countRecentDrivers(): Promise<{ count: number }> {
+    return await this.driverService.countRecentDrivers();
+  }
+
   @Get('count-effectives')
   @UseGuards(AuthGuard)
   async countEffectivatedDrivers(): Promise<{ count: number }> {
