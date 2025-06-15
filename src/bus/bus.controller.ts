@@ -82,8 +82,6 @@ export class BusController {
     @Param('busId') busId: string,
     @Body() data: updateBusDetails,
   ): Promise<ResponseBody> {
-
-    
     const numericId = parseInt(busId, 10);
     if (isNaN(numericId)) {
       return { code: HttpStatus.BAD_REQUEST, message: `ID inválido: ${busId}` };
@@ -188,6 +186,33 @@ export class BusController {
   @UseGuards(AuthGuard)
   async pendingBuses(): Promise<{ count: number; buses: Bus[] }> {
     return await this.busService.pendingBuses();
+  }
+
+  @Patch('update/:busId')
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  async updateBus(
+    @Param('busId') busId: string,
+    @Body() data: Prisma.BusUpdateInput,
+  ): Promise<ResponseBody> {
+    const numericId = parseInt(busId, 10);
+    if (isNaN(numericId)) {
+      return { code: HttpStatus.BAD_REQUEST, message: `ID inválido: ${busId}` };
+    }
+
+    const response = await this.busService.updateBus(numericId, data);
+
+    if (!response) {
+      return {
+        message: 'Erro ao atualizar. Tente novamente.',
+        code: HttpStatus.INTERNAL_SERVER_ERROR,
+      };
+    }
+
+    return {
+      message: 'Dados Salvos!.',
+      code: HttpStatus.OK,
+    };
   }
 
   @Get('count-inactive')
