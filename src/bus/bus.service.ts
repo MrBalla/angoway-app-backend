@@ -240,21 +240,30 @@ export class BusService {
     return this.prisma.bus.update({ where: { id }, data });
   }
 
-  async changeRoute(driverId: number, newRouteId: number) {
+  async changeRoute(driverId: number, newRouteId: number):Promise<Bus | ResponseBody> {
     const bus = await this.prisma.bus.findFirst({ where: { driverId } });
 
     if (!bus) {
-      throw new NotFoundException('Este autocarro não existe');
+      return {
+        code:HttpStatus.NOT_FOUND,
+        message: "Este autocarro nao existe."
+      }
     }
 
     if (!newRouteId) {
-      throw new BadRequestException('Informe a nova rota');
+      return {
+        code: HttpStatus.BAD_REQUEST,
+        message: "Voce precisa informar a rota."
+      }
     }
 
     const newRoute = await this.routesService.findOne(newRouteId);
 
     if (!newRoute) {
-      throw new NotFoundException('Esta rota não existe !');
+      return {
+        code:HttpStatus.NOT_FOUND,
+        message:"Esta rota nao existe!."
+      }
     }
 
     return this.prisma.bus.update({

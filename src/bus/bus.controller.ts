@@ -145,11 +145,23 @@ export class BusController {
   async changeBusRoute(
     @Param('driverId') driverId: string,
     @Param('routeId') newRouteId: string,
-  ): Promise<Bus> {
-    return await this.busService.changeRoute(
+  ): Promise<ResponseBody> {
+    const response = await this.busService.changeRoute(
       Number(driverId),
       Number(newRouteId),
     );
+
+    if(response){
+      return {
+        code: HttpStatus.OK,
+        message:"Dados Salvos !"
+      }
+    }
+
+    return {
+      code:HttpStatus.INTERNAL_SERVER_ERROR,
+      message:"Erro ao atualizar rota. Tente novamente."
+    }
   }
 
   @Get('count')
