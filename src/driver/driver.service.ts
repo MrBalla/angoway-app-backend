@@ -162,6 +162,39 @@ export class DriverService {
     return { count };
   }
 
+  async countEffectivatedDrivers(): Promise<{ count: number }> {
+    const effectives = await this.prisma.driver.findMany({
+      where: {
+        effectiveDate: {
+          not: null,
+        },
+      },
+    });
+
+    const effectivatedDrivers = effectives.length;
+
+    return { count: effectivatedDrivers };
+  }
+
+  async countRecentDrivers(): Promise<{ count: number }> {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const startOfNextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
+    const drivers = await this.prisma.driver.findMany({
+      where: {
+        createdAt: {
+          gte: startOfMonth,
+          lt: startOfNextMonth,
+        },
+      },
+    });
+
+    const recentDrivers = drivers.length;
+
+    return { count: recentDrivers };
+  }
+
   async updateDriver(params: {
     where: Prisma.DriverWhereUniqueInput;
     data: Prisma.DriverUpdateInput;
@@ -261,8 +294,8 @@ export class DriverService {
         message: 'Autocarro não encontrado',
       };
     }
-    
-    if(bus.driverId && bus.driverId !== driver.id){
+
+    if (bus.driverId && bus.driverId !== driver.id) {
       return {
         code: HttpStatus.BAD_REQUEST,
         message: 'Autocarro já atribuído a outro motorista',
@@ -270,21 +303,21 @@ export class DriverService {
     }
 
     await this.prisma.bus.update({
-      where: { 
-        nia: busNia 
+      where: {
+        nia: busNia,
       },
-      data: { 
-        driverId: driver.id 
+      data: {
+        driverId: driver.id,
       },
-    });    
+    });
 
     return this.prisma.driver.update({
-      where: { 
-        id: driverId 
+      where: {
+        id: driverId,
       },
       data: {
         status: 'ON_ROUTE',
-        effectiveDate: new Date()
+        effectiveDate: new Date(),
       },
       include: {
         assignedBus: true,
@@ -300,8 +333,8 @@ export class DriverService {
     }
     //Verificar se o motorista está atribuído a um autocarro
     const bus = await this.prisma.bus.findUnique({
-      where: { 
-        driverId: driverId 
+      where: {
+        driverId: driverId,
       },
     });
     if (!bus) {
@@ -312,16 +345,16 @@ export class DriverService {
     //Remover a atribuição do autocarro e deixar o status como disponível
     await this.prisma.bus.update({
       where: {
-        driverId: driverId
+        driverId: driverId,
       },
       data: {
-        driverId: null
+        driverId: null,
       },
     });
-    
+
     return this.prisma.driver.update({
-      where: { 
-        id: driverId 
+      where: {
+        id: driverId,
       },
       data: {
         status: 'AVAILABLE',
