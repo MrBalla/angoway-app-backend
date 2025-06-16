@@ -3,17 +3,18 @@ import {
   Injectable,
   HttpStatus,
 } from '@nestjs/common';
-import { Prisma, User } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { ResponseBody } from 'src/types/response.body';
+import { User } from 'src/types/User';
 @Injectable()
 export class UserService {
   @Inject()
   private readonly prisma: PrismaService;
 
   //Criando o usuario
-  async createUser(data: Prisma.UserCreateInput): Promise<ResponseBody | User> {
+  async createUser(data: Omit<User,"id">): Promise<ResponseBody | User> {
     const isEmailUsed = await this.user({ email: data.email });
     if (isEmailUsed) {
       return {
