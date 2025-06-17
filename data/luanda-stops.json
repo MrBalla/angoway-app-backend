@@ -144,7 +144,7 @@
       "lon": 13.2329227,
       "tags": {
         "highway": "bus_stop",
-        "name":"asddas"
+        "name":"Ponte Amarela"
       }
     },
     {
@@ -156,6 +156,7 @@
         "amenity": "bus_station",
         "bus": "yes",
         "highway": "bus_stop",
+        "name": "3ª Paragem do Kilamba",
         "public_transport": "platform"
       }
     },
@@ -168,6 +169,7 @@
         "amenity": "bus_station",
         "bus": "yes",
         "highway": "bus_stop",
+        "name":"Ultima Paragem do Kilamba",
         "public_transport": "platform"
       }
     },
@@ -180,6 +182,7 @@
         "amenity": "bus_station",
         "bus": "yes",
         "highway": "bus_stop",
+        "name":"Paragem da Admnistração Kilamba",
         "public_transport": "platform"
       }
     },
@@ -192,6 +195,7 @@
         "amenity": "bus_station",
         "bus": "yes",
         "highway": "bus_stop",
+        "name":"Ultima Paragem do Kilamba",
         "public_transport": "platform"
       }
     },
@@ -204,6 +208,7 @@
         "amenity": "bus_station",
         "bus": "yes",
         "highway": "bus_stop",
+        "name":"Paragem da Admnistração Kilamba",
         "public_transport": "platform"
       }
     },
@@ -216,6 +221,7 @@
         "amenity": "bus_station",
         "bus": "yes",
         "highway": "bus_stop",
+        "name":"3ª Paragem do Kilamba",
         "public_transport": "platform"
       }
     },
@@ -228,6 +234,7 @@
         "amenity": "bus_station",
         "bus": "yes",
         "highway": "bus_stop",
+        "name": "4ª Paragem do Kilamba",
         "public_transport": "platform"
       }
     },
@@ -240,6 +247,7 @@
         "amenity": "bus_station",
         "bus": "yes",
         "highway": "bus_stop",
+        "name": "4ª Paragem do Kilamba",
         "public_transport": "platform"
       }
     },
@@ -252,6 +260,7 @@
         "amenity": "bus_station",
         "bus": "yes",
         "highway": "bus_stop",
+        "name":"1ª Paragem do Kilamba",
         "public_transport": "platform"
       }
     },
@@ -264,6 +273,7 @@
         "amenity": "bus_station",
         "bus": "yes",
         "highway": "bus_stop",
+        "name": "1ª Paragem do Kilamba",
         "public_transport": "platform"
       }
     },
@@ -275,6 +285,7 @@
       "tags": {
         "bus": "yes",
         "highway": "bus_stop",
+        "name":"Paragem do  INHK",
         "public_transport": "platform"
       }
     },
@@ -286,28 +297,7 @@
       "tags": {
         "bus": "yes",
         "highway": "bus_stop",
-        "public_transport": "platform"
-      }
-    },
-    {
-      "type": "node",
-      "id": 2509063005,
-      "lat": -8.9962652,
-      "lon": 13.2448506,
-      "tags": {
-        "bus": "yes",
-        "highway": "bus_stop",
-        "public_transport": "platform"
-      }
-    },
-    {
-      "type": "node",
-      "id": 2509063017,
-      "lat": -8.995974,
-      "lon": 13.2454246,
-      "tags": {
-        "bus": "yes",
-        "highway": "bus_stop",
+        "name":"Paragem do  INHK",
         "public_transport": "platform"
       }
     },
@@ -317,7 +307,8 @@
       "lat": -8.8958552,
       "lon": 13.2264044,
       "tags": {
-        "highway": "bus_stop"
+        "highway": "bus_stop",
+        "name":"Xyami Shopping - Nova Vida"
       }
     },
     {
@@ -326,7 +317,8 @@
       "lat": -8.9159114,
       "lon": 13.1674534,
       "tags": {
-        "highway": "bus_stop"
+        "highway": "bus_stop",
+        "name":"Paragem Futungo"
       }
     },
     {
@@ -348,6 +340,7 @@
       "tags": {
         "bus": "yes",
         "highway": "bus_stop",
+        "name":"Campo do 1º d'Agosto",
         "public_transport": "platform"
       }
     },
@@ -357,7 +350,8 @@
       "lat": -8.8392183,
       "lon": 13.2336786,
       "tags": {
-        "highway": "bus_stop"
+        "highway": "bus_stop",
+        "name": "Faculdade de Engenharia - DEE"
       }
     },
     {
@@ -366,7 +360,8 @@
       "lat": -8.8338709,
       "lon": 13.2391915,
       "tags": {
-        "highway": "bus_stop"
+        "highway": "bus_stop",
+        "name":"Campo do R.20"
       }
     },
     {
@@ -375,7 +370,8 @@
       "lat": -8.8708927,
       "lon": 13.212159,
       "tags": {
-        "highway": "bus_stop"
+        "highway": "bus_stop",
+        "name":"AngoMart - Rocha Pinto"
       }
     },
     {
@@ -384,7 +380,8 @@
       "lat": -8.8160757,
       "lon": 13.2296606,
       "tags": {
-        "highway": "bus_stop"
+        "highway": "bus_stop",
+        "name":"Largo Lumeji"
       }
     },
     {
@@ -393,7 +390,8 @@
       "lat": -8.8318582,
       "lon": 13.219002,
       "tags": {
-        "highway": "bus_stop"
+        "highway": "bus_stop",
+        "name":"Paragem da Samba"
       }
     },
     {
@@ -402,16 +400,8 @@
       "lat": -8.8445197,
       "lon": 13.2123903,
       "tags": {
-        "highway": "bus_stop"
-      }
-    },
-    {
-      "type": "node",
-      "id": 4787692343,
-      "lat": -8.824146,
-      "lon": 13.2313097,
-      "tags": {
-        "highway": "bus_stop"
+        "highway": "bus_stop",
+        "name":"Antigo Controlo"
       }
     },
     {
@@ -433,7 +423,8 @@
       "lat": -8.9013182,
       "lon": 13.2041205,
       "tags": {
-        "highway": "bus_stop"
+        "highway": "bus_stop",
+        "name":"Escola Académica"
       }
     },
     {
@@ -442,7 +433,8 @@
       "lat": -8.8985177,
       "lon": 13.2150525,
       "tags": {
-        "highway": "bus_stop"
+        "highway": "bus_stop",
+        "name":"Paragem da Vila"
       }
     },
     {
@@ -451,7 +443,8 @@
       "lat": -8.8970056,
       "lon": 13.2216185,
       "tags": {
-        "highway": "bus_stop"
+        "highway": "bus_stop",
+        "name": "paragem da Beledear"
       }
     },
     {
@@ -460,7 +453,8 @@
       "lat": -8.8528327,
       "lon": 13.2086887,
       "tags": {
-        "highway": "bus_stop"
+        "highway": "bus_stop",
+        "name": "Paragem da Suave"
       }
     },
     {
@@ -478,7 +472,8 @@
       "lat": -8.859999,
       "lon": 13.2046571,
       "tags": {
-        "highway": "bus_stop"
+        "highway": "bus_stop",
+        "name":"Paragem do Morro da Luz"
       }
     },
     {
@@ -487,7 +482,8 @@
       "lat": -8.8848042,
       "lon": 13.1831276,
       "tags": {
-        "highway": "bus_stop"
+        "highway": "bus_stop",
+        "name":"Paragem do Kibabo"
       }
     },
     {
@@ -496,7 +492,8 @@
       "lat": -8.8786588,
       "lon": 13.2099869,
       "tags": {
-        "highway": "bus_stop"
+        "highway": "bus_stop",
+        "name":"Paragem do RS"
       }
     },
     {
@@ -507,6 +504,7 @@
       "tags": {
         "bus": "yes",
         "highway": "bus_stop",
+        "name":"Clínica Girassol",
         "public_transport": "platform"
       }
     },
@@ -518,6 +516,7 @@
       "tags": {
         "bus": "yes",
         "highway": "bus_stop",
+        "name":"Marginal de Luanda",
         "public_transport": "platform"
       }
     },
@@ -527,7 +526,8 @@
       "lat": -8.7965334,
       "lon": 13.2241804,
       "tags": {
-        "highway": "bus_stop"
+        "highway": "bus_stop",
+        "name": "Ilha de Luanda - Restaurante -Naval"
       }
     },
     {
@@ -536,7 +536,8 @@
       "lat": -8.7896847,
       "lon": 13.2282891,
       "tags": {
-        "highway": "bus_stop"
+        "highway": "bus_stop",
+        "name": "Ilha de Luanda"
       }
     },
     {
@@ -547,17 +548,7 @@
       "tags": {
         "bus": "yes",
         "highway": "bus_stop",
-        "public_transport": "platform"
-      }
-    },
-    {
-      "type": "node",
-      "id": 4855309769,
-      "lat": -8.8878954,
-      "lon": 13.2046165,
-      "tags": {
-        "bus": "yes",
-        "highway": "bus_stop",
+        "name":"Passadeira da IURD",
         "public_transport": "platform"
       }
     },
@@ -569,6 +560,7 @@
       "tags": {
         "bus": "yes",
         "highway": "bus_stop",
+        "name":"Paragem da Gamek",
         "public_transport": "platform"
       }
     },
@@ -578,7 +570,8 @@
       "lat": -8.8814412,
       "lon": 13.2087068,
       "tags": {
-        "highway": "bus_stop"
+        "highway": "bus_stop",
+        "name": "paragem da Macon"
       }
     },
     {
@@ -587,7 +580,8 @@
       "lat": -8.8778812,
       "lon": 13.2097494,
       "tags": {
-        "highway": "bus_stop"
+        "highway": "bus_stop",
+        "name": "Grupo Hamze"
       }
     },
     {
@@ -596,7 +590,8 @@
       "lat": -8.8750717,
       "lon": 13.2105974,
       "tags": {
-        "highway": "bus_stop"
+        "highway": "bus_stop",
+        "name": "Passadeira do Condominio 21ST"
       }
     },
     {
@@ -605,7 +600,8 @@
       "lat": -8.8717746,
       "lon": 13.211433,
       "tags": {
-        "highway": "bus_stop"
+        "highway": "bus_stop",
+        "name": "PTA-Aguas"
       }
     },
     {
@@ -614,7 +610,8 @@
       "lat": -8.8264374,
       "lon": 13.2425803,
       "tags": {
-        "highway": "bus_stop"
+        "highway": "bus_stop",
+        "name":"Passadeira do ELizângela Filomena"
       }
     },
     {
@@ -623,7 +620,8 @@
       "lat": -8.8289359,
       "lon": 13.2425367,
       "tags": {
-        "highway": "bus_stop"
+        "highway": "bus_stop",
+        "name":"Paragem do 1º de Maio"
       }
     },
     {
@@ -632,7 +630,8 @@
       "lat": -8.8316155,
       "lon": 13.2403507,
       "tags": {
-        "highway": "bus_stop"
+        "highway": "bus_stop",
+        "name":"Largo das Heroínas"
       }
     },
     {
@@ -655,16 +654,8 @@
       "tags": {
         "bus": "yes",
         "highway": "bus_stop",
+        "name":"Museu das Forças Armadas",
         "public_transport": "platform"
-      }
-    },
-    {
-      "type": "node",
-      "id": 5148614575,
-      "lat": -8.7964973,
-      "lon": 13.2245569,
-      "tags": {
-        "highway": "bus_stop"
       }
     },
     {
@@ -673,7 +664,8 @@
       "lat": -8.7924359,
       "lon": 13.2262599,
       "tags": {
-        "highway": "bus_stop"
+        "highway": "bus_stop",
+        "name":"Base Naval de Angola"
       }
     },
     {
@@ -691,7 +683,8 @@
       "lat": -8.7847289,
       "lon": 13.2333684,
       "tags": {
-        "highway": "bus_stop"
+        "highway": "bus_stop",
+        "name": "Ilha de Luanda - Loja do Pescador"
       }
     },
     {
@@ -700,7 +693,8 @@
       "lat": -8.7762676,
       "lon": 13.245022,
       "tags": {
-        "highway": "bus_stop"
+        "highway": "bus_stop",
+        "name":"Floresta da Ilha"
       }
     },
     {
@@ -709,7 +703,8 @@
       "lat": -8.7819803,
       "lon": 13.2368024,
       "tags": {
-        "highway": "bus_stop"
+        "highway": "bus_stop",
+        "name":"Ilha de Luanda - Loja da Unitel"
       }
     },
     {
