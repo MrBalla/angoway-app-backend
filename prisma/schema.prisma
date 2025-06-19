@@ -70,7 +70,7 @@ model Travel{
     id             Int        @id @default(autoincrement())
     routeId        Int        
     driverId       Int   
-    busId          Int        @unique
+    busId          Int        
     profit         Int
     arrivalTime    DateTime?
     departureTime  DateTime?
