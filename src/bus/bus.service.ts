@@ -218,15 +218,22 @@ export class BusService {
 
   // driver app (manage screen)
   async updateBusDetails(id: number, data: updateBusDetails) {
+    if (data.status !== undefined && data.status !== null) {
+      if (data.status === 'IN_TRANSIT'){
+          this.travelService.create(id);
+      } else if (data.status === 'OFFLINE' || data.status === 'ACCIDENT') {
+        
+      }
+    }
     if (data.currentLoad !== null || data.currentLoad !== undefined) {
       const travel = await this.travelService.findOneByBusId(id);
       if (!travel) {
+        
         return {
           code: HttpStatus.NOT_FOUND,
           message: 'Registro da viagem não encontrado',
         };
       }
-
       const currentProfit = Number(travel.profit)
       const loadTimesPrice = Number(data.currentLoad) * this.BUS_RIDE_PRICE
 

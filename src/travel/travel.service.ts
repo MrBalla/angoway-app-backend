@@ -6,6 +6,8 @@ import { countMonthly } from 'src/types/count-monthly.details';
 import { weeklyEarnings } from '../types/weekly-earnings.response';
 import { ResponseBody } from 'src/types/response.body';
 import { number } from 'zod';
+import * as bcrypt from 'bcrypt';
+import { RouteInfoPathExtractor } from '@nestjs/core/middleware/route-info-path-extractor';
 
 interface ProfitRecord {
   profit: number;
@@ -17,9 +19,31 @@ export class TravelService {
   @Inject()
   private readonly prisma: PrismaService;
 
-  async create(data: Prisma.TravelCreateInput): Promise<ResponseBody> {
+  async create(busId: number): Promise<ResponseBody> {
+    const bus = await this.prisma.bus.findUnique({ 
+      where : { id: busId },
+    });
+    if (!bus) {
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: 'Ônibus não encontrado !',
+      };
+    }
+    if (bus.driverId === null) {
+      return {
+        code: HttpStatus.BAD_REQUEST,
+        message: 'Ônibus não possui motorista !',
+      };
+    }
+
     const travel = await this.prisma.travel.create({
-      data: data,
+      data: {
+        busId: bus.id,
+        routeId: bus.routeId,
+        driverId:  bus.driverId,
+        profit: 0,
+        arrivalTime: new Date(),
+      },
     });
 
     if (travel) {
