@@ -218,6 +218,23 @@ export class BusService {
 
   // driver app (manage screen)
   async updateBusDetails(id: number, data: updateBusDetails) {
+    let updatedInfo: string = "";
+    if (data.status !== undefined && data.status !== null) {
+      const bus = await this.prisma.bus.findUnique({
+        where: { id },
+      });
+      if (!bus) {
+        return {
+          code: HttpStatus.NOT_FOUND,
+          message: 'Ônibus não encontrado',
+        };
+      }
+      if (bus.status !== 'IN_TRANSIT' && data.status === 'IN_TRANSIT') {
+        this.travelService.create(id);
+      } else if (bus.status === 'IN_TRANSIT' && (data.status === 'OFFLINE' || data.status === 'ACCIDENT')) {
+        await this.travelService.close(id);
+      }
+    }
     if (data.currentLoad !== null || data.currentLoad !== undefined) {
       const travel = await this.travelService.findOneByBusId(id);
       if (!travel) {
@@ -226,7 +243,6 @@ export class BusService {
           message: 'Registro da viagem não encontrado',
         };
       }
-
       const currentProfit = Number(travel.profit)
       const loadTimesPrice = Number(data.currentLoad) * this.BUS_RIDE_PRICE
 

@@ -6,6 +6,8 @@ import { countMonthly } from 'src/types/count-monthly.details';
 import { weeklyEarnings } from '../types/weekly-earnings.response';
 import { ResponseBody } from 'src/types/response.body';
 import { number } from 'zod';
+import * as bcrypt from 'bcrypt';
+import { RouteInfoPathExtractor } from '@nestjs/core/middleware/route-info-path-extractor';
 
 interface ProfitRecord {
   profit: number;
@@ -17,15 +19,37 @@ export class TravelService {
   @Inject()
   private readonly prisma: PrismaService;
 
-  async create(data: Prisma.TravelCreateInput): Promise<ResponseBody> {
+  async create(id: number ): Promise<ResponseBody> {
+    const bus = await this.prisma.bus.findUnique({ 
+      where : { id },
+    });
+    if (!bus) {
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: 'Ônibus não encontrado !',
+      };
+    }
+    if (bus.driverId === null) {
+      return {
+        code: HttpStatus.BAD_REQUEST,
+        message: 'Ônibus não possui motorista !',
+      };
+    }
+
     const travel = await this.prisma.travel.create({
-      data: data,
+      data: {
+        busId: bus.id,
+        routeId: bus.routeId,
+        driverId:  bus.driverId,
+        profit: 0,
+        arrivalTime: new Date(),
+      },
     });
 
     if (travel) {
       return {
         code: HttpStatus.CREATED,
-        message: 'Registro Criado !',
+        message: 'Registro Viagem Criado !',
       };
     }
 
@@ -34,6 +58,36 @@ export class TravelService {
       message: 'Erro ao criar registro de viagem !',
     };
   }
+
+  async close(id: number): Promise<ResponseBody> {
+    const travel = await this.findOneByBusId(id);
+    if (!travel) {
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: 'Registro de viagem não encontrado !',
+      };
+    }
+    const updatedTravel = await this.prisma.travel.update({
+      where: { id: travel.id },
+      data: {
+       departureTime: new Date(),
+      },
+    });
+
+    if (!updatedTravel.departureTime) {
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: 'Registro de viagem não encontrado !',
+      };
+    }
+
+    return {
+      code: HttpStatus.OK,
+      message: 'Registro de viagem fechado com sucesso !',
+    };
+  }
+
+
 
   async monthlyCount(
     year?: number,
@@ -183,11 +237,13 @@ export class TravelService {
   }
 
   async findOneByBusId(busId: number): Promise<Travel | null> {
-    return await this.prisma.travel.findUnique({
-      where: {
-        busId:busId
-      }
+    const travels =  await this.prisma.travel.findMany({
+      where: { busId }
     })
+    if (travels.length === 0) {
+      return null;
+    }
+    return travels[travels.length - 1];
   }
 
   async remove(id: number) {

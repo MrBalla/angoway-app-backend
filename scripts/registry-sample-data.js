@@ -49,12 +49,11 @@ function generateRandomDate(monthOffset) {
 }
 function createSampleData() {
     return __awaiter(this, void 0, void 0, function () {
-        var password, hashedPassword, users, drivers, orlando, laurentino, routes, routeSchedules, luandaStops, stops, validStopIds, validRouteIds, buses, driversIDs, busesIDs, routesIDs, profits, i, monthOffset, createdAt, routeId, driverId, busId, profit, departureTime, arrivalTime, error_1;
-        var _this = this;
+        var password, hashedPassword, users, drivers, orlando, laurentino, routes, routeSchedules, luandaStops, _i, luandaStops_1, luandaStop, name_1, stops, stopCout, validStopIds, validRouteIds, stopIds, buses, driversIDs, busesIDs, routesIDs, profits, i, monthOffset, createdAt, routeId, driverId, busId, profit, departureTime, arrivalTime, error_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 17, 18, 20]);
+                    _a.trys.push([0, 21, 22, 24]);
                     password = '108449123Dss';
                     return [4 /*yield*/, bcrypt.hash(password, 10)];
                 case 1:
@@ -159,57 +158,90 @@ function createSampleData() {
                                     arrivalTime: '2025-12-05T15:25:00Z',
                                     estimatedDurationMinutes: 55,
                                     status: 'active',
-                                    distanceKM: 56.00
-                                }
-                            ]
+                                    distanceKM: 56.0,
+                                },
+                                {
+                                    routeId: 2,
+                                    departureLocation: 'Luanda Sul',
+                                    arrivalLocation: 'Cacuaco',
+                                    departureTime: '2025-12-05T14:30:00Z',
+                                    arrivalTime: '2025-12-05T15:25:00Z',
+                                    estimatedDurationMinutes: 55,
+                                    status: 'active',
+                                    distanceKM: 56.0,
+                                },
+                                {
+                                    routeId: 3,
+                                    departureLocation: 'Luanda Central',
+                                    arrivalLocation: 'Talatona',
+                                    departureTime: '2025-12-05T07:30:00Z',
+                                    arrivalTime: '2025-12-05T07:55:00Z',
+                                    estimatedDurationMinutes: 25,
+                                    status: 'active',
+                                    distanceKM: 54.0,
+                                },
+                                {
+                                    routeId: 4,
+                                    departureLocation: 'Luanda Central',
+                                    arrivalLocation: 'Kilamba',
+                                    departureTime: '2025-12-05T14:30:00Z',
+                                    arrivalTime: '2025-12-05T15:25:00Z',
+                                    estimatedDurationMinutes: 55,
+                                    status: 'active',
+                                    distanceKM: 56.0,
+                                },
+                            ],
                         })];
                 case 7:
                     routeSchedules = _a.sent();
+                    console.log("Schedules Created", routeSchedules.count);
                     console.log('Routes created:', routes.count);
                     luandaStops = luandaStopsJson.elements;
-                    luandaStops.forEach(function (luandaStop) { return __awaiter(_this, void 0, void 0, function () {
-                        var name, stop;
-                        return __generator(this, function (_a) {
-                            switch (_a.label) {
-                                case 0:
-                                    name = luandaStop.tags.name || 'N/A';
-                                    return [4 /*yield*/, prisma.stop.create({
-                                            data: {
-                                                name: name,
-                                                latitude: luandaStop.lat,
-                                                longitude: luandaStop.lon
-                                            },
-                                        })];
-                                case 1:
-                                    stop = _a.sent();
-                                    return [2 /*return*/];
-                            }
-                        });
-                    }); });
-                    return [4 /*yield*/, prisma.stop.findMany({})];
+                    _i = 0, luandaStops_1 = luandaStops;
+                    _a.label = 8;
                 case 8:
-                    stops = _a.sent();
-                    return [4 /*yield*/, prisma.stop.findMany({ select: { id: true } })];
+                    if (!(_i < luandaStops_1.length)) return [3 /*break*/, 11];
+                    luandaStop = luandaStops_1[_i];
+                    name_1 = luandaStop.tags.name || 'N/A';
+                    return [4 /*yield*/, prisma.stop.create({
+                            data: {
+                                name: name_1,
+                                latitude: luandaStop.lat,
+                                longitude: luandaStop.lon
+                            },
+                        })];
                 case 9:
+                    _a.sent();
+                    _a.label = 10;
+                case 10:
+                    _i++;
+                    return [3 /*break*/, 8];
+                case 11: return [4 /*yield*/, prisma.stop.findMany({})];
+                case 12:
+                    stops = _a.sent();
+                    stopCout = stops.length;
+                    return [4 /*yield*/, prisma.stop.findMany({ select: { id: true } })];
+                case 13:
                     validStopIds = _a.sent();
                     return [4 /*yield*/, prisma.route.findMany({ select: { id: true } })];
-                case 10:
+                case 14:
                     validRouteIds = _a.sent();
+                    stopIds = validStopIds.map(function (stop) { return stop.id; });
                     return [4 /*yield*/, prisma.routeStop.createMany({
                             data: [
-                                { routeId: 1, stopId: Math.floor(Math.random() * (179)), order: 2 },
-                                { routeId: 1, stopId: Math.floor(Math.random() * (179)), order: 3 },
-                                { routeId: 2, stopId: Math.floor(Math.random() * (179)), order: 1 },
-                                { routeId: 2, stopId: Math.floor(Math.random() * (179)), order: 2 },
-                                { routeId: 2, stopId: Math.floor(Math.random() * (179)), order: 3 },
-                                { routeId: 3, stopId: Math.floor(Math.random() * (179)), order: 1 },
-                                { routeId: 4, stopId: Math.floor(Math.random() * (179)), order: 1 },
-                                { routeId: 4, stopId: Math.floor(Math.random() * (179)), order: 2 },
-                                { routeId: 5, stopId: Math.floor(Math.random() * (179)), order: 1 },
-                                { routeId: 1, stopId: Math.floor(Math.random() * (179)), order: 1 },
+                                { routeId: 1, stopId: stopIds[Math.floor(Math.random() * stopIds.length)] },
+                                { routeId: 1, stopId: stopIds[Math.floor(Math.random() * stopIds.length)] },
+                                { routeId: 2, stopId: stopIds[Math.floor(Math.random() * stopIds.length)] },
+                                { routeId: 2, stopId: stopIds[Math.floor(Math.random() * stopIds.length)] },
+                                { routeId: 2, stopId: stopIds[Math.floor(Math.random() * stopIds.length)] },
+                                { routeId: 3, stopId: stopIds[Math.floor(Math.random() * stopIds.length)] },
+                                { routeId: 4, stopId: stopIds[Math.floor(Math.random() * stopIds.length)] },
+                                { routeId: 4, stopId: stopIds[Math.floor(Math.random() * stopIds.length)] },
+                                { routeId: 5, stopId: stopIds[Math.floor(Math.random() * stopIds.length)] },
+                                { routeId: 1, stopId: stopIds[Math.floor(Math.random() * stopIds.length)] },
                             ]
                         })];
-                case 11:
+                case 15:
                     _a.sent();
                     console.log('Stops created:', stops.length);
                     return [4 /*yield*/, prisma.bus.createMany({
@@ -234,7 +266,7 @@ function createSampleData() {
                                 },
                             ],
                         })];
-                case 12:
+                case 16:
                     buses = _a.sent();
                     console.log('Buses created:', buses.count);
                     driversIDs = [1, 2];
@@ -242,9 +274,9 @@ function createSampleData() {
                     routesIDs = [1, 2, 3, 4, 5];
                     profits = [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000];
                     i = 0;
-                    _a.label = 13;
-                case 13:
-                    if (!(i < 20)) return [3 /*break*/, 16];
+                    _a.label = 17;
+                case 17:
+                    if (!(i < 20)) return [3 /*break*/, 20];
                     monthOffset = Math.floor(i / 5);
                     createdAt = generateRandomDate(monthOffset);
                     routeId = routesIDs[Math.floor(Math.random() * routesIDs.length)];
@@ -266,25 +298,25 @@ function createSampleData() {
                                 createdAt: createdAt
                             },
                         })];
-                case 14:
+                case 18:
                     _a.sent();
-                    _a.label = 15;
-                case 15:
+                    _a.label = 19;
+                case 19:
                     i++;
-                    return [3 /*break*/, 13];
-                case 16:
+                    return [3 /*break*/, 17];
+                case 20:
                     console.log('Travel created:', 20);
                     console.log('✅ Sample data created successfully.');
-                    return [3 /*break*/, 20];
-                case 17:
+                    return [3 /*break*/, 24];
+                case 21:
                     error_1 = _a.sent();
                     console.error('❌ Error creating sample data:', error_1);
                     throw error_1;
-                case 18: return [4 /*yield*/, prisma.$disconnect()];
-                case 19:
+                case 22: return [4 /*yield*/, prisma.$disconnect()];
+                case 23:
                     _a.sent();
                     return [7 /*endfinally*/];
-                case 20: return [2 /*return*/];
+                case 24: return [2 /*return*/];
             }
         });
     });
