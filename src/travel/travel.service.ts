@@ -19,9 +19,9 @@ export class TravelService {
   @Inject()
   private readonly prisma: PrismaService;
 
-  async create(busId: number): Promise<ResponseBody> {
+  async create(id: number ): Promise<ResponseBody> {
     const bus = await this.prisma.bus.findUnique({ 
-      where : { id: busId },
+      where : { id },
     });
     if (!bus) {
       return {
@@ -49,7 +49,7 @@ export class TravelService {
     if (travel) {
       return {
         code: HttpStatus.CREATED,
-        message: 'Registro Criado !',
+        message: 'Registro Viagem Criado !',
       };
     }
 
@@ -58,6 +58,36 @@ export class TravelService {
       message: 'Erro ao criar registro de viagem !',
     };
   }
+
+  async close(id: number): Promise<ResponseBody> {
+    const travel = await this.findOneByBusId(id);
+    if (!travel) {
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: 'Registro de viagem não encontrado !',
+      };
+    }
+    const updatedTravel = await this.prisma.travel.update({
+      where: { id: travel.id },
+      data: {
+       departureTime: new Date(),
+      },
+    });
+
+    if (!updatedTravel.departureTime) {
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: 'Registro de viagem não encontrado !',
+      };
+    }
+
+    return {
+      code: HttpStatus.OK,
+      message: 'Registro de viagem fechado com sucesso !',
+    };
+  }
+
+
 
   async monthlyCount(
     year?: number,
@@ -207,11 +237,13 @@ export class TravelService {
   }
 
   async findOneByBusId(busId: number): Promise<Travel | null> {
-    return await this.prisma.travel.findUnique({
-      where: {
-        busId:busId
-      }
+    const travels =  await this.prisma.travel.findMany({
+      where: { busId }
     })
+    if (travels.length === 0) {
+      return null;
+    }
+    return travels[travels.length - 1];
   }
 
   async remove(id: number) {

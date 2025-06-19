@@ -218,17 +218,28 @@ export class BusService {
 
   // driver app (manage screen)
   async updateBusDetails(id: number, data: updateBusDetails) {
+    let updatedInfo: string = "";
     if (data.status !== undefined && data.status !== null) {
-      if (data.status === 'IN_TRANSIT'){
-          this.travelService.create(id);
-      } else if (data.status === 'OFFLINE' || data.status === 'ACCIDENT') {
-        
+      const bus = await this.prisma.bus.findUnique({
+        where: { id },
+      });
+      if (!bus) {
+        return {
+          code: HttpStatus.NOT_FOUND,
+          message: 'Ônibus não encontrado',
+        };
+      }
+      if (bus.status !== 'IN_TRANSIT' && data.status === 'IN_TRANSIT') {
+        console.log("Bus is not in transit, creating travel");
+        this.travelService.create(id);
+      } else if (bus.status === 'IN_TRANSIT' && (data.status === 'OFFLINE' || data.status === 'ACCIDENT')) {
+        console.log("Bus is in transit, closing travel");
+        console.log(await this.travelService.close(id));
       }
     }
     if (data.currentLoad !== null || data.currentLoad !== undefined) {
       const travel = await this.travelService.findOneByBusId(id);
       if (!travel) {
-        
         return {
           code: HttpStatus.NOT_FOUND,
           message: 'Registro da viagem não encontrado',

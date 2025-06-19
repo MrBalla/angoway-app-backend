@@ -66,7 +66,7 @@ export class AuthService {
         message: 'Nenhum ônibus atribuído a este motorista !',
       };
     }
-
+    console.log(Params.password, driver.password);
     const passwordMatch = await bcrypt.compare(
       Params.password,
       driver.password,
