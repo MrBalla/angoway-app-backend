@@ -230,11 +230,9 @@ export class BusService {
         };
       }
       if (bus.status !== 'IN_TRANSIT' && data.status === 'IN_TRANSIT') {
-        console.log("Bus is not in transit, creating travel");
         this.travelService.create(id);
       } else if (bus.status === 'IN_TRANSIT' && (data.status === 'OFFLINE' || data.status === 'ACCIDENT')) {
-        console.log("Bus is in transit, closing travel");
-        console.log(await this.travelService.close(id));
+        await this.travelService.close(id);
       }
     }
     if (data.currentLoad !== null || data.currentLoad !== undefined) {
