@@ -1,0 +1,31 @@
+version: '3.8'
+
+networks:
+  angoway-network:
+    driver: bridge
+
+services:
+  angowayappbackend:
+    image: angowayappbackend
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: production
+    ports:
+      - 3300:3300
+    networks:
+      - angoway-network
+
+  angowaydatabase:
+    image: angowaydatabase
+    build:
+      context: .
+      dockerfile: ./Dockerfile.database
+    environment:
+      DATABASE_PASSWORD: root
+      DATABASE_NAME: angowaydb
+    ports:
+      - 3306:3306
+    networks:
+      - angoway-network
