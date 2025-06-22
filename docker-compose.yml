@@ -1,31 +1,37 @@
-version: '3.8'
+services:
+  db:
+    image: postgres:latest
+    container_name: angoway_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: angoway
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: angowaydb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - angoway-network
+
+  angowayappbackend:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    container_name: angoway_backend
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgres://angoway:root@db:5432/angowaydb
+    ports:
+      - "3300:3300"
+    depends_on:
+      - db
+    networks:
+      - angoway-network
 
 networks:
   angoway-network:
     driver: bridge
 
-services:
-  angowayappbackend:
-    image: angowayappbackend
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    environment:
-      NODE_ENV: production
-    ports:
-      - 3300:3300
-    networks:
-      - angoway-network
-
-  angowaydatabase:
-    image: angowaydatabase
-    build:
-      context: .
-      dockerfile: ./Dockerfile.database
-    environment:
-      DATABASE_PASSWORD: root
-      DATABASE_NAME: angowaydb
-    ports:
-      - 3306:3306
-    networks:
-      - angoway-network
+volumes:
+  postgres_data:

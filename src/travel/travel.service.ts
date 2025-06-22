@@ -88,7 +88,6 @@ export class TravelService {
   }
 
 
-
   async monthlyCount(
     year?: number,
   ): Promise<{ month: string; travels: number }[] | []> {

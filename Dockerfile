@@ -1,24 +1,35 @@
-FROM node:lts-alpine
+# Etapa 1: Builder
+FROM node:lts-alpine AS builder
 
-ENV NODE_ENV=production
-ENV DATABASE_URL = postgresql://user:password@angowaydatabase:3300/angowaydb
+WORKDIR /app
 
-WORKDIR /usr/src/app
-
-COPY ["package.json", "package-lock.json*", "npm-shrinkwrap.json*", "./"]
-RUN npm install --production --silent && mv node_modules ../
-
-RUN npm install -g prisma
+COPY package*.json ./
+RUN npm install
 
 COPY . .
 
-RUN prisma generate
+# Gera Prisma Client
+RUN npx prisma generate
 
-RUN command npm run build
+# Compila o NestJS
+RUN npm run build
 
-EXPOSE 3300
+# Debug: lista arquivos gerados em /app/dist
+RUN ls -l /app/dist
 
-RUN chown -R node /usr/src/app
-USER node
+# Etapa 2: Imagem final
+FROM node:lts-alpine
 
-CMD ["npm", "run", "setup"]
+WORKDIR /app
+
+# Copia apenas os arquivos necessários do builder
+COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/package-lock.json ./package-lock.json
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/prisma ./prisma
+
+RUN npm ci --only=production
+
+ENV NODE_ENV=production
+
+CMD ["node", "dist/src/main.js"]
