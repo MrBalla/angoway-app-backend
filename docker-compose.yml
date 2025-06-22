@@ -5,27 +5,36 @@ networks:
     driver: bridge
 
 services:
-  angowayappbackend:
-    image: angowayappbackend
-    build:
-      context: .
-      dockerfile: ./Dockerfile
+  angowaydatabase:
+    image: postgres:15-alpine
+    container_name: angowaydatabase
+    restart: always
     environment:
-      NODE_ENV: production
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: angowaydb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     ports:
-      - 3300:3300
+      - '5432:5432'
     networks:
       - angoway-network
 
-  angowaydatabase:
-    image: angowaydatabase
+  angowayappbackend:
     build:
       context: .
-      dockerfile: ./Dockerfile.database
+      dockerfile: Dockerfile
+    image: angowayappbackend
+    container_name: angowayappbackend
+    depends_on:
+      - angowaydatabase
     environment:
-      DATABASE_PASSWORD: root
-      DATABASE_NAME: angowaydb
+      NODE_ENV: production
+      DATABASE_URL: postgres://user:password@angowaydatabase:5432/angowaydb
     ports:
-      - 3306:3306
+      - '3300:3300'
     networks:
       - angoway-network
+
+volumes:
+  postgres_data:
