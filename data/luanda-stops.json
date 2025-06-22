@@ -160,6 +160,175 @@
         "public_transport": "platform"
       }
     },
+     {
+      "type": "node",
+      "id": 2505831006,
+      "lat": -8.929738,
+      "lon": 13.161642,
+      "tags": {
+        "amenity": "bus_station",
+        "bus": "yes",
+        "highway": "bus_stop",
+        "name": "Paragem da AngoMart - Partido",
+        "public_transport": "platform"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2505831006,
+      "lat": -8.930316,
+      "lon": 13.161454,
+      "tags": {
+        "amenity": "bus_station",
+        "bus": "yes",
+        "highway": "bus_stop",
+        "name": "Paragem da AngoMart - Partido",
+        "public_transport": "platform"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2505831006,
+      "lat": -8.935821,
+      "lon": 13.161973,
+      "tags": {
+        "amenity": "bus_station",
+        "bus": "yes",
+        "highway": "bus_stop",
+        "name": "Paragem da Dona Xepa",
+        "public_transport": "platform"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2505831006,
+      "lat": -8.936046,
+      "lon": 13.161725,
+      "tags": {
+        "amenity": "bus_station",
+        "bus": "yes",
+        "highway": "bus_stop",
+        "name": "Paragem da Dona Xepa",
+        "public_transport": "platform"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2505831006,
+      "lat": -8.939498,
+      "lon": 13.160695,
+      "tags": {
+        "amenity": "bus_station",
+        "bus": "yes",
+        "highway": "bus_stop",
+        "name": "Paragem da SonaGalp",
+        "public_transport": "platform"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2505831006,
+      "lat": -8.939367,
+      "lon": 13.160224,
+      "tags": {
+        "amenity": "bus_station",
+        "bus": "yes",
+        "highway": "bus_stop",
+        "name": "Paragem da SonaGalp",
+        "public_transport": "platform"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2505831006,
+      "lat": -8.943218,
+      "lon": 13.157279,
+      "tags": {
+        "amenity": "bus_station",
+        "bus": "yes",
+        "highway": "bus_stop",
+        "name": "Paragem do BFA",
+        "public_transport": "platform"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2505831006,
+      "lat": -8.943218,
+      "lon": 13.157279,
+      "tags": {
+        "amenity": "bus_station",
+        "bus": "yes",
+        "highway": "bus_stop",
+        "name": "Paragem do BFA",
+        "public_transport": "platform"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2505831006,
+      "lat": -8.943153,
+      "lon": 13.156862,
+      "tags": {
+        "amenity": "bus_station",
+        "bus": "yes",
+        "highway": "bus_stop",
+        "name": "Paragem do BFA",
+        "public_transport": "platform"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2505831006,
+      "lat": -8.949138,
+      "lon": 13.152960,
+      "tags": {
+        "amenity": "bus_station",
+        "bus": "yes",
+        "highway": "bus_stop",
+        "name": "Paragem do Benfica",
+        "public_transport": "platform"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2505831006,
+      "lat": -8.951712,
+      "lon": 13.152482,
+      "tags": {
+        "amenity": "bus_station",
+        "bus": "yes",
+        "highway": "bus_stop",
+        "name": "Paragem da Agua Azul",
+        "public_transport": "platform"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2505831006,
+      "lat": -8.943218,
+      "lon": 13.157279,
+      "tags": {
+        "amenity": "bus_station",
+        "bus": "yes",
+        "highway": "bus_stop",
+        "name": "Paragem do BFA",
+        "public_transport": "platform"
+      }
+    },
+    {
+      "type": "node",
+      "id": 2505831006,
+      "lat": -8.958148,
+      "lon": 13.147851,
+      "tags": {
+        "amenity": "bus_station",
+        "bus": "yes",
+        "highway": "bus_stop",
+        "name": "Paragem do Benfica (Centrooptico)",
+        "public_transport": "platform"
+      }
+    },
     {
       "type": "node",
       "id": 2505831022,
