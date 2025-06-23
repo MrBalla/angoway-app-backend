@@ -325,11 +325,14 @@ export class DriverService {
     });
   }
   //remover a atribuição do autocarro ao motorista
-  async unassignBus(driverId: number): Promise<Driver> {
+  async unassignBus(driverId: number): Promise<ResponseBody | Driver> {
     //Verificar se o motorista existe
     const driver = await this.driver({ id: driverId });
     if (!driver) {
-      throw new BadRequestException('Motorista não encontrado');
+      return {
+        code: HttpStatus.BAD_REQUEST,
+        message: 'Motorista não encontrado',
+      };
     }
     //Verificar se o motorista está atribuído a um autocarro
     const bus = await this.prisma.bus.findUnique({
@@ -338,9 +341,10 @@ export class DriverService {
       },
     });
     if (!bus) {
-      throw new BadRequestException(
-        'Motorista não está atribuído a um autocarro',
-      );
+      return {
+        code: HttpStatus.BAD_REQUEST,
+        message: 'Motorista não está atribuído a um autocarro',
+      };
     }
     //Remover a atribuição do autocarro e deixar o status como disponível
     await this.prisma.bus.update({
@@ -370,5 +374,23 @@ export class DriverService {
         currentLongitude: long,
       },
     });
+  }
+
+  //for mocking
+  async getLocation(
+    id: number,
+  ): Promise<ResponseBody | { latitude: number; longitude: number }> {
+    const driver = await this.prisma.driver.findUnique({ where: { id: id } });
+    if (!driver) {
+      return {
+        code: HttpStatus.BAD_REQUEST,
+        message: 'Motorista não encontrado',
+      };
+    }
+
+    return {
+      latitude: driver.currentLatitude || 0,
+      longitude: driver.currentLongitude || 0,
+    };
   }
 }

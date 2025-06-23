@@ -104,17 +104,22 @@ export class DriverController {
   @UseGuards(AuthGuard)
   async getDriverById(
     @Param('id') id: string,
-  ): Promise<Omit<Driver, 'password'>> {
+  ): Promise<ResponseBody | Omit<Driver, 'password'>> {
     const numericId = parseInt(id, 10);
     if (isNaN(numericId)) {
-      throw new NotFoundException(`ID inválido: ${id}`);
+      return {
+        code: HttpStatus.BAD_REQUEST,
+        message: `ID inválido: ${id}`,
+      };
     }
-    console.log('numericId', numericId);
     const driver = await this.driverService.driver({
       id: numericId,
     });
     if (!driver) {
-      throw new NotFoundException(`Motorista com ID ${id} não encontrado`);
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: `Motorista com ID ${id} não encontrado`,
+      };
     }
     const { password, ...driverWithoutPassword } = driver;
     return driverWithoutPassword;
@@ -147,10 +152,12 @@ export class DriverController {
     @Param('id') id: string,
     @Body('busNia') busNia: string,
   ): Promise<ResponseBody> {
-    const response = await this.driverService.assignBus(
-      parseInt(id, 10),
-      busNia,
-    );
+    const numericId = parseInt(id, 10);
+    if (isNaN(numericId)) {
+      return { code: HttpStatus.BAD_REQUEST, message: `ID inválido: ${id}` };
+    }
+
+    const response = await this.driverService.assignBus(numericId, busNia);
 
     if (response) {
       return {
@@ -160,7 +167,7 @@ export class DriverController {
     }
 
     return {
-      code: 500,
+      code: HttpStatus.INTERNAL_SERVER_ERROR,
       message: 'Não foi possível atribuir o autocarro',
     };
   }
@@ -172,11 +179,15 @@ export class DriverController {
     @Param('id') id: string,
     @Body() updateDriverData: Prisma.DriverUpdateInput,
   ): Promise<ResponseBody> {
+    const numericId = parseInt(id, 10);
+    if (isNaN(numericId)) {
+      return { code: HttpStatus.BAD_REQUEST, message: `ID inválido: ${id}` };
+    }
     const driver = await this.driverService.updateDriver({
-      where: { id: parseInt(id, 10) },
+      where: { id: numericId },
       data: updateDriverData,
     });
-    const { password, ...driverWithoutPassword } = driver;
+
     return {
       message: 'Motorista atualizado com sucesso',
       code: HttpStatus.OK,
@@ -190,8 +201,13 @@ export class DriverController {
     @Param('id') id: string,
     @Body() updatePasswordData: { password: string },
   ): Promise<ResponseBody> {
+    const numericId = parseInt(id, 10);
+    if (isNaN(numericId)) {
+      return { code: HttpStatus.BAD_REQUEST, message: `ID inválido: ${id}` };
+    }
+
     const driver = await this.driverService.updatePassword({
-      where: { id: parseInt(id, 10) },
+      where: { id: numericId },
       data: { password: updatePasswordData.password },
     });
     const { password, ...driverWithoutPassword } = driver;
@@ -205,7 +221,11 @@ export class DriverController {
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   async deleteDriver(@Param('id') id: string): Promise<ResponseBody> {
-    await this.driverService.deleteDriver({ id: parseInt(id, 10) });
+    const numericId = parseInt(id, 10);
+    if (isNaN(numericId)) {
+      return { code: HttpStatus.BAD_REQUEST, message: `ID inválido: ${id}` };
+    }
+    await this.driverService.deleteDriver({ id: numericId });
     return {
       message: 'Motorista deletado com sucesso',
       code: HttpStatus.OK,
@@ -219,12 +239,19 @@ export class DriverController {
     @Param('id') id: string,
     @Body() updateStatusData: { status: 'AVAILABLE' | 'ON_ROUTE' | 'OFFLINE' },
   ): Promise<ResponseBody> {
+    const numericId = parseInt(id, 10);
+    if (isNaN(numericId)) {
+      return { code: HttpStatus.BAD_REQUEST, message: `ID inválido: ${id}` };
+    }
     const driver = await this.driverService.updateStatus(
-      parseInt(id, 10),
+      numericId,
       updateStatusData.status,
     );
     if (!driver) {
-      throw new NotFoundException(`Motorista com ID ${id} não encontrado`);
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: `Motorista com ID ${id} não encontrado`,
+      };
     }
     const { password, ...driverWithoutPassword } = driver;
     return {
@@ -237,10 +264,13 @@ export class DriverController {
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   async verifyDriver(@Param('id') id: string): Promise<ResponseBody> {
+    const numericId = parseInt(id, 10);
+    if (isNaN(numericId)) {
+      return { code: HttpStatus.BAD_REQUEST, message: `ID inválido: ${id}` };
+    }
     const driver = await this.driverService.verifyDriver({
-      id: parseInt(id, 10),
+      id: numericId,
     });
-    const { password, ...driverWithoutPassword } = driver;
     return {
       message: `Motorista ${driver.isVerified ? 'verificado' : 'desverificado'} com sucesso`,
       code: HttpStatus.OK,
@@ -251,8 +281,11 @@ export class DriverController {
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
   async unassignBus(@Param('id') id: string): Promise<ResponseBody> {
-    const driver = await this.driverService.unassignBus(parseInt(id, 10));
-    const { password, ...driverWithoutPassword } = driver;
+    const numericId = parseInt(id, 10);
+    if (isNaN(numericId)) {
+      return { code: HttpStatus.BAD_REQUEST, message: `ID inválido: ${id}` };
+    }
+    const driver = await this.driverService.unassignBus(numericId);
     return {
       message: 'Atribuição de autocarro removida com sucesso',
       code: HttpStatus.OK,
@@ -267,8 +300,12 @@ export class DriverController {
     @Param('id') id: string,
     @Body() updateLocationData: { latitude: number; longitude: number },
   ): Promise<ResponseBody> {
+    const numericId = parseInt(id, 10);
+    if (isNaN(numericId)) {
+      return { code: HttpStatus.BAD_REQUEST, message: `ID inválido: ${id}` };
+    }
     const driver = await this.driverService.updateLocation(
-      parseInt(id, 10),
+      numericId,
       updateLocationData.latitude,
       updateLocationData.longitude,
     );
@@ -277,5 +314,17 @@ export class DriverController {
       message: 'Localização do motorista atualizada com sucesso',
       code: HttpStatus.OK,
     };
+  }
+
+  @Get('location/:id')
+  @UseGuards(AuthGuard)
+  async getLocation(
+    @Param('id') id: string,
+  ): Promise<ResponseBody | { latitude: number; longitude: number }> {
+    const numericId = parseInt(id, 10);
+    if (isNaN(numericId)) {
+      return { code: HttpStatus.BAD_REQUEST, message: `ID inválido: ${id}` };
+    }
+    return await this.driverService.getLocation(numericId);
   }
 }
