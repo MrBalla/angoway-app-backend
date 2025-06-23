@@ -1,7 +1,11 @@
+networks:
+  angoway-network:
+    driver: bridge
+
 services:
-  db:
-    image: postgres:latest
-    container_name: angoway_postgres
+  angowaydatabase:
+    image: postgres:15-alpine
+    container_name: angowaydatabase
     restart: always
     environment:
       POSTGRES_USER: angoway
@@ -10,28 +14,31 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - '5432:5432'
+    healthcheck:
+      - test: ['CMD', 'pg_isready']
+      - interval: 10s
+      - timeout: 5s
+      - retries: 5
     networks:
       - angoway-network
 
   angowayappbackend:
     build:
       context: .
-      dockerfile: ./Dockerfile
-    container_name: angoway_backend
+      dockerfile: Dockerfile
+    image: angowayappbackend
+    container_name: angowayappbackend
+    depends_on:
+      - angowaydatabase
     environment:
       NODE_ENV: production
-      DATABASE_URL: postgres://angoway:root@db:5432/angowaydb
+      DATABASE_URL: postgres://angoway:root@angowaydatabase:5432/angowaydb
+      PORT: 3300
     ports:
-      - "3300:3300"
-    depends_on:
-      - db
+      - '3300:3300'
     networks:
       - angoway-network
-
-networks:
-  angoway-network:
-    driver: bridge
 
 volumes:
   postgres_data:

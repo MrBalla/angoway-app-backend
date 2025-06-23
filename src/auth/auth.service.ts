@@ -81,12 +81,10 @@ export class AuthService {
     // initializes driver and driver's bus
     this.busService.updateBus(assignedBus.id, {
       currentLoad: 0,
-      status: "IN_TRANSIT"
     })
     this.driverService.updateDriver({
       where: { id: driver.id },
       data: {
-        status: "ON_ROUTE",
         lastLogin: new Date()
       }
     })
