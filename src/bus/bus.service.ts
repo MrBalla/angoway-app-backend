@@ -183,6 +183,8 @@ export class BusService {
                   select: {
                     id: true,
                     name: true,
+                    latitude: true,
+                    longitude: true
                   },
                 },
               },

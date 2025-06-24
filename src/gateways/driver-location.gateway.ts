@@ -33,7 +33,7 @@ export class DriverLocationGateway
     try {
       const token = client.handshake.auth.token;
       const decoded = await this.jwtService.verifyAsync(token);
-        
+
       (client as any).driverId = decoded.sub;
 
       this.logger.log(
@@ -61,7 +61,8 @@ export class DriverLocationGateway
       return;
     }
 
-    const busDetails = await this.busService.findBusAndDetailsByDriverId(driverId);
+    const busDetails =
+      await this.busService.findBusAndDetailsByDriverId(driverId);
     if (!busDetails) {
       this.logger.warn(`No bus found for driverId: ${driverId}`);
       return;
@@ -77,7 +78,7 @@ export class DriverLocationGateway
       driverPhoto: busDetails.driver?.url_foto_de_perfil,
       driverExperience: busDetails.driver?.experienceTime,
       seats: busDetails.currentLoad,
-      stops: busDetails.route.routeStops
+      stops: busDetails.route.routeStops.map((stop) => stop.stop),
     };
 
     client.broadcast.emit('driverLocationUpdate', busData);
