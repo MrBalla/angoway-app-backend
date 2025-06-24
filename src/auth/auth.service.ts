@@ -29,7 +29,7 @@ export class AuthService {
     Params: Prisma.UserCreateInput,
   ): Promise<ResponseBody | { access_token: string }> {
     //verificar se o usuario existe
-    const user = await this.userService.user({ role:"USER", number: Params.number });
+    const user = await this.userService.user({ number: Params.number });
     if (!user)
       return {
         code: HttpStatus.NOT_FOUND,
