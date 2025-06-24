@@ -1,3 +1,4 @@
+
 export type busDetails = {
   status: string | undefined;
   capacity: number | undefined;
@@ -9,6 +10,6 @@ export type busDetails = {
     destination: string | undefined;
     destinationLat: number | null;
     destinationLng: number | null;
-    stops: {}[] | undefined;
   };
+  stops: {}[] | undefined;
 };
