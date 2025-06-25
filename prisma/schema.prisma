@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  output = "./output"
 }
 
 datasource db {
@@ -130,7 +131,7 @@ model RouteStop{
   route   Route  @relation(fields: [routeId], references: [id])
   stop    Stop   @relation(fields: [stopId], references: [id])
 
-  @@unique([routeId, stopId])
+  // @@unique([routeId, stopId])
 }
 
 model Feedback {

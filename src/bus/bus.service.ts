@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { Prisma, Bus } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
+import { DriverService } from 'src/driver/driver.service';
 import { RoutesService } from 'src/routes/routes.service';
 import { TravelService } from 'src/travel/travel.service';
 import { ResponseBody } from 'src/types/response.body';
@@ -21,6 +22,7 @@ export class BusService {
   constructor(
     private readonly routesService: RoutesService,
     private readonly travelService: TravelService,
+    private readonly driverService: DriverService,
   ) {}
 
   async generateNIA(): Promise<string> {
@@ -181,6 +183,8 @@ export class BusService {
                   select: {
                     id: true,
                     name: true,
+                    latitude: true,
+                    longitude: true
                   },
                 },
               },
@@ -218,7 +222,7 @@ export class BusService {
 
   // driver app (manage screen)
   async updateBusDetails(id: number, data: updateBusDetails) {
-    let updatedInfo: string = "";
+    let updatedInfo: string = '';
     if (data.status !== undefined && data.status !== null) {
       const bus = await this.prisma.bus.findUnique({
         where: { id },
@@ -231,8 +235,43 @@ export class BusService {
       }
       if (bus.status !== 'IN_TRANSIT' && data.status === 'IN_TRANSIT') {
         this.travelService.create(id);
-      } else if (bus.status === 'IN_TRANSIT' && (data.status === 'OFFLINE' || data.status === 'ACCIDENT')) {
+
+        try {
+          // initializes driver
+          await this.driverService.updateDriver({
+            where: { id: bus.driverId || undefined },
+            data: {
+              status: 'ON_ROUTE',
+              lastLogin: new Date(),
+            },
+          });
+        } catch (err) {
+          return {
+            code: HttpStatus.INTERNAL_SERVER_ERROR,
+            message:
+              'Não conseguimos atualizar o seu status. Faça login novamente.',
+          };
+        }
+      } else if (
+        bus.status === 'IN_TRANSIT' &&
+        (data.status === 'OFF_SERVICE' || data.status === 'ACCIDENT')
+      ) {
         await this.travelService.close(id);
+        try {
+          
+          await this.driverService.updateDriver({
+            where: { id: bus.driverId || undefined },
+            data: {
+              status: 'OFF_SERVICE',
+            },
+          });
+        } catch (err) {
+          return {
+            code: HttpStatus.INTERNAL_SERVER_ERROR,
+            message:
+              'Não conseguimos atualizar o seu status. Faça login novamente.',
+          };
+        }
       }
     }
     if (data.currentLoad !== null || data.currentLoad !== undefined) {
@@ -243,8 +282,8 @@ export class BusService {
           message: 'Registro da viagem não encontrado',
         };
       }
-      const currentProfit = Number(travel.profit)
-      const loadTimesPrice = Number(data.currentLoad) * this.BUS_RIDE_PRICE
+      const currentProfit = Number(travel.profit);
+      const loadTimesPrice = Number(data.currentLoad) * this.BUS_RIDE_PRICE;
 
       this.prisma.travel.update({
         where: { id },
@@ -256,30 +295,33 @@ export class BusService {
     return this.prisma.bus.update({ where: { id }, data });
   }
 
-  async changeRoute(driverId: number, newRouteId: number):Promise<Bus | ResponseBody> {
+  async changeRoute(
+    driverId: number,
+    newRouteId: number,
+  ): Promise<Bus | ResponseBody> {
     const bus = await this.prisma.bus.findFirst({ where: { driverId } });
 
     if (!bus) {
       return {
-        code:HttpStatus.NOT_FOUND,
-        message: "Este autocarro nao existe."
-      }
+        code: HttpStatus.NOT_FOUND,
+        message: 'Este autocarro nao existe.',
+      };
     }
 
     if (!newRouteId) {
       return {
         code: HttpStatus.BAD_REQUEST,
-        message: "Voce precisa informar a rota."
-      }
+        message: 'Voce precisa informar a rota.',
+      };
     }
 
     const newRoute = await this.routesService.findOne(newRouteId);
 
     if (!newRoute) {
       return {
-        code:HttpStatus.NOT_FOUND,
-        message:"Esta rota nao existe!."
-      }
+        code: HttpStatus.NOT_FOUND,
+        message: 'Esta rota nao existe!.',
+      };
     }
 
     return this.prisma.bus.update({

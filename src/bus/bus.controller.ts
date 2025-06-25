@@ -64,12 +64,16 @@ export class BusController {
         originLng: bus.route.originLongitude,
         destinationLat: bus.route.destinationLatitude,
         destinationLng: bus.route.destinationLongitude,
-        stops: bus?.route.routeStops.map((rs) => ({
-          id: rs.stop.id,
-          name: rs.stop.name,
-          order: rs.order,
-        })),
       },
+      stops: bus?.route.routeStops.map((rs) => {
+        return {
+          id: rs.id,
+          latitude: rs.stop.latitude,
+          longitude: rs.stop.longitude,
+          name: rs.stop.name,
+          order: null,
+        };
+      }),
     };
 
     return busDetails;
