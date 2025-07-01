@@ -9,6 +9,7 @@ import {
   Param,
   Patch,
   Post,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { DriverService } from './driver.service';
@@ -258,6 +259,22 @@ export class DriverController {
       message: 'Status do motorista atualizado com sucesso',
       code: HttpStatus.OK,
     };
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  @Get('me/:driverId')
+  async profileDetails(@Param('driverId') id: string) {
+    
+    const numericId = parseInt(id, 10);
+    if (isNaN(numericId) || !id) {
+      return {
+        code: HttpStatus.BAD_REQUEST,
+        message: `ID inválido: ${id}`,
+      };
+    }
+
+    return this.driverService.getDriverDetails(numericId);
   }
 
   @Patch('/verify/:id')
