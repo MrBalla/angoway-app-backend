@@ -124,6 +124,16 @@ export class DriverService {
                 profit: true,
               },
             },
+            route: {
+              select: {
+                schedules: {
+                  select: {
+                    departureTime: true,
+                    arrivalTime:true
+                  }
+                }
+              }
+            }
           },
         },
       },
