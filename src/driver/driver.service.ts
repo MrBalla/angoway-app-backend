@@ -106,6 +106,49 @@ export class DriverService {
     });
   }
 
+  async getDriverDetails(id: number): Promise<ResponseBody | any> {
+    const driver = await this.prisma.driver.findUnique({
+      where: { id: id },
+      select: {
+        isVerified: true,
+        name: true,
+        lastLogin: true,
+        rating: true,
+        url_foto_de_perfil: true,
+        assignedBus: {
+          select: {
+            nia: true,
+            matricula: true,
+            travels: {
+              select: {
+                profit: true,
+              },
+            },
+            route: {
+              select: {
+                schedules: {
+                  select: {
+                    departureTime: true,
+                    arrivalTime:true
+                  }
+                }
+              }
+            }
+          },
+        },
+      },
+    });
+
+    if (!driver) {
+      return {
+        code: HttpStatus.NOT_FOUND,
+        message: 'Não encontramos este Motorista !',
+      };
+    }
+
+    return driver;
+  }
+
   async getDriversAvailable(): Promise<Driver[]> {
     return this.prisma.driver.findMany({
       where: {
